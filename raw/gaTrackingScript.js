@@ -4,7 +4,7 @@
 
 import {
 	pageView, hasLocalStorage, listViewScript, setClientID, removePii,
-} from './trackingHelpers'
+} from './helpers'
 
 (function () {
 	window.dataLayer = window.dataLayer || [];

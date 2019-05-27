@@ -1,4 +1,4 @@
-# shopify-tracking-code
+# Shopify Tracker
 Littledata's tracking script for Shopify stores
 
 Dependencies
