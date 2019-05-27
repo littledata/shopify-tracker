@@ -1,0 +1,63 @@
+{
+    "extends": ["airbnb-base"],
+    "plugins": [
+        "import"
+    ],
+    "rules": {
+        "curly" : "error",
+        "linebreak-style" : "off",
+        "meteor/no-session" : "off",
+        "meteor/eventmap-params": "off",
+        "indent": ["error", "tab"],
+        "no-tabs": "off",
+        "import/no-absolute-path" : "off",
+        "import/prefer-default-export": "off",
+        "import/no-extraneous-dependencies" : "off",
+        "import/extensions" : "off",
+        "import/no-unresolved" : "error",
+        "func-names": "off",
+        "no-undef":"error",
+        "object-shorthand":"warn",
+        "prefer-arrow-callback": "off",
+        "consistent-return": "off",
+        "padded-blocks": "off",
+        "semi": "off",
+        "meteor/template-names": "off",
+        "no-underscore-dangle": "off",
+        "no-plusplus": "off",
+        "eqeqeq": "warn",
+        "quotes": "warn",
+        "radix": "off",
+        "no-unused-vars": "error",
+        "no-param-reassign": "error",
+        "guard-for-in": "off",
+        "no-restricted-syntax": "off",
+        "arrow-parens": "off",
+        "max-len": "off",
+        "no-unused-expressions": "off",
+        "no-console" : "warn",
+        "no-eval" : "warn",
+        "no-useless-escape" : "off",
+        "no-continue" : "off",
+        "meteor/audit-argument-checks" : "off",
+        "no-extend-native" : "off",
+        "global-require" : "off",
+        "no-bitwise" : "error",
+        "no-restricted-properties" : "off",
+        "spaced-comment" : "off",
+        "no-unreachable" : "error",
+        "no-trailing-spaces" : "warn"
+    },
+    "env": {
+        "es6": true,
+        "browser": true,
+        "node": true,
+        "mongo": true,
+        "mocha": true
+    },
+    "globals" : {
+    	"dataLayer": true,
+    	"gtag": true
+    },
+    "root" : true
+}
