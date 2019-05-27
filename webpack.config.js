@@ -1,9 +1,13 @@
 const path = require('path');
 
 module.exports = {
-	entry: './src/gaTrackingScript.js',
+	entry: {
+		gaTracker: './src/gaTracker.js',
+		segmentTracker: './src/segmentTracker.js',
+	},
 	output: {
-		filename: 'gaTrackingScript.js',
+		filename: '[name].js',
 		path: path.resolve(__dirname, 'dist'),
 	},
+	mode: 'production',
 };
