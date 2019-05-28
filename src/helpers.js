@@ -26,23 +26,25 @@ export const hasLocalStorage = (function () {
 	}
 }())
 
-export const listViewScript = function (impressionTag, clickTag) {
-	window.setTimeout(function () {
-		impressionTag()
-	}, 500) /* wait for pageview to fire first */
+export const getElementsByHref = (hrefContaining) => {
+	const htmlCollection = document.getElementsByTagName('a')
+	return Array.prototype.slice.call(htmlCollection)
+		.filter(element => element.href && element.href.includes(hrefContaining))
+}
 
+export const findDataLayerProduct = link => LittledataLayer.ecommerce.impressions.find(p => {
+	const linkSplit = link.split('/products/')
+	const productLink = linkSplit && linkSplit[1]
+	return productLink === p.handle
+})
+
+export const productListClicks = function (clickTag) {
 	/* product list clicks */
 	if (!LittledataLayer.productClicks) return
-	const htmlCollection = document.getElementsByTagName('a')
-	Array.prototype.slice.call(htmlCollection)
-		.filter(function () { return this.href.indexOf('/products') !== -1 }) /* only add event to products */
+	getElementsByHref('/products') // only add event to products
 		.addEventListener('click', function (ev) {
 			var self = this;
-			var product = LittledataLayer.ecommerce.impressions.filter(function (p) {
-				var linkSplit = self.href.split('/products/')
-				var productLink = linkSplit && linkSplit[1]
-				return productLink === p.handle
-			})[0];
+			var product = findDataLayerProduct(self.href)
 
 			if (product) {
 				ev.preventDefault();

@@ -3,8 +3,9 @@
 /* global ga, LittledataLayer */
 
 import {
-	pageView, hasLocalStorage, listViewScript, setClientID, removePii, getPersistentClientId,
+	pageView, hasLocalStorage, productListClicks, setClientID, removePii, getPersistentClientId,
 } from './helpers'
+import productListViews from './productListViews'
 
 (function () {
 	window.dataLayer = window.dataLayer || [];
@@ -39,20 +40,7 @@ import {
 		setClientID(() => ga.getAll()[0].get('clientId'))
 		/* run list, product, and clientID scripts everywhere */
 		if (LittledataLayer.ecommerce.impressions.length) {
-			listViewScript(function () {
-				gtag('event', 'view_item_list', {
-					items: LittledataLayer.ecommerce.impressions.slice(0, 30),
-					send_to: LittledataLayer.webPropertyID,
-					non_interaction: true,
-				})
-				dataLayer.push({
-					event: 'view_item_list',
-					ecommerce: {
-						currencyCode: '{{shop.currency}}',
-						impressions: LittledataLayer.ecommerce.impressions.slice(0, 30),
-					},
-				})
-			}, function (product, self) {
+			productListClicks((product, self) => {
 				product.list_name = location.pathname //eslint-disable-line
 				dataLayer.push({
 					event: 'select_content',
@@ -71,6 +59,20 @@ import {
 					event_callback() {
 						window.clearTimeout(self.timeout)
 						document.location = self.href
+					},
+				})
+			})
+
+			productListViews((products) => {
+				gtag('event', 'view_item_list', {
+					items: products,
+					send_to: LittledataLayer.webPropertyID,
+					non_interaction: true,
+				})
+				dataLayer.push({
+					event: 'view_item_list',
+					ecommerce: {
+						impressions: products,
 					},
 				})
 			})
