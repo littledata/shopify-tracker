@@ -1,5 +1,4 @@
 /* global ga, LittledataLayer */
-/* eslint no-var: 0 */
 
 export const pageView = function (fireTag) {
 	// delay page firing until the page is visible
@@ -37,10 +36,10 @@ export const listViewScript = function (impressionTag, clickTag) {
 	Array.prototype.slice.call(htmlCollection)
 		.filter(function () { return this.href.indexOf('/products') !== -1 }) /* only add event to products */
 		.addEventListener('click', function (ev) {
-			var self = this;
-			var product = LittledataLayer.ecommerce.impressions.filter(function (p) {
-				var linkSplit = self.href.split('/products/')
-				var productLink = linkSplit && linkSplit[1]
+			const self = this;
+			const product = LittledataLayer.ecommerce.impressions.filter(function (p) {
+				const linkSplit = self.href.split('/products/')
+				const productLink = linkSplit && linkSplit[1]
 				return productLink === p.handle
 			})[0];
 
@@ -60,24 +59,44 @@ export const listViewScript = function (impressionTag, clickTag) {
 		})
 }
 
-export const setClientID = function (getClientId) {
+function postClientID() {
 	setTimeout(function () {
 		ga(function () {
-			const xhr = new XMLHttpRequest();
-			xhr.open('POST', '/cart/update');
-			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-			xhr.send({ attributes: { clientID: getClientId() } })
+			const clientID = ga.getByName('gtag_UA_424242_4').get('clientId');
+			const createdAt = new Date().getTime()
+			const cartUpdateReq = new XMLHttpRequest(); // new HttpRequest instance
+			cartUpdateReq.onload = function () {
+				const updatedCart = JSON.parse(cartUpdateReq.response)
+				const clientIDReq = new XMLHttpRequest()
+				clientIDReq.open('POST', 'https://transactions-staging.littledata.io/clientID')
+				clientIDReq.setRequestHeader('Content-Type', 'application/json');
+				clientIDReq.send(JSON.stringify({ clientID, createdAt, cartID: updatedCart.token }))
+			}
+			cartUpdateReq.open('POST', '/cart/update.json');
+			cartUpdateReq.setRequestHeader('Content-Type', 'application/json');
+			cartUpdateReq.send(JSON.stringify({ attributes: { clientID, createdAt } }))
 		});
 	}, 1000)
 }
 
+export function setClientID() {
+	const { cart } = LittledataLayer
+	if (!cart.attributes || !cart.attributes.clientID || !cart.attributes.createdAt) return postClientID()
+
+	const createdAt = new Date(cart.attributes.createdAt)
+	const timeout = 60 * 60 * 1000 // 60 minutes
+	const timePassed = new Date() - createdAt
+	if (timePassed < timeout) return
+	postClientID()
+}
+
 export function removePii(string) {
-	var piiRegex = {
+	const piiRegex = {
 		email: /[\s&amp;\/,=]([a-zA-Z0-9_.+-]+(\@|%40)[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)($|[\s&amp;\/,])/,
 		postcode: /[\s&amp;\/,=]([A-Z]{1,2}[0-9][0-9A-Z]?(\s|%20)[0-9][A-Z]{2})($|[\s&amp;\/,])/,
 	};
-	var dlRemoved = string;
-	var key;
+	let dlRemoved = string;
+	let key;
 	for (key in piiRegex) {
 		dlRemoved = dlRemoved.replace(piiRegex[key], 'REMOVED');
 	}
