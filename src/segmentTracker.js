@@ -12,6 +12,10 @@ var analytics = window.analytics=window.analytics||[];if(!analytics.initialize)i
 
 (function () {
 	window.dataLayer = window.dataLayer || [];
+	if (!LittledataLayer) {
+		console.warn('Aborting Littledata tracking as LittledataLayer was not found')
+		return
+	}
 
 	if (LittledataLayer.customer) {
 		analytics.identify(LittledataLayer.customer.id, LittledataLayer.customer)
@@ -22,7 +26,7 @@ var analytics = window.analytics=window.analytics||[];if(!analytics.initialize)i
 	})
 
 	document.addEventListener('ready', function () {
-		setClientID()
+		setClientID(() => analytics.user().anonymousId())
 		if (LittledataLayer) {
 			/* run list, product, and clientID scripts everywhere */
 			if (LittledataLayer.ecommerce.impressions.length) {
@@ -41,7 +45,7 @@ var analytics = window.analytics=window.analytics||[];if(!analytics.initialize)i
 			}
 			var product = LittledataLayer.ecommerce.detail //eslint-disable-line
 			if (product) {
-				if (hasLocalStorage()) product.list_id = localStorage.list
+				if (hasLocalStorage) product.list_id = localStorage.list
 				product.category = 'EnhancedEcommerce'
 				analytics.track('Product Viewed', product)
 			}

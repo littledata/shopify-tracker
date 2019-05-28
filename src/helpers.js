@@ -16,7 +16,7 @@ export const pageView = function (fireTag) {
 	}
 }
 
-export const hasLocalStorage = function () {
+export const hasLocalStorage = (function () {
 	try {
 		localStorage.setItem('littledata_test_storage', 'test');
 		localStorage.removeItem('littledata_test_storage');
@@ -24,11 +24,16 @@ export const hasLocalStorage = function () {
 	} catch (ex) {
 		return false;
 	}
-}
+}())
 
 export const listViewScript = function (impressionTag, clickTag) {
+	window.setTimeout(function () {
+		impressionTag()
+	}, 500) /* wait for pageview to fire first */
+
 	/* product list clicks */
-	var htmlCollection = document.getElementsByTagName('a')
+	if (!LittledataLayer.productClicks) return
+	const htmlCollection = document.getElementsByTagName('a')
 	Array.prototype.slice.call(htmlCollection)
 		.filter(function () { return this.href.indexOf('/products') !== -1 }) /* only add event to products */
 		.addEventListener('click', function (ev) {
@@ -46,27 +51,22 @@ export const listViewScript = function (impressionTag, clickTag) {
 					document.location = self.href;
 				}, 1000)
 				if (hasLocalStorage) {
-					localStorage.list = location.pathname;
+					localStorage.list = document.location.pathname;
 				}
 				clickTag(product, self)
 			} else {
 				document.location = self.href;
 			}
 		})
-
-	window.setTimeout(function () {
-		impressionTag()
-	}, 500) /* wait for pageview to fire first */
 }
 
-export const setClientID = function () {
+export const setClientID = function (getClientId) {
 	setTimeout(function () {
 		ga(function () {
-			var clientID = ga.getByName(`gtag_${LittledataLayer.webPropertyId.replace(/-/g, '_')}`).get('clientId');
-			var xhr = new XMLHttpRequest();
+			const xhr = new XMLHttpRequest();
 			xhr.open('POST', '/cart/update');
 			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-			xhr.send({ attributes: { clientID } })
+			xhr.send({ attributes: { clientID: getClientId() } })
 		});
 	}, 1000)
 }
@@ -82,4 +82,50 @@ export function removePii(string) {
 		dlRemoved = dlRemoved.replace(piiRegex[key], 'REMOVED');
 	}
 	return dlRemoved;
+}
+
+export const guid = (function () {
+	function s4() {
+		return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+	}
+
+	return `${s4()}${s4()}-${s4()}-${s4()}-${s4()}-${s4()}${s4()}${s4()}`
+}())
+
+export const getCookie = ({ name }) => {
+	if (document.cookie.length > 0) {
+		let cookieStart = document.cookie.indexOf(`${name}=`);
+		if (cookieStart !== -1) {
+			cookieStart = cookieStart + name.length + 1;
+			let cookieEnd = document.cookie.indexOf(';', cookieStart);
+			if (cookieEnd === -1) {
+				cookieEnd = document.cookie.length;
+			}
+			return unescape(document.cookie.substring(cookieStart, cookieEnd));
+		}
+	}
+	return '';
+};
+
+export function getPersistentUserId() {
+	// needed because Safari wipes 1st party cookies
+	// so we need to persist this over localStorage, if available
+	const cookieClientId = getCookie('_ga')
+
+	// if not, we need to set it
+	if (hasLocalStorage && !LittledataLayer.enhancePrivacy) {
+		const localClientId = localStorage.getItem('_ga')
+		if (localClientId) return localClientId
+		if (cookieClientId) { // set it to local storage
+			localStorage.setItem('_ga', cookieClientId)
+		}
+	}
+
+	if (cookieClientId) return cookieClientId
+	// no id from either, so create new
+	const thisGuid = guid
+	// and set localstorage - gtag will do this for cookie
+	if (hasLocalStorage) localStorage.setItem('_ga', thisGuid)
+
+	return thisGuid
 }
