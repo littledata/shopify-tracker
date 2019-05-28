@@ -2,7 +2,7 @@
 /* global ga, LittledataLayer */
 
 import {
-	pageView, hasLocalStorage, productListClicks, setClientID, removePii, getPersistentClientId,
+	pageView, productListClicks, setClientID, removePii, getPersistentClientId,
 } from './helpers'
 import productListViews from './productListViews'
 
@@ -78,7 +78,7 @@ import productListViews from './productListViews'
 
 			var product = LittledataLayer.ecommerce.detail //eslint-disable-line
 			if (product) {
-				if (hasLocalStorage) product.list_name = localStorage.list
+				product.list_name = document.location.href
 				gtag('event', 'view_item', {
 					items: [product],
 					non_interaction: true,

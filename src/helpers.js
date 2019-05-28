@@ -1,4 +1,5 @@
 /* global ga, LittledataLayer */
+import checkLinker from './checkLinker'
 
 export const pageView = function (fireTag) {
 	// delay page firing until the page is visible
@@ -14,16 +15,6 @@ export const pageView = function (fireTag) {
 		fireTag()
 	}
 }
-
-export const hasLocalStorage = (function () {
-	try {
-		localStorage.setItem('littledata_test_storage', 'test');
-		localStorage.removeItem('littledata_test_storage');
-		return true;
-	} catch (ex) {
-		return false;
-	}
-}())
 
 export const getElementsByHref = (hrefContaining) => {
 	const htmlCollection = document.getElementsByTagName('a')
@@ -51,9 +42,7 @@ export const productListClicks = function (clickTag) {
 				self.timeout = window.setTimeout(function () {
 					document.location = self.href;
 				}, 1000)
-				if (hasLocalStorage) {
-					localStorage.list = document.location.pathname;
-				}
+
 				clickTag(product, self)
 			} else {
 				document.location = self.href;
@@ -131,25 +120,26 @@ export const getCookie = ({ name }) => {
 export function getPersistentClientId() {
 	// needed because Safari wipes 1st party cookies
 	// so we need to persist over localStorage, if available
+
+	// ignore this and return undefined if we have linker params
+	if (checkLinker()) return
 	const cookieClientId = getCookie('_ga')
 
-	if (hasLocalStorage && !LittledataLayer.enhancePrivacy) {
-		const localClientId = localStorage.getItem('_ga')
+	if (window.localStorage && !LittledataLayer.enhancePrivacy) {
+		const localClientId = window.localStorage.getItem('_ga')
 		// prefer local storage version, as it was set by this function
 		if (localClientId) return localClientId
 		if (cookieClientId) { // set it to local storage for next time
-			localStorage.setItem('_ga', cookieClientId)
+			window.localStorage.setItem('_ga', cookieClientId)
 		}
 	}
 
 	if (cookieClientId) return cookieClientId
 	// no id from either, so create new
 	const thisGuid = ga.getAll()[0].get('clientId')
-	// and set localstorage - gtag will do this for cookie
-	try {
-		localStorage.setItem('_ga', thisGuid)
-	} catch (e) {
-		return thisGuid
+	// and set localstorage - gtag will set the cookie
+	if (window.localStorage) {
+		window.localStorage.setItem('_ga', thisGuid)
 	}
 
 	return thisGuid
