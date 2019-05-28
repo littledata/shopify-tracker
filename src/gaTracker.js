@@ -1,5 +1,4 @@
 /* eslint-env browser */
-/* eslint no-var: 0 */
 /* global ga, LittledataLayer */
 
 import {
@@ -13,7 +12,7 @@ import productListViews from './productListViews'
 	gtag('js', new Date());
 
 	if (!LittledataLayer) {
-		console.warn('Aborting Littledata tracking as LittledataLayer was not found!')
+		console.warn('Aborting Littledata tracking as LittledataLayer was not found!!')
 		return
 	}
 

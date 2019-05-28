@@ -1,6 +1,5 @@
 /* eslint-env browser */
 /* global LittledataLayer */
-/* eslint no-var: 0 */
 
 import {
 	pageView, hasLocalStorage, productListClicks, setClientID,
