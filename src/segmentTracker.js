@@ -47,7 +47,7 @@ var analytics = window.analytics=window.analytics||[];if(!analytics.initialize)i
 			}
 			const product = LittledataLayer.ecommerce.detail //eslint-disable-line
 			if (product) {
-				if (hasLocalStorage) product.list_id = localStorage.list
+				product.list_id = document.location.href
 				product.category = 'EnhancedEcommerce'
 				analytics.track('Product Viewed', product)
 			}
