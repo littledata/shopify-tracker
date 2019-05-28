@@ -3,7 +3,7 @@
 /* global ga, LittledataLayer */
 
 import {
-	pageView, hasLocalStorage, listViewScript, setClientID, removePii, getPersistentUserId,
+	pageView, hasLocalStorage, listViewScript, setClientID, removePii, getPersistentClientId,
 } from './helpers'
 
 (function () {
@@ -26,7 +26,7 @@ import {
 		page_location: removePii(document.location.href),
 		currency: LittledataLayer.ecommerce.currencyCode,
 		link_attribution: true,
-		clientId: getPersistentUserId(),
+		clientId: getPersistentClientId(),
 	}
 
 	if (LittledataLayer.referralExclusion.test(document.referrer)) config.page_referrer = null
@@ -36,7 +36,7 @@ import {
 	})
 
 	document.addEventListener('DOMContentLoaded', function () {
-		setClientID(() => ga.getByName(`gtag_${LittledataLayer.webPropertyId.replace(/-/g, '_')}`).get('clientId'))
+		setClientID(() => ga.getAll()[0].get('clientId'))
 		/* run list, product, and clientID scripts everywhere */
 		if (LittledataLayer.ecommerce.impressions.length) {
 			listViewScript(function () {

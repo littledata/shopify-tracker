@@ -107,25 +107,29 @@ export const getCookie = ({ name }) => {
 	return '';
 };
 
-export function getPersistentUserId() {
+export function getPersistentClientId() {
 	// needed because Safari wipes 1st party cookies
-	// so we need to persist this over localStorage, if available
+	// so we need to persist over localStorage, if available
 	const cookieClientId = getCookie('_ga')
 
-	// if not, we need to set it
 	if (hasLocalStorage && !LittledataLayer.enhancePrivacy) {
 		const localClientId = localStorage.getItem('_ga')
+		// prefer local storage version, as it was set by this function
 		if (localClientId) return localClientId
-		if (cookieClientId) { // set it to local storage
+		if (cookieClientId) { // set it to local storage for next time
 			localStorage.setItem('_ga', cookieClientId)
 		}
 	}
 
 	if (cookieClientId) return cookieClientId
 	// no id from either, so create new
-	const thisGuid = guid
+	const thisGuid = ga.getAll()[0].get('clientId')
 	// and set localstorage - gtag will do this for cookie
-	if (hasLocalStorage) localStorage.setItem('_ga', thisGuid)
+	try {
+		localStorage.setItem('_ga', thisGuid)
+	} catch (e) {
+		return thisGuid
+	}
 
 	return thisGuid
 }
