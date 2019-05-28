@@ -2,7 +2,7 @@
 /* global LittledataLayer */
 
 import {
-	pageView, hasLocalStorage, productListClicks, setClientID,
+	pageView, productListClicks, setClientID,
 } from './helpers'
 import productListViews from './productListViews'
 
