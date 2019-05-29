@@ -13,7 +13,7 @@ var analytics = window.analytics=window.analytics||[];if(!analytics.initialize)i
 (function () {
 	window.dataLayer = window.dataLayer || [];
 	if (!LittledataLayer) {
-		console.warn('Aborting Littledata tracking as LittledataLayer was not found')
+		console.warn('Aborting Littledata tracking as LittledataLayer was not found') //eslint-disable-line
 		return
 	}
 
@@ -45,7 +45,7 @@ var analytics = window.analytics=window.analytics||[];if(!analytics.initialize)i
 					})
 				})
 			}
-			const product = LittledataLayer.ecommerce.detail //eslint-disable-line
+			const product = LittledataLayer.ecommerce.detail
 			if (product) {
 				product.list_id = document.location.href
 				product.category = 'EnhancedEcommerce'
