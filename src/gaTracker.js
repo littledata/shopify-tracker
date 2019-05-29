@@ -1,9 +1,8 @@
 /* eslint-env browser */
-/* eslint no-var: 0 */
 /* global ga, LittledataLayer */
 
 import {
-	pageView, hasLocalStorage, productListClicks, setClientID, removePii, getPersistentClientId,
+	pageView, productListClicks, setClientID, removePii, getPersistentClientId,
 } from './helpers'
 import productListViews from './productListViews'
 
@@ -13,7 +12,7 @@ import productListViews from './productListViews'
 	gtag('js', new Date());
 
 	if (!LittledataLayer) {
-		console.warn('Aborting Littledata tracking as LittledataLayer was not found!')
+		console.warn('Aborting Littledata tracking as LittledataLayer was not found!!')
 		return
 	}
 
@@ -79,7 +78,7 @@ import productListViews from './productListViews'
 
 			var product = LittledataLayer.ecommerce.detail //eslint-disable-line
 			if (product) {
-				if (hasLocalStorage) product.list_name = localStorage.list
+				product.list_name = document.location.href
 				gtag('event', 'view_item', {
 					items: [product],
 					non_interaction: true,

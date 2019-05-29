@@ -1,9 +1,8 @@
 /* eslint-env browser */
 /* global LittledataLayer */
-/* eslint no-var: 0 */
 
 import {
-	pageView, hasLocalStorage, productListClicks, setClientID,
+	pageView, productListClicks, setClientID,
 } from './helpers'
 import productListViews from './productListViews'
 
@@ -32,7 +31,7 @@ var analytics = window.analytics=window.analytics||[];if(!analytics.initialize)i
 			/* run list, product, and clientID scripts everywhere */
 			if (LittledataLayer.ecommerce.impressions.length) {
 				productListClicks(product => {
-					var p = product
+					const p = product
 					p.list_id = document.location.pathname
 					p.category = 'EnhancedEcommerce'
 					analytics.track('Product Clicked', p)
@@ -46,9 +45,9 @@ var analytics = window.analytics=window.analytics||[];if(!analytics.initialize)i
 					})
 				})
 			}
-			var product = LittledataLayer.ecommerce.detail //eslint-disable-line
+			const product = LittledataLayer.ecommerce.detail //eslint-disable-line
 			if (product) {
-				if (hasLocalStorage) product.list_id = localStorage.list
+				product.list_id = document.location.href
 				product.category = 'EnhancedEcommerce'
 				analytics.track('Product Viewed', product)
 			}
