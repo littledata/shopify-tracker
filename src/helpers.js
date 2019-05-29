@@ -50,10 +50,10 @@ export const productListClicks = function (clickTag) {
 		})
 }
 
-function postClientID() {
+function postClientID(getClientId) {
 	setTimeout(function () {
 		ga(function () {
-			const clientID = ga.getByName('gtag_UA_424242_4').get('clientId');
+			const clientID = getClientId()
 			const createdAt = new Date().getTime()
 			const cartUpdateReq = new XMLHttpRequest(); // new HttpRequest instance
 			cartUpdateReq.onload = function () {
@@ -70,15 +70,29 @@ function postClientID() {
 	}, 1000)
 }
 
-export function setClientID() {
-	const { cart } = LittledataLayer
-	if (!cart.attributes || !cart.attributes.clientID || !cart.attributes.createdAt) return postClientID()
+function postCartToLittledata(cart) {
+	console.log('posted cart', cart)
+}
 
-	const createdAt = new Date(cart.attributes.createdAt)
+export function setClientID(getClientId) {
+	const { cart } = LittledataLayer
+	if (!cart || !cart.attributes || !cart.attributes.clientID || !cart.attributes.createdAt) return postClientID(getClientId)
+
+	const clientIdCreated = new Date(cart.attributes.createdAt)
 	const timeout = 60 * 60 * 1000 // 60 minutes
-	const timePassed = new Date() - createdAt
-	if (timePassed < timeout) return
-	postClientID()
+	const timePassed = new Date() - clientIdCreated
+	// only need to resent client ID if it's expired from our Redis cache
+	if (timePassed > timeout) {
+		postClientID(getClientId)
+	}
+	// if the cart was last updated more than 60 minutes ago, we also need to send the full contents
+	if (cart && cart.updated_at) {
+		const cartCreated = new Date(cart.updated_at)
+		const cartAge = new Date() - cartCreated
+		if (cartAge > timeout) {
+			postCartToLittledata(cart)
+		}
+	}
 }
 
 export function removePii(string) {

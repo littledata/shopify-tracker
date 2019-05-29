@@ -16,7 +16,7 @@ import productListViews from './productListViews'
 		return
 	}
 
-	var config = { //eslint-disable-line
+	const config = {
 		linker: {
 			domains: ['shopify.com', 'rechargeapps.com', 'recurringcheckout.com', 'carthook.com', 'checkout.com'],
 		},
