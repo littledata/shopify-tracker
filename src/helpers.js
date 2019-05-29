@@ -32,7 +32,7 @@ export const productListClicks = function (clickTag) {
 	/* product list clicks */
 	if (!LittledataLayer.productClicks) return
 	getElementsByHref('/products').forEach(element => {
-		element.addEventListener('click', function (ev) {// only add event to products
+		element.addEventListener('click', function (ev) { // only add event to products
 			const self = this;
 			const product = findDataLayerProduct(self.href)
 
