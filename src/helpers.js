@@ -31,8 +31,8 @@ export const findDataLayerProduct = link => LittledataLayer.ecommerce.impression
 export const productListClicks = function (clickTag) {
 	/* product list clicks */
 	if (!LittledataLayer.productClicks) return
-	getElementsByHref('/products') // only add event to products
-		.addEventListener('click', function (ev) {
+	getElementsByHref('/products').forEach(element => {
+		element.addEventListener('click', function (ev) {// only add event to products
 			const self = this;
 			const product = findDataLayerProduct(self.href)
 
@@ -48,6 +48,7 @@ export const productListClicks = function (clickTag) {
 				document.location = self.href;
 			}
 		})
+	}); 
 }
 
 function postClientID(getClientId) {
