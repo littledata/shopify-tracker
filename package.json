@@ -1,6 +1,7 @@
 {
     "scripts": {
-        "build": "node ./node_modules/webpack/bin/webpack.js",
+        "build-master": "node ./node_modules/webpack/bin/webpack.js",
+        "build-staging": "node ./node_modules/webpack/bin/webpack.js --mode development",
         "lint": "node ./node_modules/eslint/bin/eslint.js ./src --quiet"
     },
     "devDependencies": {
