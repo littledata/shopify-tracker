@@ -35,7 +35,7 @@ import productListViews from './productListViews'
 		gtag('config', LittledataLayer.webPropertyID, config);
 	})
 
-	document.addEventListener('DOMContentLoaded', function () {
+	window.addEventListener('DOMContentLoaded', function () {
 		setClientID(() => ga.getAll()[0].get('clientId'))
 		/* run list, product, and clientID scripts everywhere */
 		if (LittledataLayer.ecommerce.impressions.length) {
@@ -75,26 +75,26 @@ import productListViews from './productListViews'
 					},
 				})
 			})
+		}
 
-			var product = LittledataLayer.ecommerce.detail //eslint-disable-line
-			if (product) {
-				product.list_name = document.location.href
-				gtag('event', 'view_item', {
-					items: [product],
-					non_interaction: true,
-					send_to: LittledataLayer.webPropertyID,
-				})
+		var product = LittledataLayer.ecommerce.detail //eslint-disable-line
+		if (product) {
+			product.list_name = document.location.href
+			gtag('event', 'view_item', {
+				items: [product],
+				non_interaction: true,
+				send_to: LittledataLayer.webPropertyID,
+			})
 
-				dataLayer.push({
-					event: 'view_item',
-					ecommerce: {
-						detail: {
-							actionField: { list: product.list_name },
-							products: [product],
-						},
+			dataLayer.push({
+				event: 'view_item',
+				ecommerce: {
+					detail: {
+						actionField: { list: product.list_name },
+						products: [product],
 					},
-				})
-			}
+				},
+			})
 		}
 	})
 }())
