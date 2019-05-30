@@ -2,7 +2,7 @@ import { getElementsByHref, findDataLayerProduct } from './helpers'
 
 export default (impressionTag) => {
 	let waitForScroll;
-	const products = getElementsByHref('/products')
+	const products = getElementsByHref('/products/')
 	if (products.length === 0) {
 		return;
 	}
