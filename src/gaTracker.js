@@ -12,7 +12,7 @@ import productListViews from './productListViews'
 	gtag('js', new Date());
 
 	if (!LittledataLayer) {
-		console.warn('Aborting Littledata tracking as LittledataLayer was not found')
+		console.warn('Aborting Littledata tracking as LittledataLayer was not found') //eslint-disable-line
 		return
 	}
 
@@ -40,7 +40,6 @@ import productListViews from './productListViews'
 		/* run list, product, and clientID scripts everywhere */
 		if (LittledataLayer.ecommerce.impressions.length) {
 			productListClicks((product, self) => {
-				product.list_name = location.pathname //eslint-disable-line
 				dataLayer.push({
 					event: 'select_content',
 					ecommerce: {
@@ -77,7 +76,7 @@ import productListViews from './productListViews'
 			})
 		}
 
-		var product = LittledataLayer.ecommerce.detail //eslint-disable-line
+		const product = LittledataLayer.ecommerce.detail
 		if (product) {
 			product.list_name = document.location.href
 			gtag('event', 'view_item', {
