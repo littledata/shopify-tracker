@@ -42,9 +42,9 @@ import productListViews from './productListViews'
 			productListClicks((product, self) => {
 				const productFromImpressions = LittledataLayer.ecommerce.impressions.find(prod => prod.name === product.name
 					&& prod.handle === product.handle);
-				
-				// eslint-disable-next-line no-param-reassign
-				product.list_position = (productFromImpressions && productFromImpressions.list_position) || 1;
+
+				const pos = productFromImpressions && productFromImpressions.list_position;
+				window.localStorage.setItem('position', pos);
 				dataLayer.push({
 					event: 'select_content',
 					ecommerce: {
@@ -83,6 +83,7 @@ import productListViews from './productListViews'
 
 		const product = LittledataLayer.ecommerce.detail
 		if (product) {
+			product.list_position = window.localStorage.getItem('position') || 1;
 			gtag('event', 'view_item', {
 				items: [product],
 				non_interaction: true,
