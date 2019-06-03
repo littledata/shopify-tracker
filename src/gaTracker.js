@@ -40,6 +40,11 @@ import productListViews from './productListViews'
 		/* run list, product, and clientID scripts everywhere */
 		if (LittledataLayer.ecommerce.impressions.length) {
 			productListClicks((product, self) => {
+				const productFromImpressions = LittledataLayer.ecommerce.impressions.find(prod => prod.name === product.name
+					&& prod.handle === product.handle);
+				
+				// eslint-disable-next-line no-param-reassign
+				product.list_position = (productFromImpressions && productFromImpressions.list_position) || 1;
 				dataLayer.push({
 					event: 'select_content',
 					ecommerce: {
