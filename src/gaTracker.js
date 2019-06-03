@@ -78,7 +78,6 @@ import productListViews from './productListViews'
 
 		const product = LittledataLayer.ecommerce.detail
 		if (product) {
-			product.list_name = document.location.href
 			gtag('event', 'view_item', {
 				items: [product],
 				non_interaction: true,
