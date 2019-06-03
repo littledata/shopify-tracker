@@ -16,10 +16,11 @@ export const pageView = function (fireTag) {
 	}
 }
 
-export const getElementsByHref = (hrefContaining) => {
+export const getElementsByHref = (regex) => {
 	const htmlCollection = document.getElementsByTagName('a')
+	const r = new RegExp(regex)
 	return Array.prototype.slice.call(htmlCollection)
-		.filter(element => element.href && element.href.includes(hrefContaining))
+		.filter(element => element.href && r.test(element.href))
 }
 
 export const findDataLayerProduct = link => LittledataLayer.ecommerce.impressions.find(p => {
@@ -48,7 +49,7 @@ export const productListClicks = function (clickTag) {
 				document.location = self.href;
 			}
 		})
-	}); 
+	})
 }
 
 function postClientID(getClientId) {
@@ -158,4 +159,15 @@ export function getPersistentClientId() {
 	}
 
 	return thisGuid
+}
+
+export const trackProductImageClicks = (clickTag) => {
+	getElementsByHref('/files/.*/products/').forEach(element => {
+		element.addEventListener('click', function () { // only add event to product images
+			const image = this.getElementsByTagName('img')[0]
+			const name = image && image.alt
+
+			clickTag(name)
+		})
+	})
 }
