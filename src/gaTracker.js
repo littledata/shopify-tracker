@@ -101,8 +101,8 @@ import productListViews from './productListViews'
 					name,
 				})
 
-				gtag('event', 'Product Details Page (Littledata)', {
-					event_category: 'Product image click',
+				gtag('event', 'Product image click', {
+					event_category: 'Product details page (Littledata)',
 					event_label: name,
 					send_to: LittledataLayer.webPropertyID,
 				})
@@ -110,12 +110,12 @@ import productListViews from './productListViews'
 
 			trackSocialShares(network => {
 				dataLayer.push({
-					event: 'product_share',
-					name,
+					event: 'share_product',
+					network,
 				})
 
-				gtag('event', 'Product Details Page (Littledata)', {
-					event_category: 'Social share',
+				gtag('event', 'Social share', {
+					event_category: 'Product details page (Littledata)',
 					event_label: network,
 					send_to: LittledataLayer.webPropertyID,
 				})

@@ -2,7 +2,7 @@
 /* global LittledataLayer */
 
 import {
-	pageView, productListClicks, setClientID, trackProductImageClicks,
+	pageView, productListClicks, setClientID, trackProductImageClicks, trackSocialShares,
 } from './helpers'
 
 import productListViews from './productListViews'
@@ -15,7 +15,7 @@ const segmentProduct = (dataLayerProduct) => ({
 	...dataLayerProduct,
 	product_id: dataLayerProduct.id,
 	sku: dataLayerProduct.id,
-})
+});
 
 (function () {
 	window.dataLayer = window.dataLayer || [];

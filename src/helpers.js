@@ -171,3 +171,13 @@ export const trackProductImageClicks = (clickTag) => {
 		})
 	})
 }
+
+export const trackSocialShares = clickTag => {
+	const networks = '(facebook|pinterest|twitter|linkedin|plus\.google|instagram)'
+	getElementsByHref(`${networks}\.com/(share|pin|intent)`).forEach(element => {
+		element.addEventListener('click', function () {
+			const match = this.href.match(new RegExp(networks))
+			clickTag(match && match[0])
+		})
+	})
+}
