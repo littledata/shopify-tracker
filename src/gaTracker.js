@@ -2,7 +2,7 @@
 /* global ga, LittledataLayer */
 
 import {
-	pageView, productListClicks, setClientID, removePii, getPersistentClientId,
+	pageView, productListClicks, setClientID, removePii, getPersistentClientId, trackProductImageClicks, trackSocialShares,
 } from './helpers'
 import productListViews from './productListViews'
 
@@ -20,8 +20,8 @@ import productListViews from './productListViews'
 		linker: {
 			domains: ['shopify.com', 'rechargeapps.com', 'recurringcheckout.com', 'carthook.com', 'checkout.com'],
 		},
-		anonymize_ip: LittledataLayer.enhancePrivacy || true,
-		allow_ad_personalization_signals: !LittledataLayer.enhancePrivacy || true,
+		anonymize_ip: !!LittledataLayer.enhancePrivacy,
+		allow_ad_personalization_signals: !LittledataLayer.enhancePrivacy,
 		page_title: removePii(document.title),
 		page_location: removePii(document.location.href),
 		currency: LittledataLayer.ecommerce.currencyCode,
@@ -78,7 +78,6 @@ import productListViews from './productListViews'
 
 		const product = LittledataLayer.ecommerce.detail
 		if (product) {
-			product.list_name = document.location.href
 			gtag('event', 'view_item', {
 				items: [product],
 				non_interaction: true,
@@ -93,6 +92,33 @@ import productListViews from './productListViews'
 						products: [product],
 					},
 				},
+			})
+
+			// if PDP, we can also track clicks on images and social shares
+			trackProductImageClicks(name => {
+				dataLayer.push({
+					event: 'product_image_click',
+					name,
+				})
+
+				gtag('event', 'Product image click', {
+					event_category: 'Product details page (Littledata)',
+					event_label: name,
+					send_to: LittledataLayer.webPropertyID,
+				})
+			})
+
+			trackSocialShares(network => {
+				dataLayer.push({
+					event: 'share_product',
+					network,
+				})
+
+				gtag('event', 'Social share', {
+					event_category: 'Product details page (Littledata)',
+					event_label: network,
+					send_to: LittledataLayer.webPropertyID,
+				})
 			})
 		}
 	})
