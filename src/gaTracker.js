@@ -1,8 +1,8 @@
 /* eslint-env browser */
-/* global ga, LittledataLayer */
+/* global LittledataLayer */
 
 import {
-	pageView, productListClicks, setClientID, removePii, getPersistentClientId, trackProductImageClicks, trackSocialShares,
+	pageView, productListClicks, getGaCookie, setClientID, removePii, getPersistentClientId, trackProductImageClicks, trackSocialShares,
 } from './helpers'
 import productListViews from './productListViews'
 
@@ -36,7 +36,7 @@ import productListViews from './productListViews'
 	})
 
 	window.addEventListener('DOMContentLoaded', function () {
-		setClientID(() => ga.getAll()[0].get('clientId'))
+		setClientID(() => getGaCookie())
 		/* run list, product, and clientID scripts everywhere */
 		if (LittledataLayer.ecommerce.impressions.length) {
 			productListClicks((product, self) => {

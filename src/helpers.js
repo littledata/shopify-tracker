@@ -1,4 +1,4 @@
-/* global ga, LittledataLayer */
+/* global LittledataLayer */
 import checkLinker from './checkLinker'
 
 export const pageView = function (fireTag) {
@@ -54,21 +54,19 @@ export const productListClicks = function (clickTag) {
 
 function postClientID(getClientId) {
 	setTimeout(function () {
-		ga(function () {
-			const clientID = getClientId()
-			const createdAt = new Date().getTime()
-			const cartUpdateReq = new XMLHttpRequest(); // new HttpRequest instance
-			cartUpdateReq.onload = function () {
-				const updatedCart = JSON.parse(cartUpdateReq.response)
-				const clientIDReq = new XMLHttpRequest()
-				clientIDReq.open('POST', 'https://transactions-staging.littledata.io/clientID')
-				clientIDReq.setRequestHeader('Content-Type', 'application/json');
-				clientIDReq.send(JSON.stringify({ clientID, createdAt, cartID: updatedCart.token }))
-			}
-			cartUpdateReq.open('POST', '/cart/update.json');
-			cartUpdateReq.setRequestHeader('Content-Type', 'application/json');
-			cartUpdateReq.send(JSON.stringify({ attributes: { clientID, createdAt } }))
-		});
+		const clientID = getClientId()
+		const createdAt = new Date().getTime()
+		const cartUpdateReq = new XMLHttpRequest(); // new HttpRequest instance
+		cartUpdateReq.onload = function () {
+			const updatedCart = JSON.parse(cartUpdateReq.response)
+			const clientIDReq = new XMLHttpRequest()
+			clientIDReq.open('POST', 'https://transactions-staging.littledata.io/clientID')
+			clientIDReq.setRequestHeader('Content-Type', 'application/json');
+			clientIDReq.send(JSON.stringify({ clientID, createdAt, cartID: updatedCart.token }))
+		}
+		cartUpdateReq.open('POST', '/cart/update.json');
+		cartUpdateReq.setRequestHeader('Content-Type', 'application/json');
+		cartUpdateReq.send(JSON.stringify({ attributes: { clientID, createdAt } }))
 	}, 1000)
 }
 
@@ -111,14 +109,14 @@ export function removePii(string) {
 }
 
 export const guid = (function () {
-	function s4() {
-		return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+	function s10() {
+		return Math.floor((Math.random()) * 10E9)
 	}
-
-	return `${s4()}${s4()}-${s4()}-${s4()}-${s4()}-${s4()}${s4()}${s4()}`
+	return `GA1.2.${s10()}.${s10()}`
 }())
 
-export const getCookie = ({ name }) => {
+export const getGaCookie = () => {
+	const name = '_ga'
 	if (document.cookie.length > 0) {
 		let cookieStart = document.cookie.indexOf(`${name}=`);
 		if (cookieStart !== -1) {
@@ -127,11 +125,25 @@ export const getCookie = ({ name }) => {
 			if (cookieEnd === -1) {
 				cookieEnd = document.cookie.length;
 			}
-			return unescape(document.cookie.substring(cookieStart, cookieEnd));
+			const gaCookie = unescape(document.cookie.substring(cookieStart, cookieEnd))
+			if (gaCookie) {
+				const match = gaCookie.match(/[0-9]{10}\.[0-9]{10}/)
+				return match && match[0]
+			}
 		}
 	}
 	return '';
 };
+
+// const createCookie = (name, value, days) => {
+// 	let expires = ''
+// 	if (days) {
+// 		const date = new Date();
+// 		date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+// 		expires = `; expires=${date.toGMTString()}`
+// 	}
+// 	document.cookie = `${name}=${value}${expires}; path=/;`
+// }
 
 export function getPersistentClientId() {
 	// needed because Safari wipes 1st party cookies
@@ -139,7 +151,7 @@ export function getPersistentClientId() {
 
 	// ignore this and return undefined if we have linker params
 	if (checkLinker()) return
-	const cookieClientId = getCookie('_ga')
+	const cookieClientId = getGaCookie()
 
 	if (window.localStorage && !LittledataLayer.enhancePrivacy) {
 		const localClientId = window.localStorage.getItem('_ga')
@@ -151,14 +163,8 @@ export function getPersistentClientId() {
 	}
 
 	if (cookieClientId) return cookieClientId
-	// no id from either, so create new
-	const thisGuid = ga.getAll()[0].get('clientId')
-	// and set localstorage - gtag will set the cookie
-	if (window.localStorage) {
-		window.localStorage.setItem('_ga', thisGuid)
-	}
-
-	return thisGuid
+	// returning an empty client id will cause gtag to create a new one
+	return ''
 }
 
 export const trackProductImageClicks = (clickTag) => {
