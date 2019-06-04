@@ -128,11 +128,11 @@ export const getGaCookie = () => {
 			const gaCookie = unescape(document.cookie.substring(cookieStart, cookieEnd))
 			if (gaCookie) {
 				const match = gaCookie.match(/[0-9]{10}\.[0-9]{10}/)
-				return match && match[0]
+				return match ? match[0] : ''
 			}
 		}
 	}
-	return '';
+	return ''
 };
 
 // const createCookie = (name, value, days) => {
