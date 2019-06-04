@@ -24,6 +24,10 @@ const segmentProduct = (dataLayerProduct) => ({
 		return
 	}
 
+	if (!LittledataLayer.hideBranding) {
+		console.log('%c\nThis store uses Littledata 🚀 to automate its analytics and make better, data-driven decisions. Learn more at http://apps.shopify.com/segment-com-by-littledata \n', 'color: #088f87;') //eslint-disable-line
+	}
+
 	if (LittledataLayer.customer) {
 		analytics.identify(LittledataLayer.customer.id, LittledataLayer.customer)
 	}

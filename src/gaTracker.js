@@ -2,9 +2,10 @@
 /* global LittledataLayer */
 
 import {
-	pageView, productListClicks, getGaCookie, setClientID, removePii, getPersistentClientId, trackProductImageClicks, trackSocialShares,
+	pageView, productListClicks, setClientID, removePii, getPersistentClientId, trackProductImageClicks, trackSocialShares,
 } from './helpers'
 import productListViews from './productListViews'
+import { getGaCookie } from './getGaCookie'
 
 (function () {
 	window.dataLayer = window.dataLayer || [];
@@ -14,6 +15,10 @@ import productListViews from './productListViews'
 	if (!LittledataLayer) {
 		console.warn('Aborting Littledata tracking as LittledataLayer was not found') //eslint-disable-line
 		return
+	}
+
+	if (!LittledataLayer.hideBranding) {
+		console.log('%c\nThis store uses Littledata 🚀 to automate its analytics and make better, data-driven decisions. Learn more at http://apps.shopify.com/littledata \n', 'color: #088f87;') //eslint-disable-line
 	}
 
 	const config = {
@@ -35,7 +40,7 @@ import productListViews from './productListViews'
 		gtag('config', LittledataLayer.webPropertyID, config);
 	})
 
-	window.addEventListener('DOMContentLoaded', function () {
+	function trackEvents() {
 		setClientID(() => getGaCookie())
 		/* run list, product, and clientID scripts everywhere */
 		if (LittledataLayer.ecommerce.impressions.length) {
@@ -127,5 +132,13 @@ import productListViews from './productListViews'
 				})
 			})
 		}
-	})
+	}
+
+	if (document.readyState !== 'loading') {
+		trackEvents();
+	} else {
+		document.addEventListener('DOMContentLoaded', function () {
+			trackEvents();
+		});
+	}
 }())

@@ -1,5 +1,6 @@
 /* global LittledataLayer */
 import checkLinker from './checkLinker'
+import { getGaCookie } from './getGaCookie'
 
 export const pageView = function (fireTag) {
 	// delay page firing until the page is visible
@@ -114,26 +115,6 @@ export const guid = (function () {
 	}
 	return `GA1.2.${s10()}.${s10()}`
 }())
-
-export const getGaCookie = () => {
-	const name = '_ga'
-	if (document.cookie.length > 0) {
-		let cookieStart = document.cookie.indexOf(`${name}=`);
-		if (cookieStart !== -1) {
-			cookieStart = cookieStart + name.length + 1;
-			let cookieEnd = document.cookie.indexOf(';', cookieStart);
-			if (cookieEnd === -1) {
-				cookieEnd = document.cookie.length;
-			}
-			const gaCookie = unescape(document.cookie.substring(cookieStart, cookieEnd))
-			if (gaCookie) {
-				const match = gaCookie.match(/[0-9]{10}\.[0-9]{10}/)
-				return match ? match[0] : ''
-			}
-		}
-	}
-	return ''
-};
 
 // const createCookie = (name, value, days) => {
 // 	let expires = ''
