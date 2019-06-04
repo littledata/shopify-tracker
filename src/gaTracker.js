@@ -36,7 +36,7 @@ import { getGaCookie } from './getGaCookie'
 		gtag('config', LittledataLayer.webPropertyID, config);
 	})
 
-	window.addEventListener('DOMContentLoaded', function () {
+	function trackEvents() {
 		setClientID(() => getGaCookie())
 		/* run list, product, and clientID scripts everywhere */
 		if (LittledataLayer.ecommerce.impressions.length) {
@@ -128,5 +128,13 @@ import { getGaCookie } from './getGaCookie'
 				})
 			})
 		}
-	})
+	}
+
+	if (document.readyState !== 'loading') {
+		trackEvents();
+	} else {
+		document.addEventListener('DOMContentLoaded', function () {
+			trackEvents();
+		});
+	}
 }())
