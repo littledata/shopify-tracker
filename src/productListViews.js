@@ -14,7 +14,7 @@ export default (impressionTag) => {
 		const impressions = [];
 		products.forEach((element, index) => {
 			if (!element) return;
-			const elementTop = element.offsetTop;
+			const elementTop = window.pageYOffset + element.getBoundingClientRect().top;
 			const elementHeight = element.offsetHeight;
 			const elementBottom = elementTop + elementHeight;
 			if (elementBottom >= viewportTop && elementTop < viewportBottom) {
