@@ -2,9 +2,10 @@
 /* global LittledataLayer */
 
 import {
-	pageView, productListClicks, getGaCookie, setClientID, removePii, getPersistentClientId, trackProductImageClicks, trackSocialShares,
+	pageView, productListClicks, setClientID, removePii, getPersistentClientId, trackProductImageClicks, trackSocialShares,
 } from './helpers'
 import productListViews from './productListViews'
+import { getGaCookie } from './getGaCookie'
 
 (function () {
 	window.dataLayer = window.dataLayer || [];
