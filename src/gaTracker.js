@@ -20,8 +20,8 @@ import productListViews from './productListViews'
 		linker: {
 			domains: ['shopify.com', 'rechargeapps.com', 'recurringcheckout.com', 'carthook.com', 'checkout.com'],
 		},
-		anonymize_ip: !!LittledataLayer.enhancePrivacy,
-		allow_ad_personalization_signals: !LittledataLayer.enhancePrivacy,
+		anonymize_ip: !!LittledataLayer.anonymizeIp,
+		allow_ad_personalization_signals: !!LittledataLayer.googleSignals,
 		page_title: removePii(document.title),
 		page_location: removePii(document.location.href),
 		currency: LittledataLayer.ecommerce.currencyCode,

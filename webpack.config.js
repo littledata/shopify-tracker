@@ -4,6 +4,7 @@ module.exports = {
 	entry: {
 		gaTracker: './src/gaTracker.js',
 		segmentTracker: './src/segmentTracker.js',
+		getGaCookie: './src/getGaCookie.js',
 	},
 	module: {
 		rules: [{
