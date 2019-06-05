@@ -16,11 +16,7 @@ import { getGaCookie } from './getGaCookie'
 	window.ga = window.ga || function (param, param2, param3) {
 		if (typeof param === 'function') return param.call() //ensures anything waiting for ga library gets called
 		if (param === 'send') {
-			let data = '\''
-			if (param2) data += param2
-			if (param3) data += ` ${param3}`
-			data += '\''
-			console.warn(`Page attempted to send ${data} to Google Analytics using \'ga\' command. You need to migrate to gtag https://developers.google.com/analytics/devguides/collection/gtagjs/migration`) //eslint-disable-line no-console
+			console.warn(`Littledata caught attempt to send ${param2} ${JSON.stringify(param3)} to Google Analytics using ga() function. You need to migrate to gtag https://developers.google.com/analytics/devguides/collection/gtagjs/migration`) //eslint-disable-line no-console
 		}
 	}
 
