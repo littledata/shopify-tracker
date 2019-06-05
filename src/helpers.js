@@ -149,7 +149,7 @@ export function getPersistentClientId() {
 }
 
 export const trackProductImageClicks = (clickTag) => {
-	getElementsByHref('/files/.*/products/').forEach(element => {
+	getElementsByHref('^https://cdn\.shopify\.com/s/files/.*/products/').forEach(element => {
 		element.addEventListener('click', function () { // only add event to product images
 			const image = this.getElementsByTagName('img')[0]
 			const name = image && image.alt
