@@ -12,6 +12,12 @@ import { getGaCookie } from './getGaCookie'
 	function gtag() { dataLayer.push(arguments) } //eslint-disable-line
 	gtag('js', new Date());
 
+	// handle old calls from the page to analytics.js
+	window.ga = window.ga || function(param) {
+		console.warn('Page attempted to send data to Google Analytics using \'ga\' command. You need to migrate to gtag https://developers.google.com/analytics/devguides/collection/gtagjs/migration')
+		if (typeof param === 'function') return param.call() //ensures anything waiting for ga gets called
+	}
+
 	if (!LittledataLayer) {
 		console.warn('Aborting Littledata tracking as LittledataLayer was not found') //eslint-disable-line
 		return
