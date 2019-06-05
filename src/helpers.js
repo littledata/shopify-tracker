@@ -72,7 +72,10 @@ function postClientID(getClientId) {
 }
 
 function postCartToLittledata(cart) {
-	console.log('posted cart', cart)
+	const httpRequest = new XMLHttpRequest(); // new HttpRequest instance
+	httpRequest.open('POST', 'https://transactions-staging.littledata.io/cart/store')
+	httpRequest.setRequestHeader('Content-Type', 'application/json')
+	httpRequest.send(cart)
 }
 
 export function setClientID(getClientId) {
