@@ -96,7 +96,7 @@ import { getGaCookie } from './getGaCookie'
 
 		const product = LittledataLayer.ecommerce.detail
 		if (product) {
-			product.list_position = window.localStorage.getItem('position') || 1;
+			product.list_position = parseInt(window.localStorage.getItem('position')) || 1;
 			gtag('event', 'view_item', {
 				items: [product],
 				non_interaction: true,

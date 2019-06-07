@@ -66,7 +66,7 @@ const segmentProduct = (dataLayerProduct) => ({
 				const product = segmentProduct(rawProduct)
 				product.list_id = document.location.href
 				product.category = 'EnhancedEcommerce'
-				product.list_position = window.localStorage.getItem('position') || 1;
+				product.list_position = parseInt(window.localStorage.getItem('position')) || 1;
 				analytics.track('Product Viewed', product)
 
 				// if PDP, we can also track clicks on images and social shares
