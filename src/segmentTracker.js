@@ -37,7 +37,7 @@ const segmentProduct = (dataLayerProduct) => ({
 	})
 
 	function trackEvents() {
-		setClientID(() => analytics.user().anonymousId())
+		setClientID(() => window.analytics.user().anonymousId())
 		if (LittledataLayer) {
 			/* run list, product, and clientID scripts everywhere */
 			if (LittledataLayer.ecommerce.impressions.length) {
