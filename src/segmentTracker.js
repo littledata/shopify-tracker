@@ -81,13 +81,13 @@ const segmentProduct = (dataLayerProduct) => ({
 
 	if (document.readyState !== 'loading') {
 		// wait for analytics.user() to be defined
-		analytics.ready(function() {
+		analytics.ready(function () {
 			trackEvents();
 		});
 	} else {
 		document.addEventListener('DOMContentLoaded', function () {
 			// wait for analytics.user() to be defined
-			analytics.ready(function() {
+			analytics.ready(function () {
 				trackEvents();
 			});
 		});
