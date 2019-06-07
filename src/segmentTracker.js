@@ -80,10 +80,16 @@ const segmentProduct = (dataLayerProduct) => ({
 	}
 
 	if (document.readyState !== 'loading') {
-		trackEvents();
+		// wait for analytics.user() to be defined
+		analytics.ready(function () {
+			trackEvents();
+		});
 	} else {
 		document.addEventListener('DOMContentLoaded', function () {
-			trackEvents();
+			// wait for analytics.user() to be defined
+			analytics.ready(function () {
+				trackEvents();
+			});
 		});
 	}
 }())
