@@ -42,6 +42,11 @@ const segmentProduct = (dataLayerProduct) => ({
 			/* run list, product, and clientID scripts everywhere */
 			if (LittledataLayer.ecommerce.impressions.length) {
 				productListClicks(product => {
+					const productFromImpressions = LittledataLayer.ecommerce.impressions.find(prod => prod.name === product.name
+						&& prod.handle === product.handle);
+					const pos = productFromImpressions && productFromImpressions.list_position;
+					window.localStorage.setItem('position', pos);
+
 					const p = segmentProduct(product)
 					p.list_id = document.location.pathname
 					p.category = 'EnhancedEcommerce'
@@ -61,6 +66,7 @@ const segmentProduct = (dataLayerProduct) => ({
 				const product = segmentProduct(rawProduct)
 				product.list_id = document.location.href
 				product.category = 'EnhancedEcommerce'
+				product.list_position = window.localStorage.getItem('position') || 1;
 				analytics.track('Product Viewed', product)
 
 				// if PDP, we can also track clicks on images and social shares
