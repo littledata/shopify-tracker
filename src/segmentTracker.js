@@ -36,7 +36,7 @@ const segmentProduct = (dataLayerProduct) => ({
 		analytics.page();
 	})
 
-	document.addEventListener('ready', function () {
+	function trackEvents() {
 		setClientID(() => analytics.user().anonymousId())
 		if (LittledataLayer) {
 			/* run list, product, and clientID scripts everywhere */
@@ -77,5 +77,13 @@ const segmentProduct = (dataLayerProduct) => ({
 				})
 			}
 		}
-	})
+	}
+
+	if (document.readyState !== 'loading') {
+		trackEvents();
+	} else {
+		document.addEventListener('DOMContentLoaded', function () {
+			trackEvents();
+		});
+	}
 }())
