@@ -10,7 +10,7 @@ export const getGaCookie = () => {
 			}
 			const gaCookie = unescape(document.cookie.substring(cookieStart, cookieEnd))
 			if (gaCookie) {
-				const match = gaCookie.match(/[0-9]{10}\.[0-9]{10}/)
+				const match = gaCookie.match(/(\d{2,11})\.(\d{2,11})/g)
 				return match ? match[0] : ''
 			}
 		}
