@@ -29,11 +29,11 @@ const segmentProduct = (dataLayerProduct) => ({
 	}
 
 	if (LittledataLayer.customer) {
-		analytics.identify(LittledataLayer.customer.id, LittledataLayer.customer)
+		window.analytics.identify(LittledataLayer.customer.id, LittledataLayer.customer)
 	}
 
 	pageView(function () {
-		analytics.page();
+		window.analytics.page();
 	})
 
 	function trackEvents() {
@@ -50,11 +50,11 @@ const segmentProduct = (dataLayerProduct) => ({
 					const p = segmentProduct(product)
 					p.list_id = document.location.pathname
 					p.category = 'EnhancedEcommerce'
-					analytics.track('Product Clicked', p)
+					window.analytics.track('Product Clicked', p)
 				})
 
 				productListViews(products => {
-					analytics.track('Product List Viewed', {
+					window.analytics.track('Product List Viewed', {
 						list_id: products[0].list,
 						category: 'EnhancedEcommerce',
 						products,
@@ -67,16 +67,16 @@ const segmentProduct = (dataLayerProduct) => ({
 				product.list_id = document.location.href
 				product.category = 'EnhancedEcommerce'
 				product.list_position = parseInt(window.localStorage.getItem('position')) || 1;
-				analytics.track('Product Viewed', product)
+				window.analytics.track('Product Viewed', product)
 
 				// if PDP, we can also track clicks on images and social shares
 				trackProductImageClicks((name) => {
 					product.image_url = name
-					analytics.track('Product Image Clicked', product)
+					window.analytics.track('Product Image Clicked', product)
 				})
 
 				trackSocialShares(network => {
-					analytics.track('Product Shared', {
+					window.analytics.track('Product Shared', {
 						...product,
 						share_via: network,
 					})
@@ -87,13 +87,13 @@ const segmentProduct = (dataLayerProduct) => ({
 
 	if (document.readyState !== 'loading') {
 		// wait for analytics.user() to be defined
-		analytics.ready(function () {
+		window.analytics.ready(function () {
 			trackEvents();
 		});
 	} else {
 		document.addEventListener('DOMContentLoaded', function () {
 			// wait for analytics.user() to be defined
-			analytics.ready(function () {
+			window.analytics.ready(function () {
 				trackEvents();
 			});
 		});
