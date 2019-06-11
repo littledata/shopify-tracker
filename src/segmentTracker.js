@@ -60,14 +60,14 @@ const segmentProduct = (dataLayerProduct) => ({
 				})
 
 				productListViews(products => {
-					const list_id = products && products[0].list;
+					const listId = products && products[0].list;
 					products.forEach((product, index) => {
 						const p = segmentProduct(product)
 						products[index] = p //eslint-disable-line no-param-reassign
 					})
-					const p = segmentProduct(product)
+
 					window.analytics.track('Product List Viewed', {
-						list_id,
+						list_id: listId,
 						category: 'EnhancedEcommerce',
 						products,
 					})
