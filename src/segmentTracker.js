@@ -19,7 +19,7 @@ const segmentProduct = (dataLayerProduct) => ({
 	sku: dataLayerProduct.id,
 	position: dataLayerProduct.list_position,
 	name: dataLayerProduct.name,
-	price: parseFloat(product.price),
+	price: parseFloat(dataLayerProduct.price),
 	variant: dataLayerProduct.variant,
 });
 
@@ -60,7 +60,9 @@ const segmentProduct = (dataLayerProduct) => ({
 				})
 
 				productListViews(products => {
-					products.forEach(product => product.price = parseFloat(product.price))
+					products.forEach((product, index) => {
+						products[index].price = parseFloat(product.price)
+					})
 					window.analytics.track('Product List Viewed', {
 						list_id: products[0].list,
 						category: 'EnhancedEcommerce',
