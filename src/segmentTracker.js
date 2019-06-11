@@ -61,7 +61,7 @@ const segmentProduct = (dataLayerProduct) => ({
 
 				productListViews(products => {
 					products.forEach((product, index) => {
-						products[index].price = parseFloat(product.price)
+						products[index].price = parseFloat(product.price) //eslint-disable-line no-param-reassign
 					})
 					window.analytics.track('Product List Viewed', {
 						list_id: products[0].list,
