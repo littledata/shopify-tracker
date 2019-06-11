@@ -12,9 +12,15 @@ var analytics = window.analytics=window.analytics||[];if(!analytics.initialize)i
 }
 
 const segmentProduct = (dataLayerProduct) => ({
-	...dataLayerProduct,
+	brand: dataLayerProduct.brand,
+	category: dataLayerProduct.category,
+	url: dataLayerProduct.handle,
 	product_id: dataLayerProduct.id,
 	sku: dataLayerProduct.id,
+	position: dataLayerProduct.list_position,
+	name: dataLayerProduct.name,
+	price: parseFloat(product.price),
+	variant: dataLayerProduct.variant,
 });
 
 (function () {
@@ -54,6 +60,7 @@ const segmentProduct = (dataLayerProduct) => ({
 				})
 
 				productListViews(products => {
+					products.forEach(product => product.price = parseFloat(product.price))
 					window.analytics.track('Product List Viewed', {
 						list_id: products[0].list,
 						category: 'EnhancedEcommerce',
@@ -66,7 +73,7 @@ const segmentProduct = (dataLayerProduct) => ({
 				const product = segmentProduct(rawProduct)
 				product.list_id = document.location.href
 				product.category = 'EnhancedEcommerce'
-				product.list_position = parseInt(window.localStorage.getItem('position')) || 1;
+				product.position = parseInt(window.localStorage.getItem('position')) || 1;
 				window.analytics.track('Product Viewed', product)
 
 				// if PDP, we can also track clicks on images and social shares
