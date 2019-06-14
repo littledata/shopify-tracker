@@ -156,8 +156,7 @@ export function getPersistentClientIdSegment() {
 	// needed because Safari wipes 1st party cookies
 	// so we need to persist over localStorage, if available
 
-	if (!window.analytics || !window.analytics.user())
-		return ''
+	if (!window.analytics || !window.analytics.user()) return ''
 
 	if (window.localStorage && !LittledataLayer.enhancePrivacy) {
 		const localClientId = window.localStorage.getItem('_ga')

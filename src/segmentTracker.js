@@ -2,7 +2,8 @@
 /* global LittledataLayer */
 
 import {
-	pageView, productListClicks, setClientID, trackProductImageClicks, trackSocialShares,
+	pageView, productListClicks, setClientID, trackProductImageClicks,
+	trackSocialShares, getPersistentClientIdSegment,
 } from './helpers'
 
 import productListViews from './productListViews'
