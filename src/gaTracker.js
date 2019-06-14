@@ -49,7 +49,7 @@ import { getGaCookie } from './getGaCookie'
 	})
 
 	function trackEvents() {
-		setClientID(() => getGaCookie())
+		setClientID(() => getPersistentClientId())
 		/* run list, product, and clientID scripts everywhere */
 		if (LittledataLayer.ecommerce.impressions.length) {
 			productListClicks((product, self) => {
