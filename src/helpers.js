@@ -135,18 +135,41 @@ export function getPersistentClientId() {
 
 	// ignore this and return undefined if we have linker params
 	if (checkLinker()) return
-	const cookieClientId = getGaCookie()
+	
+	if (window.localStorage && !LittledataLayer.enhancePrivacy) {
+		const localClientId = window.localStorage.getItem('_ga')
+		// prefer local storage version, as it was set by this function
+		if (localClientId) return localClientId
+
+		const cookieClientId = getGaCookie()
+		if (cookieClientId) { // set it to local storage for next time
+			window.localStorage.setItem('_ga', cookieClientId)
+			return cookieClientId
+		}
+	}
+
+	// returning an empty client id will cause gtag to create a new one
+	return ''
+}
+
+export function getPersistentClientIdSegment() {
+	// needed because Safari wipes 1st party cookies
+	// so we need to persist over localStorage, if available
+
+	if (!window.analytics || !window.analytics.user()) return ''
 
 	if (window.localStorage && !LittledataLayer.enhancePrivacy) {
 		const localClientId = window.localStorage.getItem('_ga')
 		// prefer local storage version, as it was set by this function
 		if (localClientId) return localClientId
+
+		const cookieClientId = window.analytics.user().anonymousId()
 		if (cookieClientId) { // set it to local storage for next time
 			window.localStorage.setItem('_ga', cookieClientId)
+			return cookieClientId
 		}
 	}
 
-	if (cookieClientId) return cookieClientId
 	// returning an empty client id will cause gtag to create a new one
 	return ''
 }

@@ -5,7 +5,6 @@ import {
 	pageView, productListClicks, setClientID, removePii, getPersistentClientId, trackProductImageClicks, trackSocialShares,
 } from './helpers'
 import productListViews from './productListViews'
-import { getGaCookie } from './getGaCookie'
 
 (function () {
 	window.dataLayer = window.dataLayer || [];
@@ -49,7 +48,7 @@ import { getGaCookie } from './getGaCookie'
 	})
 
 	function trackEvents() {
-		setClientID(() => getGaCookie())
+		setClientID(() => getPersistentClientId())
 		/* run list, product, and clientID scripts everywhere */
 		if (LittledataLayer.ecommerce.impressions.length) {
 			productListClicks((product, self) => {
