@@ -79,6 +79,8 @@ function postCartToLittledata(cart) {
 }
 
 export function setClientID(getClientId) {
+	// eslint-disable-next-line no-debugger
+	debugger;
 	const { cart } = LittledataLayer
 	if (!cart || !cart.attributes || !cart.attributes.clientID || !cart.attributes.createdAt) return postClientID(getClientId)
 
@@ -135,7 +137,7 @@ export function getPersistentClientId() {
 
 	// ignore this and return undefined if we have linker params
 	if (checkLinker()) return
-	
+
 	if (window.localStorage && !LittledataLayer.enhancePrivacy) {
 		const localClientId = window.localStorage.getItem('_ga')
 		// prefer local storage version, as it was set by this function
