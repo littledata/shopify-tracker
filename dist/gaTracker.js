@@ -359,12 +359,10 @@ function postCartToLittledata(cart) {
 }
 
 function setClientID(getClientId) {
-  // eslint-disable-next-line no-debugger
-  debugger;
   var _LittledataLayer = LittledataLayer,
       cart = _LittledataLayer.cart;
   if (!cart || !cart.attributes || !cart.attributes.clientID || !cart.attributes.createdAt) return postClientID(getClientId);
-  var clientIdCreated = new Date(cart.attributes.createdAt);
+  var clientIdCreated = new Date(parseInt(cart.attributes.createdAt));
   var timeout = 60 * 60 * 1000; // 60 minutes
 
   var timePassed = new Date() - clientIdCreated; // only need to resent client ID if it's expired from our Redis cache
