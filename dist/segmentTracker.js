@@ -162,7 +162,7 @@ var productListClicks = function productListClicks(clickTag) {
 function postClientID(getClientId) {
   setTimeout(function () {
     var clientID = getClientId();
-    var createdAt = new Date().getTime();
+    var updatedAt = new Date().getTime();
     var cartUpdateReq = new XMLHttpRequest(); // new HttpRequest instance
 
     cartUpdateReq.onload = function () {
@@ -172,7 +172,7 @@ function postClientID(getClientId) {
       clientIDReq.setRequestHeader('Content-Type', 'application/json');
       clientIDReq.send(JSON.stringify({
         clientID: clientID,
-        createdAt: createdAt,
+        updatedAt: updatedAt,
         cartID: updatedCart.token
       }));
     };
@@ -182,7 +182,7 @@ function postClientID(getClientId) {
     cartUpdateReq.send(JSON.stringify({
       attributes: {
         clientID: clientID,
-        createdAt: createdAt
+        updatedAt: updatedAt
       }
     }));
   }, 1000);
@@ -199,24 +199,15 @@ function postCartToLittledata(cart) {
 function setClientID(getClientId) {
   var _LittledataLayer = LittledataLayer,
       cart = _LittledataLayer.cart;
-  if (!cart || !cart.attributes || !cart.attributes.clientID || !cart.attributes.createdAt) return postClientID(getClientId);
-  var clientIdCreated = new Date(parseInt(cart.attributes.createdAt));
+  if (!cart || !cart.attributes || !cart.attributes.clientID || !cart.attributes.updatedAt) return postClientID(getClientId);
+  var clientIdCreated = new Date(parseInt(cart.attributes.updatedAt));
   var timeout = 60 * 60 * 1000; // 60 minutes
 
   var timePassed = new Date() - clientIdCreated; // only need to resent client ID if it's expired from our Redis cache
 
   if (timePassed > timeout) {
     postClientID(getClientId);
-  } // if the cart was last updated more than 60 minutes ago, we also need to send the full contents
-
-
-  if (cart && cart.updated_at) {
-    var cartCreated = new Date(cart.updated_at);
-    var cartAge = new Date() - cartCreated;
-
-    if (cartAge > timeout) {
-      postCartToLittledata(cart);
-    }
+    postCartToLittledata(cart);
   }
 }
 function removePii(string) {
