@@ -56,18 +56,18 @@ export const productListClicks = function (clickTag) {
 function postClientID(getClientId) {
 	setTimeout(function () {
 		const clientID = getClientId()
-		const createdAt = new Date().getTime()
+		const updatedAt = new Date().getTime()
 		const cartUpdateReq = new XMLHttpRequest(); // new HttpRequest instance
 		cartUpdateReq.onload = function () {
 			const updatedCart = JSON.parse(cartUpdateReq.response)
 			const clientIDReq = new XMLHttpRequest()
 			clientIDReq.open('POST', 'https://transactions-staging.littledata.io/clientID')
 			clientIDReq.setRequestHeader('Content-Type', 'application/json');
-			clientIDReq.send(JSON.stringify({ clientID, createdAt, cartID: updatedCart.token }))
+			clientIDReq.send(JSON.stringify({ clientID, updatedAt, cartID: updatedCart.token }))
 		}
 		cartUpdateReq.open('POST', '/cart/update.json');
 		cartUpdateReq.setRequestHeader('Content-Type', 'application/json');
-		cartUpdateReq.send(JSON.stringify({ attributes: { clientID, createdAt } }))
+		cartUpdateReq.send(JSON.stringify({ attributes: { clientID, updatedAt } }))
 	}, 1000)
 }
 
@@ -80,22 +80,15 @@ function postCartToLittledata(cart) {
 
 export function setClientID(getClientId) {
 	const { cart } = LittledataLayer
-	if (!cart || !cart.attributes || !cart.attributes.clientID || !cart.attributes.createdAt) return postClientID(getClientId)
+	if (!cart || !cart.attributes || !cart.attributes.clientID || !cart.attributes.updatedAt) return postClientID(getClientId)
 
-	const clientIdCreated = new Date(parseInt(cart.attributes.createdAt))
+	const clientIdCreated = new Date(parseInt(cart.attributes.updatedAt))
 	const timeout = 60 * 60 * 1000 // 60 minutes
 	const timePassed = new Date() - clientIdCreated
 	// only need to resent client ID if it's expired from our Redis cache
 	if (timePassed > timeout) {
 		postClientID(getClientId)
-	}
-	// if the cart was last updated more than 60 minutes ago, we also need to send the full contents
-	if (cart && cart.updated_at) {
-		const cartCreated = new Date(cart.updated_at)
-		const cartAge = new Date() - cartCreated
-		if (cartAge > timeout) {
-			postCartToLittledata(cart)
-		}
+		postCartToLittledata(cart)
 	}
 }
 
