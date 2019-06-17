@@ -39,3 +39,10 @@ Default: `true`
 By default our tracking code briefly interrupts a click on a product in a product list, in order to send the tracking event before the page reloads. If this is interfering with other apps or scripts you can turn off product list click tracking.
 
 Default: `true`
+
+
+**persistentUserId**
+
+To enable tracking of users across a longer time period of Safari we store the cookie user ID [in the browser local storage](https://blog.littledata.io/2019/05/24/how-to-fix-marketing-attribution-for-safari-itp-2-1/). Since there is no way to clear this local storage when the user deletes their cookies, you may need to check that this is consistent with your privacy policy.
+
+Default: `true`
