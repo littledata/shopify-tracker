@@ -129,7 +129,7 @@ export function getPersistentClientId() {
 	// ignore this and return undefined if we have linker params
 	if (checkLinker()) return
 
-	if (window.localStorage && !LittledataLayer.enhancePrivacy) {
+	if (window.localStorage && LittledataLayer.persistentUserId) {
 		const localClientId = window.localStorage.getItem('_ga')
 		// prefer local storage version, as it was set by this function
 		if (localClientId) return localClientId
@@ -151,7 +151,7 @@ export function getPersistentClientIdSegment() {
 
 	if (!window.analytics || !window.analytics.user()) return ''
 
-	if (window.localStorage && !LittledataLayer.enhancePrivacy) {
+	if (window.localStorage && LittledataLayer.persistentUserId) {
 		const localClientId = window.localStorage.getItem('_ga')
 		// prefer local storage version, as it was set by this function
 		if (localClientId) return localClientId
