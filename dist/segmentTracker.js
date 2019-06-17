@@ -246,7 +246,7 @@ function getPersistentClientId() {
   // ignore this and return undefined if we have linker params
   if (Object(_checkLinker__WEBPACK_IMPORTED_MODULE_0__["default"])()) return;
 
-  if (window.localStorage && !LittledataLayer.enhancePrivacy) {
+  if (window.localStorage && LittledataLayer.persistentUserId) {
     var localClientId = window.localStorage.getItem('_ga'); // prefer local storage version, as it was set by this function
 
     if (localClientId) return localClientId;
@@ -267,7 +267,7 @@ function getPersistentClientIdSegment() {
   // so we need to persist over localStorage, if available
   if (!window.analytics || !window.analytics.user()) return '';
 
-  if (window.localStorage && !LittledataLayer.enhancePrivacy) {
+  if (window.localStorage && LittledataLayer.persistentUserId) {
     var localClientId = window.localStorage.getItem('_ga'); // prefer local storage version, as it was set by this function
 
     if (localClientId) return localClientId;
