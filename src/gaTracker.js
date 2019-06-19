@@ -48,7 +48,7 @@ import productListViews from './productListViews'
 	})
 
 	function trackEvents() {
-		setClientID(() => getPersistentClientId())
+		setClientID(getPersistentClientId)
 		/* run list, product, and clientID scripts everywhere */
 		if (LittledataLayer.ecommerce.impressions.length) {
 			productListClicks((product, self) => {
