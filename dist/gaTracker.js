@@ -519,7 +519,7 @@ __webpack_require__.r(__webpack_exports__);
 
   if (typeof str === 'string' && str.length) {
     if (!/_ga=/.test(str)) {
-      return 'Invalid linker format in string argument!';
+      return false;
     }
 
     linker = str.split('&').filter(function (p) {
@@ -533,7 +533,7 @@ __webpack_require__.r(__webpack_exports__);
   }
 
   if (typeof linker === 'undefined' || !linker.length) {
-    return 'Invalid linker format in URL!';
+    return false;
   } // Get the finger print and Client ID / Google ID strings from the parameter.
 
 
