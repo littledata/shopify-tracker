@@ -44,7 +44,7 @@ const segmentProduct = (dataLayerProduct) => ({
 	})
 
 	function trackEvents() {
-		setClientID(() => getPersistentClientIdSegment())
+		setClientID(getPersistentClientIdSegment)
 		if (LittledataLayer) {
 			/* run list, product, and clientID scripts everywhere */
 			if (LittledataLayer.ecommerce.impressions.length) {
