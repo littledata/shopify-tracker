@@ -588,9 +588,7 @@ var segmentProduct = function segmentProduct(dataLayerProduct) {
   });
 
   function trackEvents() {
-    Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(function () {
-      return Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["getPersistentClientIdSegment"])();
-    });
+    Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(_helpers__WEBPACK_IMPORTED_MODULE_0__["getPersistentClientIdSegment"]);
 
     if (LittledataLayer) {
       /* run list, product, and clientID scripts everywhere */
