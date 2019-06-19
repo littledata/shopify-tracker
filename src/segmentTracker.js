@@ -41,6 +41,7 @@ const segmentProduct = (dataLayerProduct) => ({
 
 	pageView(function () {
 		window.analytics.page();
+		trackEvents()
 	})
 
 	function trackEvents() {
@@ -96,19 +97,5 @@ const segmentProduct = (dataLayerProduct) => ({
 				})
 			}
 		}
-	}
-
-	if (document.readyState !== 'loading') {
-		// wait for analytics.user() to be defined
-		window.analytics.ready(function () {
-			trackEvents();
-		});
-	} else {
-		document.addEventListener('DOMContentLoaded', function () {
-			// wait for analytics.user() to be defined
-			window.analytics.ready(function () {
-				trackEvents();
-			});
-		});
 	}
 }())

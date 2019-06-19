@@ -12,8 +12,12 @@ export const pageView = function (fireTag) {
 				triggeredPageView = true;
 			}
 		});
-	} else {
+	} else if (document.readyState !== 'loading') {
 		fireTag()
+	} else {
+		document.addEventListener('DOMContentLoaded', function () {
+			fireTag()
+		});
 	}
 }
 

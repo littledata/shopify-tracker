@@ -8,7 +8,7 @@ import productListViews from './productListViews'
 
 (function () {
 	window.dataLayer = window.dataLayer || [];
-	function gtag() { dataLayer.push(arguments) } //eslint-disable-line
+		function gtag() { dataLayer.push(arguments) } //eslint-disable-line
 	gtag('js', new Date());
 
 	// handle old calls from the page to analytics.js
@@ -45,6 +45,7 @@ import productListViews from './productListViews'
 
 	pageView(function () {
 		gtag('config', LittledataLayer.webPropertyID, config);
+		trackEvents()
 	})
 
 	function trackEvents() {
@@ -139,13 +140,5 @@ import productListViews from './productListViews'
 				})
 			})
 		}
-	}
-
-	if (document.readyState !== 'loading') {
-		trackEvents();
-	} else {
-		document.addEventListener('DOMContentLoaded', function () {
-			trackEvents();
-		});
 	}
 }())
