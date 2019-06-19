@@ -193,7 +193,7 @@ function postCartToLittledata(cart) {
 
   httpRequest.open('POST', 'https://transactions-staging.littledata.io/cart/store');
   httpRequest.setRequestHeader('Content-Type', 'application/json');
-  httpRequest.send(cart);
+  httpRequest.send(JSON.stringify(cart));
 }
 
 function setClientID(getClientId) {
