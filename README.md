@@ -46,3 +46,9 @@ Default: `true`
 To enable tracking of users across a longer time period of Safari we store the cookie user ID [in the browser local storage](https://blog.littledata.io/2019/05/24/how-to-fix-marketing-attribution-for-safari-itp-2-1/). Since there is no way to clear this local storage when the user deletes their cookies, you may need to check that this is consistent with your privacy policy.
 
 Default: `true`
+
+**hideBranding**
+
+Our app generates a branded message in the site console log. You can disable this.
+
+Default: `false`
