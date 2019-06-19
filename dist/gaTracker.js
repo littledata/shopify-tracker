@@ -144,9 +144,7 @@ __webpack_require__.r(__webpack_exports__);
   });
 
   function trackEvents() {
-    Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(function () {
-      return Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["getPersistentClientId"])();
-    });
+    Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(_helpers__WEBPACK_IMPORTED_MODULE_0__["getPersistentClientId"]);
     /* run list, product, and clientID scripts everywhere */
 
     if (LittledataLayer.ecommerce.impressions.length) {
