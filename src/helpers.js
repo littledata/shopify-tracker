@@ -2,9 +2,8 @@
 import checkLinker from './checkLinker'
 import { getGaCookie } from './getGaCookie'
 
-export const pageView = function (fireTag) {
-	// delay page firing until the page is visible
-	if (document.hidden === true) {
+export const pageView = fireTag => {
+	if (document.hidden === true) { // delay page firing until the page is visible
 		let triggeredPageView = false;
 		document.addEventListener('visibilitychange', function () {
 			if (!document.hidden && !triggeredPageView) {
@@ -12,16 +11,16 @@ export const pageView = function (fireTag) {
 				triggeredPageView = true;
 			}
 		});
-	} else if (document.readyState !== 'loading') {
-		fireTag()
-	} else {
+	} else if (document.readyState === 'loading') { //delay until DOM is ready
 		document.addEventListener('DOMContentLoaded', function () {
 			fireTag()
 		});
+	} else {
+		fireTag()
 	}
 }
 
-export const getElementsByHref = (regex) => {
+export const getElementsByHref = regex => {
 	const htmlCollection = document.getElementsByTagName('a')
 	const r = new RegExp(regex)
 	return Array.prototype.slice.call(htmlCollection)
