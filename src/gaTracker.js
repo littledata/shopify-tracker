@@ -13,7 +13,10 @@ import productListViews from './productListViews'
 
 	// handle old calls from the page to analytics.js
 	window.ga = window.ga || function (param, param2, param3) {
-		if (typeof param === 'function') return param.call() //ensures anything waiting for ga library gets called
+		if (typeof param === 'function') {
+			console.warn('Littledata caught attempt to use Google Analytics analytics.js library. You need to migrate to gtag https://developers.google.com/analytics/devguides/collection/gtagjs/migration') //eslint-disable-line no-console
+			return param.call() //ensures anything waiting for ga library gets called
+		}
 		if (param === 'send') {
 			console.warn(`Littledata caught attempt to send ${param2} ${JSON.stringify(param3)} to Google Analytics using ga() function. You need to migrate to gtag https://developers.google.com/analytics/devguides/collection/gtagjs/migration`) //eslint-disable-line no-console
 		}
@@ -42,10 +45,6 @@ import productListViews from './productListViews'
 	}
 
 	if (LittledataLayer.referralExclusion.test(document.referrer)) config.page_referrer = null
-
-	pageView(function () {
-		gtag('config', LittledataLayer.webPropertyID, config);
-	})
 
 	function trackEvents() {
 		setClientID(getPersistentClientId)
@@ -141,11 +140,8 @@ import productListViews from './productListViews'
 		}
 	}
 
-	if (document.readyState !== 'loading') {
-		trackEvents();
-	} else {
-		document.addEventListener('DOMContentLoaded', function () {
-			trackEvents();
-		});
-	}
+	pageView(function () {
+		gtag('config', LittledataLayer.webPropertyID, config);
+		trackEvents()
+	})
 }())

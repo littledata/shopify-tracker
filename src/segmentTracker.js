@@ -39,10 +39,6 @@ const segmentProduct = (dataLayerProduct) => ({
 		window.analytics.identify(LittledataLayer.customer.id, LittledataLayer.customer)
 	}
 
-	pageView(function () {
-		window.analytics.page();
-	})
-
 	function trackEvents() {
 		setClientID(getPersistentClientIdSegment)
 		if (LittledataLayer) {
@@ -98,17 +94,8 @@ const segmentProduct = (dataLayerProduct) => ({
 		}
 	}
 
-	if (document.readyState !== 'loading') {
-		// wait for analytics.user() to be defined
-		window.analytics.ready(function () {
-			trackEvents();
-		});
-	} else {
-		document.addEventListener('DOMContentLoaded', function () {
-			// wait for analytics.user() to be defined
-			window.analytics.ready(function () {
-				trackEvents();
-			});
-		});
-	}
+	pageView(function () {
+		window.analytics.page();
+		trackEvents()
+	})
 }())
