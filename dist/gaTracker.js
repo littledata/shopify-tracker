@@ -101,11 +101,15 @@ __webpack_require__.r(__webpack_exports__);
 (function () {
   window.dataLayer = window.dataLayer || [];
 
-  function gtag() {
-    dataLayer.push(arguments);
-  } //eslint-disable-line
+  var stubFunction = function stubFunction() {
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
 
+    dataLayer.push(args);
+  };
 
+  window.gtag = window.gtag || stubFunction;
   gtag('js', new Date()); // handle old calls from the page to analytics.js
 
   window.ga = window.ga || function (param, param2, param3) {
