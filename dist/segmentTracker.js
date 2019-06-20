@@ -108,14 +108,19 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var pageView = function pageView(fireTag) {
-  // delay page firing until the page is visible
   if (document.hidden === true) {
+    // delay page firing until the page is visible
     var triggeredPageView = false;
     document.addEventListener('visibilitychange', function () {
       if (!document.hidden && !triggeredPageView) {
         fireTag();
         triggeredPageView = true;
       }
+    });
+  } else if (document.readyState === 'loading') {
+    //delay until DOM is ready
+    document.addEventListener('DOMContentLoaded', function () {
+      fireTag();
     });
   } else {
     fireTag();
@@ -583,10 +588,6 @@ var segmentProduct = function segmentProduct(dataLayerProduct) {
     window.analytics.identify(LittledataLayer.customer.id, LittledataLayer.customer);
   }
 
-  Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["pageView"])(function () {
-    window.analytics.page();
-  });
-
   function trackEvents() {
     Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(_helpers__WEBPACK_IMPORTED_MODULE_0__["getPersistentClientIdSegment"]);
 
@@ -640,19 +641,10 @@ var segmentProduct = function segmentProduct(dataLayerProduct) {
     }
   }
 
-  if (document.readyState !== 'loading') {
-    // wait for analytics.user() to be defined
-    window.analytics.ready(function () {
-      trackEvents();
-    });
-  } else {
-    document.addEventListener('DOMContentLoaded', function () {
-      // wait for analytics.user() to be defined
-      window.analytics.ready(function () {
-        trackEvents();
-      });
-    });
-  }
+  Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["pageView"])(function () {
+    window.analytics.page();
+    trackEvents();
+  });
 })();
 
 /***/ })

@@ -109,7 +109,11 @@ __webpack_require__.r(__webpack_exports__);
   gtag('js', new Date()); // handle old calls from the page to analytics.js
 
   window.ga = window.ga || function (param, param2, param3) {
-    if (typeof param === 'function') return param.call(); //ensures anything waiting for ga library gets called
+    if (typeof param === 'function') {
+      console.warn('Littledata caught attempt to use Google Analytics analytics.js library. You need to migrate to gtag https://developers.google.com/analytics/devguides/collection/gtagjs/migration'); //eslint-disable-line no-console
+
+      return param.call(); //ensures anything waiting for ga library gets called
+    }
 
     if (param === 'send') {
       console.warn("Littledata caught attempt to send ".concat(param2, " ").concat(JSON.stringify(param3), " to Google Analytics using ga() function. You need to migrate to gtag https://developers.google.com/analytics/devguides/collection/gtagjs/migration")); //eslint-disable-line no-console
@@ -139,9 +143,6 @@ __webpack_require__.r(__webpack_exports__);
     clientId: Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["getPersistentClientId"])()
   };
   if (LittledataLayer.referralExclusion.test(document.referrer)) config.page_referrer = null;
-  Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["pageView"])(function () {
-    gtag('config', LittledataLayer.webPropertyID, config);
-  });
 
   function trackEvents() {
     Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(_helpers__WEBPACK_IMPORTED_MODULE_0__["getPersistentClientId"]);
@@ -236,13 +237,10 @@ __webpack_require__.r(__webpack_exports__);
     }
   }
 
-  if (document.readyState !== 'loading') {
+  Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["pageView"])(function () {
+    gtag('config', LittledataLayer.webPropertyID, config);
     trackEvents();
-  } else {
-    document.addEventListener('DOMContentLoaded', function () {
-      trackEvents();
-    });
-  }
+  });
 })();
 
 /***/ }),
@@ -268,14 +266,19 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var pageView = function pageView(fireTag) {
-  // delay page firing until the page is visible
   if (document.hidden === true) {
+    // delay page firing until the page is visible
     var triggeredPageView = false;
     document.addEventListener('visibilitychange', function () {
       if (!document.hidden && !triggeredPageView) {
         fireTag();
         triggeredPageView = true;
       }
+    });
+  } else if (document.readyState === 'loading') {
+    //delay until DOM is ready
+    document.addEventListener('DOMContentLoaded', function () {
+      fireTag();
     });
   } else {
     fireTag();
