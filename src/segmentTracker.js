@@ -39,11 +39,6 @@ const segmentProduct = (dataLayerProduct) => ({
 		window.analytics.identify(LittledataLayer.customer.id, LittledataLayer.customer)
 	}
 
-	pageView(function () {
-		window.analytics.page();
-		trackEvents()
-	})
-
 	function trackEvents() {
 		setClientID(getPersistentClientIdSegment)
 		if (LittledataLayer) {
@@ -98,4 +93,9 @@ const segmentProduct = (dataLayerProduct) => ({
 			}
 		}
 	}
+
+	pageView(function () {
+		window.analytics.page();
+		trackEvents()
+	})
 }())
