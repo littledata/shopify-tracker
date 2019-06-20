@@ -8,7 +8,8 @@ import productListViews from './productListViews'
 
 (function () {
 	window.dataLayer = window.dataLayer || [];
-	function gtag() { dataLayer.push(arguments) } //eslint-disable-line
+	const stubFunction = (...args) => { dataLayer.push(args) }
+	window.gtag = window.gtag || stubFunction
 	gtag('js', new Date());
 
 	// handle old calls from the page to analytics.js
