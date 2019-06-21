@@ -12,16 +12,16 @@ import productListViews from './productListViews'
 	window.gtag = window.gtag || stubFunction
 	gtag('js', new Date());
 
-	// handle old calls from the page to analytics.js
-	window.ga = window.ga || function (param, param2, param3) {
-		if (typeof param === 'function') {
-			console.warn('Littledata caught attempt to use Google Analytics analytics.js library. You need to migrate to gtag https://developers.google.com/analytics/devguides/collection/gtagjs/migration') //eslint-disable-line no-console
-			return param.call() //ensures anything waiting for ga library gets called
-		}
-		if (param === 'send') {
-			console.warn(`Littledata caught attempt to send ${param2} ${JSON.stringify(param3)} to Google Analytics using ga() function. You need to migrate to gtag https://developers.google.com/analytics/devguides/collection/gtagjs/migration`) //eslint-disable-line no-console
-		}
-	}
+	// // handle old calls from the page to analytics.js
+	// window.ga = window.ga || function (param, param2, param3) {
+	// 	if (typeof param === 'function') {
+	// 		console.warn('Littledata caught attempt to use Google Analytics analytics.js library. You need to migrate to gtag https://developers.google.com/analytics/devguides/collection/gtagjs/migration') //eslint-disable-line no-console
+	// 		return param.call() //ensures anything waiting for ga library gets called
+	// 	}
+	// 	if (param === 'send') {
+	// 		console.warn(`Littledata caught attempt to send ${param2} ${JSON.stringify(param3)} to Google Analytics using ga() function. You need to migrate to gtag https://developers.google.com/analytics/devguides/collection/gtagjs/migration`) //eslint-disable-line no-console
+	// 	}
+	// }
 
 	if (!window.LittledataLayer) {
 		console.warn('Aborting Littledata tracking as LittledataLayer was not found') //eslint-disable-line no-console
