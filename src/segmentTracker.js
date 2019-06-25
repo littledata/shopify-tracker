@@ -3,7 +3,7 @@
 
 import {
 	pageView, productListClicks, setClientID, trackProductImageClicks,
-	trackSocialShares, getPersistentClientIdSegment,
+	trackSocialShares,
 } from './helpers'
 
 import productListViews from './productListViews'
@@ -40,7 +40,9 @@ const segmentProduct = (dataLayerProduct) => ({
 	}
 
 	function trackEvents() {
-		setClientID(getPersistentClientIdSegment)
+		window.analytics.ready(() => {
+			setClientID(window.analytics.user().anonymousId)
+		})
 		if (LittledataLayer) {
 			/* run list, product, and clientID scripts everywhere */
 			if (LittledataLayer.ecommerce.impressions.length) {
