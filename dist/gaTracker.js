@@ -255,7 +255,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "removePii", function() { return removePii; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "guid", function() { return guid; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getPersistentClientId", function() { return getPersistentClientId; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getPersistentClientIdSegment", function() { return getPersistentClientIdSegment; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "trackProductImageClicks", function() { return trackProductImageClicks; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "trackSocialShares", function() { return trackSocialShares; });
 /* harmony import */ var _checkLinker__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
@@ -412,27 +411,6 @@ function getPersistentClientId() {
 
     if (localClientId) return localClientId;
     var cookieClientId = Object(_getGaCookie__WEBPACK_IMPORTED_MODULE_1__["getGaCookie"])();
-
-    if (cookieClientId) {
-      // set it to local storage for next time
-      window.localStorage.setItem('_ga', cookieClientId);
-      return cookieClientId;
-    }
-  } // returning an empty client id will cause gtag to create a new one
-
-
-  return '';
-}
-function getPersistentClientIdSegment() {
-  // needed because Safari wipes 1st party cookies
-  // so we need to persist over localStorage, if available
-  if (!window.analytics || !window.analytics.user()) return '';
-
-  if (window.localStorage && LittledataLayer.persistentUserId) {
-    var localClientId = window.localStorage.getItem('_ga'); // prefer local storage version, as it was set by this function
-
-    if (localClientId) return localClientId;
-    var cookieClientId = window.analytics.user().anonymousId();
 
     if (cookieClientId) {
       // set it to local storage for next time
