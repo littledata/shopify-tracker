@@ -210,8 +210,10 @@ function setClientID(getClientId) {
   var timePassed = new Date() - clientIdCreated; // only need to resent client ID if it's expired from our Redis cache
 
   if (timePassed > timeout) {
-    postClientID(getClientId);
     postCartToLittledata(cart);
+    setTimeout(function () {
+      postClientID(getClientId);
+    }, 10000); // allow 10 seconds for our server to register cart until updating it, otherwise there's a race condition between storing and a webhook triggered by this
   }
 }
 function removePii(string) {
