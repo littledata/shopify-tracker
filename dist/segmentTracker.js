@@ -415,7 +415,6 @@ var getGaCookie = function getGaCookie() {
 
   return '';
 };
-window.getGaCookie = getGaCookie;
 
 /***/ }),
 /* 4 */
