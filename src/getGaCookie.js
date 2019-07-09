@@ -17,5 +17,3 @@ export const getGaCookie = () => {
 	}
 	return ''
 };
-
-window.getGaCookie = getGaCookie
