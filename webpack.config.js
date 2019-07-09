@@ -4,7 +4,7 @@ module.exports = {
 	entry: {
 		gaTracker: './src/gaTracker.js',
 		segmentTracker: './src/segmentTracker.js',
-		getGaCookie: './src/getGaCookie.js',
+		cartHookTracker: './src/cartHookTracker.js',
 	},
 	module: {
 		rules: [{
@@ -13,10 +13,10 @@ module.exports = {
 			use: {
 				loader: 'babel-loader',
 				options: {
-					presets: ['@babel/preset-env']
-				}
-			}
-		}]
+					presets: ['@babel/preset-env'],
+				},
+			},
+		}],
 	},
 	output: {
 		filename: '[name].js',
