@@ -41,7 +41,7 @@ const segmentProduct = (dataLayerProduct) => ({
 
 	function trackEvents() {
 		window.analytics.ready(() => {
-			setClientID(window.analytics.user().anonymousId)
+			setClientID(window.analytics.user().anonymousId, window.analytics.Integrations['Google Analytics'])
 		})
 		if (LittledataLayer) {
 			/* run list, product, and clientID scripts everywhere */
