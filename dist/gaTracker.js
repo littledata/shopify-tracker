@@ -259,6 +259,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "trackSocialShares", function() { return trackSocialShares; });
 /* harmony import */ var _checkLinker__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
 /* harmony import */ var _getGaCookie__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3);
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 /* global LittledataLayer */
 
 
@@ -319,31 +323,32 @@ var productListClicks = function productListClicks(clickTag) {
   });
 };
 
-function postClientID(getClientId) {
+function postClientID(getClientId, googleClientID) {
   setTimeout(function () {
     var clientID = getClientId();
     var updatedAt = new Date().getTime();
     var cartUpdateReq = new XMLHttpRequest(); // new HttpRequest instance
+
+    var attributes = {
+      clientID: clientID,
+      updatedAt: updatedAt,
+      googleClientID: googleClientID
+    };
 
     cartUpdateReq.onload = function () {
       var updatedCart = JSON.parse(cartUpdateReq.response);
       var clientIDReq = new XMLHttpRequest();
       clientIDReq.open('POST', 'https://transactions-staging.littledata.io/clientID');
       clientIDReq.setRequestHeader('Content-Type', 'application/json');
-      clientIDReq.send(JSON.stringify({
-        clientID: clientID,
-        updatedAt: updatedAt,
+      clientIDReq.send(JSON.stringify(_objectSpread({}, attributes, {
         cartID: updatedCart.token
-      }));
+      })));
     };
 
     cartUpdateReq.open('POST', '/cart/update.json');
     cartUpdateReq.setRequestHeader('Content-Type', 'application/json');
     cartUpdateReq.send(JSON.stringify({
-      attributes: {
-        clientID: clientID,
-        updatedAt: updatedAt
-      }
+      attributes: attributes
     }));
   }, 1000);
 }
@@ -356,7 +361,11 @@ function postCartToLittledata(cart) {
   httpRequest.send(JSON.stringify(cart));
 }
 
-function setClientID(getClientId) {
+function getGAClientId() {
+  return window.ga.getAll()[0].get('clientId');
+}
+
+function setClientID(getClientId, fetchGAClientId) {
   var _LittledataLayer = LittledataLayer,
       cart = _LittledataLayer.cart;
   if (!cart || !cart.attributes || !cart.attributes.clientID || !cart.attributes.updatedAt) return postClientID(getClientId);
@@ -368,7 +377,10 @@ function setClientID(getClientId) {
   if (timePassed > timeout) {
     postCartToLittledata(cart);
     setTimeout(function () {
-      postClientID(getClientId);
+      if (!fetchGAClientId) return postClientID(getClientId);
+      window.ga(function () {
+        postClientID(getClientId, getGAClientId());
+      });
     }, 10000); // allow 10 seconds for our server to register cart until updating it, otherwise there's a race condition between storing and a webhook triggered by this
   }
 }
