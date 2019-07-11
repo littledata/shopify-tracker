@@ -64,7 +64,7 @@ function postClientID(getClientId) {
 		cartUpdateReq.onload = function () {
 			const updatedCart = JSON.parse(cartUpdateReq.response)
 			const clientIDReq = new XMLHttpRequest()
-			clientIDReq.open('POST', 'https://transactions-staging.littledata.io/clientID')
+			clientIDReq.open('POST', `${LittledataLayer.transactionWatcherURL}/clientID`)
 			clientIDReq.setRequestHeader('Content-Type', 'application/json');
 			clientIDReq.send(JSON.stringify({ clientID, updatedAt, cartID: updatedCart.token }))
 		}
@@ -76,7 +76,7 @@ function postClientID(getClientId) {
 
 function postCartToLittledata(cart) {
 	const httpRequest = new XMLHttpRequest(); // new HttpRequest instance
-	httpRequest.open('POST', 'https://transactions-staging.littledata.io/cart/store')
+	httpRequest.open('POST', `${LittledataLayer.transactionWatcherURL}/cart/store`)
 	httpRequest.setRequestHeader('Content-Type', 'application/json')
 	httpRequest.send(JSON.stringify(cart))
 }
