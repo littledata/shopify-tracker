@@ -187,3 +187,15 @@ export const trackSocialShares = clickTag => {
 		})
 	})
 }
+
+export const validateLittledataLayer = () => {
+	if (!window.LittledataLayer) {
+		throw new Error('Aborting Littledata tracking as LittledataLayer was not found')
+	}
+}
+
+export const advertiseLD = () => {
+	if (!LittledataLayer.hideBranding) {
+		console.log('%c\nThis store uses Littledata 🚀 to automate its analytics and make better, data-driven decisions. Learn more at http://apps.shopify.com/littledata \n', 'color: #088f87;') //eslint-disable-line
+	}
+}

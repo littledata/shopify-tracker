@@ -1,5 +1,5 @@
 /* global $, CHDataObject */
-import { getGaCookie } from './getGaCookie'
+import { getGaCookie } from '../common/getGaCookie'
 
 $.post('https://transactions.littledata.io/clientID', {
 	clientID: getGaCookie(),
