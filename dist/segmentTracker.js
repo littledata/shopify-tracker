@@ -81,12 +81,13 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 5);
+/******/ 	return __webpack_require__(__webpack_require__.s = 6);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */,
-/* 1 */
+/* 1 */,
+/* 2 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -101,8 +102,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getPersistentClientId", function() { return getPersistentClientId; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "trackProductImageClicks", function() { return trackProductImageClicks; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "trackSocialShares", function() { return trackSocialShares; });
-/* harmony import */ var _checkLinker__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
-/* harmony import */ var _getGaCookie__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "validateLittledataLayer", function() { return validateLittledataLayer; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "advertiseLD", function() { return advertiseLD; });
+/* harmony import */ var _checkLinker__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3);
+/* harmony import */ var _getGaCookie__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(4);
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -299,9 +302,19 @@ var trackSocialShares = function trackSocialShares(clickTag) {
     });
   });
 };
+var validateLittledataLayer = function validateLittledataLayer() {
+  if (!window.LittledataLayer) {
+    throw new Error('Aborting Littledata tracking as LittledataLayer was not found');
+  }
+};
+var advertiseLD = function advertiseLD() {
+  if (!LittledataLayer.hideBranding) {
+    console.log('%c\nThis store uses Littledata 🚀 to automate its analytics and make better, data-driven decisions. Learn more at http://apps.shopify.com/littledata \n', 'color: #088f87;'); //eslint-disable-line
+  }
+};
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -396,7 +409,7 @@ __webpack_require__.r(__webpack_exports__);
 });
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -429,12 +442,12 @@ var getGaCookie = function getGaCookie() {
 };
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
+/* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
 
 /* harmony default export */ __webpack_exports__["default"] = (function (impressionTag) {
   var waitForScroll;
@@ -498,17 +511,13 @@ __webpack_require__.r(__webpack_exports__);
 });
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
-/* harmony import */ var _productListViews__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(4);
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
+/* harmony import */ var _common_helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
+/* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7);
 /* eslint-env browser */
 
 /* global LittledataLayer */
@@ -548,6 +557,35 @@ if (!analytics.initialize) if (analytics.invoked) window.console && console.erro
   analytics.load(LittledataLayer.writeKey);
 }
 
+(function () {
+  window.dataLayer = window.dataLayer || [];
+  Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["validateLittledataLayer"])();
+  Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["advertiseLD"])();
+  Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["identifyCustomer"])();
+  Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["pageView"])(function () {
+    window.analytics.page();
+    Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["trackEvents"])();
+  });
+})();
+
+/***/ }),
+/* 7 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "identifyCustomer", function() { return identifyCustomer; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "trackEvents", function() { return trackEvents; });
+/* harmony import */ var _common_helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
+/* harmony import */ var _common_productListViews__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(5);
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/* global LittledataLayer */
+
+
+
 var segmentProduct = function segmentProduct(dataLayerProduct) {
   return {
     brand: dataLayerProduct.brand,
@@ -562,83 +600,65 @@ var segmentProduct = function segmentProduct(dataLayerProduct) {
   };
 };
 
-(function () {
-  window.dataLayer = window.dataLayer || [];
-
-  if (!LittledataLayer) {
-    console.warn('Aborting Littledata tracking as LittledataLayer was not found'); //eslint-disable-line
-
-    return;
-  }
-
-  if (!LittledataLayer.hideBranding) {
-    console.log('%c\nThis store uses Littledata 🚀 to automate its analytics and make better, data-driven decisions. Learn more at http://apps.shopify.com/segment-com-by-littledata \n', 'color: #088f87;'); //eslint-disable-line
-  }
-
+var identifyCustomer = function identifyCustomer() {
   if (LittledataLayer.customer) {
     window.analytics.identify(LittledataLayer.customer.id, LittledataLayer.customer);
   }
+};
+var trackEvents = function trackEvents() {
+  window.analytics.ready(function () {
+    Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(window.analytics.user().anonymousId, window.analytics.Integrations['Google Analytics']);
+  });
 
-  function trackEvents() {
-    window.analytics.ready(function () {
-      Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(window.analytics.user().anonymousId, window.analytics.Integrations['Google Analytics']);
-    });
-
-    if (LittledataLayer) {
-      /* run list, product, and clientID scripts everywhere */
-      if (LittledataLayer.ecommerce.impressions.length) {
-        Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["productListClicks"])(function (product) {
-          var productFromImpressions = LittledataLayer.ecommerce.impressions.find(function (prod) {
-            return prod.name === product.name && prod.handle === product.handle;
-          });
-          var pos = productFromImpressions && productFromImpressions.list_position;
-          window.localStorage.setItem('position', pos);
+  if (LittledataLayer) {
+    /* run list, product, and clientID scripts everywhere */
+    if (LittledataLayer.ecommerce.impressions.length) {
+      Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["productListClicks"])(function (product) {
+        var productFromImpressions = LittledataLayer.ecommerce.impressions.find(function (prod) {
+          return prod.name === product.name && prod.handle === product.handle;
+        });
+        var pos = productFromImpressions && productFromImpressions.list_position;
+        window.localStorage.setItem('position', pos);
+        var p = segmentProduct(product);
+        p.list_id = document.location.pathname;
+        p.category = 'EnhancedEcommerce';
+        window.analytics.track('Product Clicked', p);
+      });
+      Object(_common_productListViews__WEBPACK_IMPORTED_MODULE_1__["default"])(function (products) {
+        var listId = products && products[0].list;
+        products.forEach(function (product, index) {
           var p = segmentProduct(product);
-          p.list_id = document.location.pathname;
-          p.category = 'EnhancedEcommerce';
-          window.analytics.track('Product Clicked', p);
+          products[index] = p; //eslint-disable-line no-param-reassign
         });
-        Object(_productListViews__WEBPACK_IMPORTED_MODULE_1__["default"])(function (products) {
-          var listId = products && products[0].list;
-          products.forEach(function (product, index) {
-            var p = segmentProduct(product);
-            products[index] = p; //eslint-disable-line no-param-reassign
-          });
-          window.analytics.track('Product List Viewed', {
-            list_id: listId,
-            category: 'EnhancedEcommerce',
-            products: products
-          });
+        window.analytics.track('Product List Viewed', {
+          list_id: listId,
+          category: 'EnhancedEcommerce',
+          products: products
         });
-      }
+      });
+    }
 
-      var rawProduct = LittledataLayer.ecommerce.detail;
+    var rawProduct = LittledataLayer.ecommerce.detail;
 
-      if (rawProduct) {
-        var product = segmentProduct(rawProduct);
-        product.list_id = document.location.href;
-        product.category = 'EnhancedEcommerce';
-        product.position = parseInt(window.localStorage.getItem('position')) || 1;
-        window.analytics.track('Product Viewed', product); // if PDP, we can also track clicks on images and social shares
+    if (rawProduct) {
+      var product = segmentProduct(rawProduct);
+      product.list_id = document.location.href;
+      product.category = 'EnhancedEcommerce';
+      product.position = parseInt(window.localStorage.getItem('position')) || 1;
+      window.analytics.track('Product Viewed', product); // if PDP, we can also track clicks on images and social shares
 
-        Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["trackProductImageClicks"])(function (name) {
-          product.image_url = name;
-          window.analytics.track('Product Image Clicked', product);
-        });
-        Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["trackSocialShares"])(function (network) {
-          window.analytics.track('Product Shared', _objectSpread({}, product, {
-            share_via: network
-          }));
-        });
-      }
+      Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["trackProductImageClicks"])(function (name) {
+        product.image_url = name;
+        window.analytics.track('Product Image Clicked', product);
+      });
+      Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["trackSocialShares"])(function (network) {
+        window.analytics.track('Product Shared', _objectSpread({}, product, {
+          share_via: network
+        }));
+      });
     }
   }
-
-  Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["pageView"])(function () {
-    window.analytics.page();
-    trackEvents();
-  });
-})();
+};
 
 /***/ })
 /******/ ]);
