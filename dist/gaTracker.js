@@ -341,7 +341,7 @@ function postClientID(getClientId, googleClientID) {
     cartUpdateReq.onload = function () {
       var updatedCart = JSON.parse(cartUpdateReq.response);
       var clientIDReq = new XMLHttpRequest();
-      clientIDReq.open('POST', 'https://transactions-staging.littledata.io/clientID');
+      clientIDReq.open('POST', "".concat(LittledataLayer.transactionWatcherURL, "/clientID"));
       clientIDReq.setRequestHeader('Content-Type', 'application/json');
       clientIDReq.send(JSON.stringify(_objectSpread({}, attributes, {
         cartID: updatedCart.token
@@ -359,7 +359,7 @@ function postClientID(getClientId, googleClientID) {
 function postCartToLittledata(cart) {
   var httpRequest = new XMLHttpRequest(); // new HttpRequest instance
 
-  httpRequest.open('POST', 'https://transactions-staging.littledata.io/cart/store');
+  httpRequest.open('POST', "".concat(LittledataLayer.transactionWatcherURL, "/cart/store"));
   httpRequest.setRequestHeader('Content-Type', 'application/json');
   httpRequest.send(JSON.stringify(cart));
 }
