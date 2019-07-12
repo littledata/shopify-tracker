@@ -215,7 +215,11 @@ function getGAClientId() {
 function setClientID(getClientId, fetchGAClientId) {
   var _LittledataLayer = LittledataLayer,
       cart = _LittledataLayer.cart;
-  if (!cart || !cart.attributes || !cart.attributes.clientID || !cart.attributes.updatedAt) return postClientID(getClientId);
+
+  if (!cart || !cart.attributes || !cart.attributes.clientID || !cart.attributes.updatedAt) {
+    return postClientID(getClientId, fetchGAClientId && getGAClientId());
+  }
+
   var clientIdCreated = new Date(parseInt(cart.attributes.updatedAt));
   var timeout = 60 * 60 * 1000; // 60 minutes
 
