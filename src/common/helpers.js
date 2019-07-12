@@ -96,7 +96,9 @@ function getGAClientId() {
 }
 export function setClientID(getClientId, fetchGAClientId) {
 	const { cart } = LittledataLayer
-	if (!cart || !cart.attributes || !cart.attributes.clientID || !cart.attributes.updatedAt) return postClientID(getClientId)
+	if (!cart || !cart.attributes || !cart.attributes.clientID || !cart.attributes.updatedAt) {
+		return postClientID(getClientId, fetchGAClientId && getGAClientId())
+	}
 
 	const clientIdCreated = new Date(parseInt(cart.attributes.updatedAt))
 	const timeout = 60 * 60 * 1000 // 60 minutes
