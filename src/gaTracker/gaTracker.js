@@ -9,8 +9,7 @@ import { pageView, validateLittledataLayer, advertiseLD } from '../common/helper
 	validateLittledataLayer()
 	advertiseLD()
 	pageView(function () {
-		const config = getConfig()
-		gtag('config', LittledataLayer.webPropertyID, config);
+		gtag('config', LittledataLayer.webPropertyID, getConfig());
 		const googleAds = LittledataLayer.googleAdsConversionIds
 		if (typeof googleAds === 'object' && googleAds.length > 0) {
 			googleAds.forEach(adId => gtag('config', adId))
