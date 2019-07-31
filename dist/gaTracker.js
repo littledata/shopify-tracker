@@ -92,6 +92,8 @@
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
 /* harmony import */ var _common_helpers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
 /* eslint-env browser */
 
 /* global LittledataLayer */
@@ -105,8 +107,14 @@ __webpack_require__.r(__webpack_exports__);
   Object(_common_helpers__WEBPACK_IMPORTED_MODULE_1__["pageView"])(function () {
     var config = Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["getConfig"])();
     gtag('config', LittledataLayer.webPropertyID, config);
-    var googleAds = LittledataLayer.googleAdsConversionId;
-    if (googleAds) gtag('config', googleAds);
+    var googleAds = LittledataLayer.googleAdsConversionIds;
+
+    if (_typeof(googleAds) === 'object' && googleAds.length > 0) {
+      googleAds.forEach(function (adId) {
+        return gtag('config', adId);
+      });
+    }
+
     Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["trackEvents"])();
   });
 })();
