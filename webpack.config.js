@@ -2,9 +2,9 @@ const path = require('path');
 
 module.exports = {
 	entry: {
-		gaTracker: './src/gaTracker.js',
-		segmentTracker: './src/segmentTracker.js',
-		cartHookTracker: './src/cartHookTracker.js',
+		gaTracker: './src/gaTracker/gaTracker.js',
+		segmentTracker: './src/segmentTracker/segmentTracker.js',
+		cartHookTracker: './src/cartHookTracker/cartHookTracker.js',
 	},
 	module: {
 		rules: [{

@@ -20,6 +20,20 @@ Configuration
 
 The following fields of the `LittledataLayer` object allow for finer configuration of tracking features:
 
+**googleAdsConversionId**
+
+Add the Google Ads (AdWords) conversion ID that you [configured with Ads]](https://support.google.com/google-ads/answer/9266898). Our script will automatically add this to `gtag('config')` command.
+
+Default: `null`
+
+
+**optimizeId**
+
+This is where to add the Google Optimize container ID that you want to [configure with gtag](https://support.google.com/optimize/answer/7513085). Our script will automatically add this to `gtag('config')` command.
+
+Default: `null`
+
+
 **anonymizeIp**
 
 This field to instructs the gtag library to [mask the last 3 numbers of the user's IP address](https://support.google.com/analytics/answer/2763052), to support greater user privacy at the expense of some geo-location accuracy.

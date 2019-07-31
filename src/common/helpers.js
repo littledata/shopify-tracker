@@ -56,21 +56,31 @@ export const productListClicks = function (clickTag) {
 	})
 }
 
-function postClientID(getClientId) {
+function postClientID(getClientId, googleClientID) {
 	setTimeout(function () {
 		const clientID = getClientId()
 		const updatedAt = new Date().getTime()
 		const cartUpdateReq = new XMLHttpRequest(); // new HttpRequest instance
+		const attributes = {
+			clientID,
+			updatedAt,
+			googleClientID,
+		}
 		cartUpdateReq.onload = function () {
 			const updatedCart = JSON.parse(cartUpdateReq.response)
 			const clientIDReq = new XMLHttpRequest()
 			clientIDReq.open('POST', `${LittledataLayer.transactionWatcherURL}/clientID`)
 			clientIDReq.setRequestHeader('Content-Type', 'application/json');
-			clientIDReq.send(JSON.stringify({ clientID, updatedAt, cartID: updatedCart.token }))
+			clientIDReq.send(JSON.stringify({
+				...attributes,
+				cartID: updatedCart.token,
+			}))
 		}
 		cartUpdateReq.open('POST', '/cart/update.json');
 		cartUpdateReq.setRequestHeader('Content-Type', 'application/json');
-		cartUpdateReq.send(JSON.stringify({ attributes: { clientID, updatedAt } }))
+		cartUpdateReq.send(JSON.stringify({
+			attributes,
+		}))
 	}, 1000)
 }
 
@@ -81,9 +91,14 @@ function postCartToLittledata(cart) {
 	httpRequest.send(JSON.stringify(cart))
 }
 
-export function setClientID(getClientId) {
+function getGAClientId() {
+	return window.ga.getAll()[0].get('clientId')
+}
+export function setClientID(getClientId, fetchGAClientId) {
 	const { cart } = LittledataLayer
-	if (!cart || !cart.attributes || !cart.attributes.clientID || !cart.attributes.updatedAt) return postClientID(getClientId)
+	if (!cart || !cart.attributes || !cart.attributes.clientID || !cart.attributes.updatedAt) {
+		return postClientID(getClientId, fetchGAClientId && getGAClientId())
+	}
 
 	const clientIdCreated = new Date(parseInt(cart.attributes.updatedAt))
 	const timeout = 60 * 60 * 1000 // 60 minutes
@@ -92,7 +107,11 @@ export function setClientID(getClientId) {
 	if (timePassed > timeout) {
 		postCartToLittledata(cart)
 		setTimeout(() => {
-			postClientID(getClientId)
+			if (!fetchGAClientId) return postClientID(getClientId)
+
+			window.ga(() => {
+				postClientID(getClientId, getGAClientId())
+			})
 		}, 10000) // allow 10 seconds for our server to register cart until updating it, otherwise there's a race condition between storing and a webhook triggered by this
 	}
 }
@@ -169,4 +188,16 @@ export const trackSocialShares = clickTag => {
 			clickTag(match && match[0])
 		})
 	})
+}
+
+export const validateLittledataLayer = () => {
+	if (!window.LittledataLayer) {
+		throw new Error('Aborting Littledata tracking as LittledataLayer was not found')
+	}
+}
+
+export const advertiseLD = () => {
+	if (!LittledataLayer.hideBranding) {
+		console.log('%c\nThis store uses Littledata 🚀 to automate its analytics and make better, data-driven decisions. Learn more at http://apps.shopify.com/littledata \n', 'color: #088f87;') //eslint-disable-line
+	}
 }
