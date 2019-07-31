@@ -120,6 +120,9 @@ export const getConfig = () => {
 	}
 
 	const optimize = LittledataLayer.optimizeId
-	if (optimize) config.optimize_id = optimize
+	if (optimize) {
+		console.log('configuring optimize container', optimize)
+		config.optimize_id = optimize
+	}
 	if (LittledataLayer.referralExclusion.test(document.referrer)) config.page_referrer = null
 }
