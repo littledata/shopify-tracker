@@ -105,6 +105,8 @@ __webpack_require__.r(__webpack_exports__);
   Object(_common_helpers__WEBPACK_IMPORTED_MODULE_1__["pageView"])(function () {
     var config = Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["getConfig"])();
     gtag('config', LittledataLayer.webPropertyID, config);
+    var googleAds = LittledataLayer.googleAdsConversionId;
+    if (googleAds) gtag('config', googleAds);
     Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["trackEvents"])();
   });
 })();
@@ -239,6 +241,8 @@ var getConfig = function getConfig() {
     link_attribution: true,
     clientId: Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["getPersistentClientId"])()
   };
+  var optimize = LittledataLayer.optimizeId;
+  if (optimize) config.optimize_id = optimize;
   if (LittledataLayer.referralExclusion.test(document.referrer)) config.page_referrer = null;
 };
 
