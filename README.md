@@ -22,7 +22,7 @@ The following fields of the `LittledataLayer` object allow for finer configurati
 
 **googleAdsConversionId**
 
-Add the Google Ads (AdWords) conversion ID that you [configured with Ads]](https://support.google.com/google-ads/answer/9266898). Our script will automatically add this to `gtag('config')` command.
+Add the Google Ads (AdWords) conversion ID that you [configured with Ads](https://support.google.com/google-ads/answer/9266898). Our script will automatically add this to `gtag('config')` command.
 
 Default: `null`
 
