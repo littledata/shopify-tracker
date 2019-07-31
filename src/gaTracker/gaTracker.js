@@ -11,6 +11,8 @@ import { pageView, validateLittledataLayer, advertiseLD } from '../common/helper
 	pageView(function () {
 		const config = getConfig()
 		gtag('config', LittledataLayer.webPropertyID, config);
+		const googleAds = LittledataLayer.googleAdsConversionId
+		if (googleAds) gtag('config', googleAds);
 		trackEvents()
 	})
 }())
