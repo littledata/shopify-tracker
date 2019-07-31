@@ -105,8 +105,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
   Object(_common_helpers__WEBPACK_IMPORTED_MODULE_1__["validateLittledataLayer"])();
   Object(_common_helpers__WEBPACK_IMPORTED_MODULE_1__["advertiseLD"])();
   Object(_common_helpers__WEBPACK_IMPORTED_MODULE_1__["pageView"])(function () {
-    var config = Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["getConfig"])();
-    gtag('config', LittledataLayer.webPropertyID, config);
+    gtag('config', LittledataLayer.webPropertyID, Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["getConfig"])());
     var googleAds = LittledataLayer.googleAdsConversionIds;
 
     if (_typeof(googleAds) === 'object' && googleAds.length > 0) {
@@ -250,7 +249,12 @@ var getConfig = function getConfig() {
     clientId: Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["getPersistentClientId"])()
   };
   var optimize = LittledataLayer.optimizeId;
-  if (optimize) config.optimize_id = optimize;
+
+  if (optimize) {
+    console.log('configuring optimize container', optimize);
+    config.optimize_id = optimize;
+  }
+
   if (LittledataLayer.referralExclusion.test(document.referrer)) config.page_referrer = null;
 };
 
