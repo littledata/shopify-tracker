@@ -1,4 +1,4 @@
-export const getGaCookie = () => {
+export const getGaCookie = ():string => {
 	const name = '_ga'
 	if (document.cookie.length > 0) {
 		let cookieStart = document.cookie.indexOf(`${name}=`);

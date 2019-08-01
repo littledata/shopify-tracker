@@ -1,8 +1,13 @@
 /* global LittledataLayer */
+declare let window: CustomWindow
 import checkLinker from './checkLinker'
 import { getGaCookie } from './getGaCookie'
 
-export const pageView = fireTag => {
+/**
+ *
+ * @param fireTag - callback to call when willing to fire pageviews
+ */
+export const pageView = (fireTag:() => void):void => {
 	if (document.hidden === true) { // delay page firing until the page is visible
 		let triggeredPageView = false;
 		document.addEventListener('visibilitychange', function () {
@@ -20,43 +25,42 @@ export const pageView = fireTag => {
 	}
 }
 
-export const getElementsByHref = regex => {
+export const getElementsByHref = (regex:RegExp|string): Array<HTMLAnchorElement> => {
 	const htmlCollection = document.getElementsByTagName('a')
 	const r = new RegExp(regex)
 	return Array.prototype.slice.call(htmlCollection)
-		.filter(element => element.href && r.test(element.href))
+		.filter((element:HTMLAnchorElement) => element.href && r.test(element.href))
 }
 
-export const findDataLayerProduct = link => LittledataLayer.ecommerce.impressions.find(p => {
+export const findDataLayerProduct = (link: string): Impression => LittledataLayer.ecommerce.impressions.filter(p => {
 	const linkSplit = link.split('/products/')
 	const productLink = linkSplit && linkSplit[1]
 	return productLink === p.handle
-})
+})[0]
 
-export const productListClicks = function (clickTag) {
+export const productListClicks = (clickTag: ListClickCallback): void => {
 	/* product list clicks */
 	if (!LittledataLayer.productClicks) return
-	getElementsByHref('/products/').forEach(element => {
+	getElementsByHref('/products/').forEach((element:TimeBombHTMLAnchor) => {
 		element.addEventListener('click', function (ev) { // only add event to products
-			const self = this;
-			const product = findDataLayerProduct(self.href)
+			const product = findDataLayerProduct(this.href)
 
 			if (product) {
 				ev.preventDefault();
 				/* only wait 1 second before redirecting */
-				self.timeout = window.setTimeout(function () {
-					document.location = self.href;
+				element.timeout = window.setTimeout(function () {
+					document.location.href = element.href;
 				}, 1000)
 
-				clickTag(product, self)
+				clickTag(product, element)
 			} else {
-				document.location = self.href;
+				document.location.href = element.href;
 			}
 		})
 	})
 }
 
-function postClientID(getClientId, googleClientID) {
+function postClientID(getClientId:() => string, googleClientID?: string) {
 	setTimeout(function () {
 		const clientID = getClientId()
 		const updatedAt = new Date().getTime()
@@ -84,7 +88,7 @@ function postClientID(getClientId, googleClientID) {
 	}, 1000)
 }
 
-function postCartToLittledata(cart) {
+function postCartToLittledata(cart: Cart.RootObject) {
 	const httpRequest = new XMLHttpRequest(); // new HttpRequest instance
 	httpRequest.open('POST', `${LittledataLayer.transactionWatcherURL}/cart/store`)
 	httpRequest.setRequestHeader('Content-Type', 'application/json')
@@ -94,15 +98,15 @@ function postCartToLittledata(cart) {
 function getGAClientId() {
 	return window.ga.getAll()[0].get('clientId')
 }
-export function setClientID(getClientId, fetchGAClientId) {
+export function setClientID(getClientId:() => string, fetchGAClientId?: boolean) {
 	const { cart } = LittledataLayer
 	if (!cart || !cart.attributes || !cart.attributes.clientID || !cart.attributes.updatedAt) {
 		return postClientID(getClientId, fetchGAClientId && getGAClientId())
 	}
 
-	const clientIdCreated = new Date(parseInt(cart.attributes.updatedAt))
+	const clientIdCreated = new Date(cart.attributes.updatedAt)
 	const timeout = 60 * 60 * 1000 // 60 minutes
-	const timePassed = new Date() - clientIdCreated
+	const timePassed = Date.now() - Number(clientIdCreated)
 	// only need to resent client ID if it's expired from our Redis cache
 	if (timePassed > timeout) {
 		postCartToLittledata(cart)
@@ -116,20 +120,22 @@ export function setClientID(getClientId, fetchGAClientId) {
 	}
 }
 
-export function removePii(string) {
-	const piiRegex = {
-		email: /[\s&amp;\/,=]([a-zA-Z0-9_.+-]+(\@|%40)[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)($|[\s&amp;\/,])/,
-		postcode: /[\s&amp;\/,=]([A-Z]{1,2}[0-9][0-9A-Z]?(\s|%20)[0-9][A-Z]{2})($|[\s&amp;\/,])/,
-	};
-	let dlRemoved = string;
-	let key;
-	for (key in piiRegex) {
-		dlRemoved = dlRemoved.replace(piiRegex[key], 'REMOVED');
-	}
-	return dlRemoved;
+export function removePii(str:string):string {
+	const piiRegexs = [{
+		key: 'email',
+		regex: /[\s&amp;\/,=]([a-zA-Z0-9_.+-]+(\@|%40)[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)($|[\s&amp;\/,])/,
+	},{
+		key: 'postcode',
+		regex: /[\s&amp;\/,=]([A-Z]{1,2}[0-9][0-9A-Z]?(\s|%20)[0-9][A-Z]{2})($|[\s&amp;\/,])/,
+	}]
+
+	return piiRegexs.reduce((memo,curr) => memo.replace(curr.regex, 'REMOVED'), str)
 }
 
-export const guid = (function () {
+/**
+ * guid
+ */
+export const guid: string = (function () {
 	function s10() {
 		return Math.floor((Math.random()) * 10E9)
 	}
@@ -169,7 +175,7 @@ export function getPersistentClientId() {
 	return ''
 }
 
-export const trackProductImageClicks = (clickTag) => {
+export const trackProductImageClicks = (clickTag: (name:string) => void) => {
 	getElementsByHref('^https://cdn\.shopify\.com/s/files/.*/products/').forEach(element => {
 		element.addEventListener('click', function () { // only add event to product images
 			const image = this.getElementsByTagName('img')[0]
@@ -180,7 +186,7 @@ export const trackProductImageClicks = (clickTag) => {
 	})
 }
 
-export const trackSocialShares = clickTag => {
+export const trackSocialShares = (clickTag: (name?:string) => void) => {
 	const networks = '(facebook|pinterest|twitter|linkedin|plus\.google|instagram)'
 	getElementsByHref(`${networks}\.com/(share|pin|intent)`).forEach(element => {
 		element.addEventListener('click', function () {

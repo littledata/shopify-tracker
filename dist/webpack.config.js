@@ -1,5 +1,4 @@
 const path = require('path');
-
 module.exports = {
     entry: {
         gaTracker: './src/gaTracker/gaTracker.ts',

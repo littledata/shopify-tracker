@@ -1,10 +1,11 @@
 /* global LittledataLayer */
+declare let window: CustomWindow
 import {
 	productListClicks, setClientID, trackProductImageClicks, trackSocialShares,
 } from '../common/helpers'
 import productListViews from '../common/productListViews'
 
-const segmentProduct = (dataLayerProduct) => ({
+const segmentProduct = (dataLayerProduct: Impression) => ({
 	brand: dataLayerProduct.brand,
 	category: dataLayerProduct.category,
 	url: dataLayerProduct.handle,
@@ -36,9 +37,11 @@ export const trackEvents = () => {
 				window.localStorage.setItem('position', pos);
 
 				const p = segmentProduct(product)
-				p.list_id = document.location.pathname
-				p.category = 'EnhancedEcommerce'
-				window.analytics.track('Product Clicked', p)
+				window.analytics.track('Product Clicked', {
+					...p,
+					list_id: document.location.pathname,
+					category:'EnhancedEcommerce',
+				})
 			})
 
 			productListViews(products => {

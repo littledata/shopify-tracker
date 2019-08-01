@@ -1,4 +1,5 @@
 /* global LittledataLayer */
+declare let window: CustomWindow
 import {
 	productListClicks, setClientID, removePii, getPersistentClientId, trackProductImageClicks, trackSocialShares,
 } from '../common/helpers'
@@ -16,8 +17,8 @@ export const trackEvents = () => {
 	/* run list, product, and clientID scripts everywhere */
 	if (LittledataLayer.ecommerce.impressions.length) {
 		productListClicks((product, self) => {
-			const productFromImpressions = LittledataLayer.ecommerce.impressions.find(prod => prod.name === product.name
-				&& prod.handle === product.handle);
+			const productFromImpressions = LittledataLayer.ecommerce.impressions.filter(prod => prod.name === product.name
+				&& prod.handle === product.handle)[0];
 
 			const pos = productFromImpressions && productFromImpressions.list_position;
 			window.localStorage.setItem('position', pos);
@@ -37,12 +38,12 @@ export const trackEvents = () => {
 				send_to: LittledataLayer.webPropertyID,
 				event_callback() {
 					window.clearTimeout(self.timeout)
-					document.location = self.href
+					document.location.href = self.href
 				},
 			})
 		})
 
-		productListViews((products) => {
+		productListViews((products:Array<Impression>) => {
 			gtag('event', 'view_item_list', {
 				items: products,
 				send_to: LittledataLayer.webPropertyID,

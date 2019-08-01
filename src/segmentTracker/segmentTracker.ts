@@ -1,6 +1,6 @@
 /* eslint-env browser */
 /* global LittledataLayer */
-
+declare let window: CustomWindow
 import { pageView, validateLittledataLayer, advertiseLD } from '../common/helpers'
 import { identifyCustomer, trackEvents } from './helpers'
 
