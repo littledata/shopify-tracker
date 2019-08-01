@@ -2,21 +2,21 @@ const path = require('path');
 
 module.exports = {
 	entry: {
-		gaTracker: './src/gaTracker/gaTracker.js',
-		segmentTracker: './src/segmentTracker/segmentTracker.js',
-		cartHookTracker: './src/cartHookTracker/cartHookTracker.js',
+		gaTracker: './src/gaTracker/gaTracker.ts',
+		segmentTracker: './src/segmentTracker/segmentTracker.ts',
+		cartHookTracker: './src/cartHookTracker/cartHookTracker.ts',
 	},
 	module: {
-		rules: [{
-			test: /\.m?js$/,
-			exclude: /(node_modules|bower_components)/,
-			use: {
-				loader: 'babel-loader',
-				options: {
-					presets: ['@babel/preset-env'],
-				},
+		rules: [
+			{
+				test: /\.tsx?$/,
+				use: 'ts-loader',
+				exclude: /node_modules/,
 			},
-		}],
+		],
+	},
+	resolve: {
+		extensions: ['.tsx', '.ts', '.js'],
 	},
 	output: {
 		filename: '[name].js',
