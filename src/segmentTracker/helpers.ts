@@ -5,7 +5,21 @@ import {
 } from '../common/helpers'
 import productListViews from '../common/productListViews'
 
-const segmentProduct = (dataLayerProduct: Impression) => ({
+interface SegmentProduct {
+	brand: string,
+	category: string,
+	url: string,
+	product_id:string,
+	sku: string,
+	position: number,
+	name: string,
+	price: number,
+	variant: string,
+	list_id?: string,
+	image_url?: string
+}
+
+const segmentProduct = (dataLayerProduct: Detail): SegmentProduct => ({
 	brand: dataLayerProduct.brand,
 	category: dataLayerProduct.category,
 	url: dataLayerProduct.handle,
@@ -25,6 +39,7 @@ export const identifyCustomer = () => {
 
 export const trackEvents = () => {
 	window.analytics.ready(() => {
+		//@ts-ignore
 		setClientID(window.analytics.user().anonymousId, window.analytics.Integrations['Google Analytics'])
 	})
 	if (LittledataLayer) {
@@ -34,7 +49,7 @@ export const trackEvents = () => {
 				const productFromImpressions = LittledataLayer.ecommerce.impressions.find(prod => prod.name === product.name
 					&& prod.handle === product.handle);
 				const pos = productFromImpressions && productFromImpressions.list_position;
-				window.localStorage.setItem('position', pos);
+				window.localStorage.setItem('position', String(pos));
 
 				const p = segmentProduct(product)
 				window.analytics.track('Product Clicked', {
@@ -46,15 +61,12 @@ export const trackEvents = () => {
 
 			productListViews(products => {
 				const listId = products && products[0].list;
-				products.forEach((product, index) => {
-					const p = segmentProduct(product)
-					products[index] = p //eslint-disable-line no-param-reassign
-				})
+				const segmentProducts = products.map(segmentProduct)
 
 				window.analytics.track('Product List Viewed', {
 					list_id: listId,
 					category: 'EnhancedEcommerce',
-					products,
+					products: segmentProducts,
 				})
 			})
 		}

@@ -108,6 +108,7 @@ declare global {
 
 	interface OwnLayer {
 		persistentUserId?: string,
+		customer?: Customer,
 		hideBranding: boolean,
 		writeKey?: string,
 		webPropertyID?: string,
@@ -143,6 +144,16 @@ declare global {
 	}
 
 	type ListClickCallback = (foundProduct: Impression, self: TimeBombHTMLAnchor) => void
+
+	interface Customer {
+		  acceptsMarketing: boolean,
+		  displayName: string,
+		  email: string,
+		  firstName: string,
+		  id: string,
+		  lastName: string,
+		  phone: string,
+	}
 }
 
 export {}
