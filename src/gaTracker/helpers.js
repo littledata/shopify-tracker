@@ -116,6 +116,7 @@ export const getConfig = () => {
 		config.optimize_id = optimize
 	}
 	if (LittledataLayer.referralExclusion.test(document.referrer)) config.page_referrer = null
+	return config
 }
 
 export const initGtag = () => {
