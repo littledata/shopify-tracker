@@ -1,18 +1,14 @@
 /* eslint-env browser */
-/* global LittledataLayer */
 
-import { initGtag, getConfig, trackEvents } from './helpers'
+import { initGtag, trackEvents, sendPageview } from './helpers'
 import { pageView, validateLittledataLayer, advertiseLD } from '../common/helpers'
 
 (function () {
-	initGtag()
 	validateLittledataLayer()
+	initGtag()
 	advertiseLD()
 	pageView(function () {
-		const config = getConfig()
-		gtag('config', LittledataLayer.webPropertyID, config);
-		const googleAds = LittledataLayer.googleAdsConversionId
-		if (googleAds) gtag('config', googleAds);
+		sendPageview()
 		trackEvents()
 	})
 }())
