@@ -32,11 +32,11 @@ export const getElementsByHref = (regex:RegExp|string): Array<HTMLAnchorElement>
 		.filter((element:HTMLAnchorElement) => element.href && r.test(element.href))
 }
 
-export const findDataLayerProduct = (link: string): Impression => LittledataLayer.ecommerce.impressions.filter(p => {
+export const findDataLayerProduct = (link: string): Impression => LittledataLayer.ecommerce.impressions.find(p => {
 	const linkSplit = link.split('/products/')
 	const productLink = linkSplit && linkSplit[1]
 	return productLink === p.handle
-})[0]
+})
 
 export const productListClicks = (clickTag: ListClickCallback): void => {
 	/* product list clicks */

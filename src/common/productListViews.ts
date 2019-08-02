@@ -1,7 +1,8 @@
+type impressionCallback = (impressionTag:(Array<Impression>)) => void
 import { getElementsByHref, findDataLayerProduct } from './helpers'
 
-export default (impressionTag) => {
-	let waitForScroll;
+export default (impressionTag: impressionCallback) => {
+	let waitForScroll = 0;
 	const products = getElementsByHref('/products/')
 	if (products.length === 0) {
 		return;
@@ -11,7 +12,7 @@ export default (impressionTag) => {
 		const viewportTop = document.documentElement.scrollTop;
 		const viewportHeight = window.innerHeight;
 		const viewportBottom = viewportTop + viewportHeight;
-		const impressions = [];
+		const impressions:Array<Impression> = [];
 		products.forEach((element, index) => {
 			if (!element) return;
 			const elementTop = window.pageYOffset + element.getBoundingClientRect().top;

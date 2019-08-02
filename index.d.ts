@@ -78,10 +78,6 @@ declare global {
 
 	}
 
-	interface Impression extends Detail {
-		list_position: number,
-	}
-
 	interface Detail {
 		id: string,
 		name: string,
@@ -92,6 +88,12 @@ declare global {
 		list_name: string,
 		list: string, // duplicate property for GTM
 		handle: string,
+		list_position?: number,
+	}
+
+
+	interface Impression extends Detail {
+		list_position: number,
 	}
 
 	interface DiscountApplication {
@@ -120,6 +122,9 @@ declare global {
 		},
 		transactionWatcherURL: string,
 		cart: Cart.RootObject,
+		anonymizeIp: boolean,
+		googleSignals: boolean,
+		optimizeId: string
 	}
 
 	var LittledataLayer: OwnLayer

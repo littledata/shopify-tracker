@@ -9,6 +9,7 @@ export const initGtag = () => {
 	window.dataLayer = window.dataLayer || [];
 	const stubFunction = function () { dataLayer.push(arguments) } //eslint-disable-line
 	window.gtag = window.gtag || stubFunction
+	// @ts-ignore
 	gtag('js', new Date());
 }
 
@@ -17,11 +18,11 @@ export const trackEvents = () => {
 	/* run list, product, and clientID scripts everywhere */
 	if (LittledataLayer.ecommerce.impressions.length) {
 		productListClicks((product, self) => {
-			const productFromImpressions = LittledataLayer.ecommerce.impressions.filter(prod => prod.name === product.name
-				&& prod.handle === product.handle)[0];
+			const productFromImpressions = LittledataLayer.ecommerce.impressions.find(prod => prod.name === product.name
+				&& prod.handle === product.handle);
 
 			const pos = productFromImpressions && productFromImpressions.list_position;
-			window.localStorage.setItem('position', pos);
+			window.localStorage.setItem('position', String(pos))
 			dataLayer.push({
 				event: 'select_content',
 				ecommerce: {
@@ -106,24 +107,34 @@ export const trackEvents = () => {
 	}
 }
 
-export const getConfig = () => {
-	const config = {
+export const getConfig = (): Gtag.CustomParams => {
+	const { anonymizeIp,
+		googleSignals,
+		ecommerce,
+		optimizeId,
+		referralExclusion,
+	} = LittledataLayer
+
+	const excludeReferal = referralExclusion.test(document.referrer)
+	const config: Gtag.CustomParams = {
 		linker: {
 			domains: ['shopify.com', 'rechargeapps.com', 'recurringcheckout.com', 'carthook.com', 'checkout.com'],
 		},
-		anonymize_ip: !!LittledataLayer.anonymizeIp,
-		allow_ad_personalization_signals: !!LittledataLayer.googleSignals,
+		anonymize_ip: !!anonymizeIp,
+		allow_ad_personalization_signals: !!googleSignals,
 		page_title: removePii(document.title),
 		page_location: removePii(document.location.href),
-		currency: LittledataLayer.ecommerce.currencyCode,
+		currency: ecommerce.currencyCode,
 		link_attribution: true,
 		clientId: getPersistentClientId(),
+		optimize_id: optimizeId,
+		page_referrer: excludeReferal ? document.referrer : null,
 	}
 
-	const optimize = LittledataLayer.optimizeId
-	if (optimize) {
-		console.log('configuring optimize container', optimize)
-		config.optimize_id = optimize
+	if (optimizeId) {
+		console.log('configuring optimize container', optimizeId)
 	}
 	if (LittledataLayer.referralExclusion.test(document.referrer)) config.page_referrer = null
+
+	return config
 }
