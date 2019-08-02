@@ -92,28 +92,16 @@
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
 /* harmony import */ var _common_helpers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
 /* eslint-env browser */
-
-/* global LittledataLayer */
 
 
 
 (function () {
-  Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["initGtag"])();
   Object(_common_helpers__WEBPACK_IMPORTED_MODULE_1__["validateLittledataLayer"])();
+  Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["initGtag"])();
   Object(_common_helpers__WEBPACK_IMPORTED_MODULE_1__["advertiseLD"])();
   Object(_common_helpers__WEBPACK_IMPORTED_MODULE_1__["pageView"])(function () {
-    gtag('config', LittledataLayer.webPropertyID, Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["getConfig"])());
-    var googleAds = LittledataLayer.googleAdsConversionIds;
-
-    if (_typeof(googleAds) === 'object' && googleAds.length > 0) {
-      googleAds.forEach(function (adId) {
-        return gtag('config', adId);
-      });
-    }
-
+    Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["sendPageview"])();
     Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["trackEvents"])();
   });
 })();
@@ -124,25 +112,17 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "initGtag", function() { return initGtag; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "trackEvents", function() { return trackEvents; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getConfig", function() { return getConfig; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "initGtag", function() { return initGtag; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sendPageview", function() { return sendPageview; });
 /* harmony import */ var _common_helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
 /* harmony import */ var _common_productListViews__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(5);
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
 /* global LittledataLayer */
 
 
-var initGtag = function initGtag() {
-  window.dataLayer = window.dataLayer || [];
-
-  var stubFunction = function stubFunction() {
-    dataLayer.push(arguments);
-  }; //eslint-disable-line
-
-
-  window.gtag = window.gtag || stubFunction;
-  gtag('js', new Date());
-};
 var trackEvents = function trackEvents() {
   Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["getPersistentClientId"]);
   /* run list, product, and clientID scripts everywhere */
@@ -242,20 +222,43 @@ var getConfig = function getConfig() {
     },
     anonymize_ip: !!LittledataLayer.anonymizeIp,
     allow_ad_personalization_signals: !!LittledataLayer.googleSignals,
-    page_title: Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["removePii"])(document.title),
-    page_location: Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["removePii"])(document.location.href),
     currency: LittledataLayer.ecommerce.currencyCode,
     link_attribution: true,
-    clientId: Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["getPersistentClientId"])()
+    clientId: Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["getPersistentClientId"])(),
+    send_page_view: false
   };
   var optimize = LittledataLayer.optimizeId;
 
   if (optimize) {
-    console.log('configuring optimize container', optimize);
     config.optimize_id = optimize;
   }
 
   if (LittledataLayer.referralExclusion.test(document.referrer)) config.page_referrer = null;
+};
+var initGtag = function initGtag() {
+  window.dataLayer = window.dataLayer || [];
+
+  var stubFunction = function stubFunction() {
+    dataLayer.push(arguments);
+  }; //eslint-disable-line
+
+
+  window.gtag = window.gtag || stubFunction;
+  gtag('js', new Date());
+  gtag('config', LittledataLayer.webPropertyID, getConfig());
+};
+var sendPageview = function sendPageview() {
+  gtag('send', 'page_view', {
+    page_title: Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["removePii"])(document.title),
+    page_location: Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["removePii"])(document.location.href)
+  });
+  var googleAds = LittledataLayer.googleAdsConversionIds;
+
+  if (_typeof(googleAds) === 'object' && googleAds.length > 0) {
+    googleAds.forEach(function (adId) {
+      return gtag('config', adId);
+    });
+  }
 };
 
 /***/ }),
