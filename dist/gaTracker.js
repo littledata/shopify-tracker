@@ -234,6 +234,7 @@ var getConfig = function getConfig() {
   }
 
   if (LittledataLayer.referralExclusion.test(document.referrer)) config.page_referrer = null;
+  return config;
 };
 var initGtag = function initGtag() {
   window.dataLayer = window.dataLayer || [];
