@@ -4,13 +4,6 @@ import {
 } from '../common/helpers'
 import productListViews from '../common/productListViews'
 
-export const initGtag = () => {
-	window.dataLayer = window.dataLayer || [];
-	const stubFunction = function () { dataLayer.push(arguments) } //eslint-disable-line
-	window.gtag = window.gtag || stubFunction
-	gtag('js', new Date());
-}
-
 export const trackEvents = () => {
 	setClientID(getPersistentClientId)
 	/* run list, product, and clientID scripts everywhere */
@@ -112,17 +105,36 @@ export const getConfig = () => {
 		},
 		anonymize_ip: !!LittledataLayer.anonymizeIp,
 		allow_ad_personalization_signals: !!LittledataLayer.googleSignals,
-		page_title: removePii(document.title),
-		page_location: removePii(document.location.href),
 		currency: LittledataLayer.ecommerce.currencyCode,
 		link_attribution: true,
 		clientId: getPersistentClientId(),
+		send_page_view: false,
 	}
 
 	const optimize = LittledataLayer.optimizeId
 	if (optimize) {
-		console.log('configuring optimize container', optimize)
 		config.optimize_id = optimize
 	}
 	if (LittledataLayer.referralExclusion.test(document.referrer)) config.page_referrer = null
+}
+
+export const initGtag = () => {
+	window.dataLayer = window.dataLayer || [];
+	const stubFunction = function () { dataLayer.push(arguments) } //eslint-disable-line
+	window.gtag = window.gtag || stubFunction
+	gtag('js', new Date());
+
+	gtag('config', LittledataLayer.webPropertyID, getConfig());
+}
+
+export const sendPageview = () => {
+	gtag('send', 'page_view', {
+		page_title: removePii(document.title),
+		page_location: removePii(document.location.href),
+	})
+
+	const googleAds = LittledataLayer.googleAdsConversionIds
+	if (typeof googleAds === 'object' && googleAds.length > 0) {
+		googleAds.forEach(adId => gtag('config', adId))
+	}
 }
