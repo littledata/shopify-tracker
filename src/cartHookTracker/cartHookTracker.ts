@@ -1,11 +1,11 @@
-/* global $, CHDataObject */
+/* global $ */
 var CHDataObject: {
-	checkout_session: string,
-}
+    checkout_session: string;
+};
 
-import { getGaCookie } from '../common/getGaCookie'
+import { getGaCookie } from '../common/getGaCookie';
 
 $.post('https://transactions.littledata.io/clientID', {
-	clientID: getGaCookie(),
-	cartID: CHDataObject.checkout_session,
-})
+    clientID: getGaCookie(),
+    cartID: CHDataObject.checkout_session,
+});
