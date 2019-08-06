@@ -129,7 +129,7 @@ export const initGtag = () => {
 }
 
 export const sendPageview = () => {
-	gtag('send', 'page_view', {
+	gtag('config', LittledataLayer.webPropertyID, {
 		page_title: removePii(document.title),
 		page_location: removePii(document.location.href),
 	})
