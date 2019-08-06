@@ -249,7 +249,7 @@ var initGtag = function initGtag() {
   gtag('config', LittledataLayer.webPropertyID, getConfig());
 };
 var sendPageview = function sendPageview() {
-  gtag('send', 'page_view', {
+  gtag('config', LittledataLayer.webPropertyID, {
     page_title: Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["removePii"])(document.title),
     page_location: Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["removePii"])(document.location.href)
   });
