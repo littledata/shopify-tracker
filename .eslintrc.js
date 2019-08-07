@@ -13,5 +13,6 @@ module.exports = {
 		// Place to specify ESLint rules. Can be used to overwrite rules specified from the extended configs
 		"@typescript-eslint/explicit-function-return-type": "off",
 		"@typescript-eslint/camelcase": "off", // both segment and google are fond ot this
+		"@typescript-eslint/no-use-before-define": "off",
 	}
   };

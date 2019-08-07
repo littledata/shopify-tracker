@@ -16,6 +16,19 @@ export const initGtag = () => {
     window.gtag = window.gtag || stubFunction;
     // @ts-ignore
     gtag('js', new Date());
+    gtag('config', LittledataLayer.webPropertyID, getConfig());
+};
+
+export const sendPageview = () => {
+    gtag('config', LittledataLayer.webPropertyID, {
+        page_title: removePii(document.title),
+        page_location: removePii(document.location.href),
+    });
+
+    const googleAds = LittledataLayer.googleAdsConversionIds;
+    if (typeof googleAds === 'object' && googleAds.length > 0) {
+        googleAds.forEach(adId => gtag('config', adId));
+    }
 };
 
 export const trackEvents = () => {
@@ -123,19 +136,13 @@ export const getConfig = (): Gtag.CustomParams => {
         },
         anonymize_ip: !!anonymizeIp,
         allow_ad_personalization_signals: !!googleSignals,
-        page_title: removePii(document.title),
-        page_location: removePii(document.location.href),
         currency: ecommerce.currencyCode,
         link_attribution: true,
         clientId: getPersistentClientId(),
         optimize_id: optimizeId,
         page_referrer: excludeReferal ? document.referrer : null,
+        send_page_view: false,
     };
-
-    if (optimizeId) {
-        console.log('configuring optimize container', optimizeId);
-    }
-    if (LittledataLayer.referralExclusion.test(document.referrer)) config.page_referrer = null;
 
     return config;
 };
