@@ -77,7 +77,7 @@ export const trackEvents = () => {
 			})
 
 			gtag('event', 'Product image click', {
-				event_category: 'Product details page (LIittledata)',
+				event_category: 'Product details page (Littledata)',
 				event_label: name,
 				send_to: LittledataLayer.webPropertyID,
 			})
