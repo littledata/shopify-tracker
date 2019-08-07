@@ -495,27 +495,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7);
 
 
-// @ts-ignore
-var analytics = window.analytics = window.analytics || [];
-if (!analytics.initialize)
-    if (analytics.invoked)
-        window.console && console.error && console.error("Segment snippet included twice.");
-    else {
-        analytics.invoked = !0;
-        analytics.methods = ["trackSubmit", "trackClick", "trackLink", "trackForm", "pageview", "identify", "reset", "group", "track", "ready", "alias", "debug", "page", "once", "off", "on"];
-        analytics.factory = function (t) { return function () { var e = Array.prototype.slice.call(arguments); e.unshift(t); analytics.push(e); return analytics; }; };
-        for (var t = 0; t < analytics.methods.length; t++) {
-            var e = analytics.methods[t];
-            analytics[e] = analytics.factory(e);
-        }
-        analytics.load = function (t, e) { var n = document.createElement("script"); n.type = "text/javascript"; n.async = !0; n.src = "https://cdn.segment.com/analytics.js/v1/" + t + "/analytics.min.js"; var a = document.getElementsByTagName("script")[0]; a.parentNode.insertBefore(n, a); analytics._loadOptions = e; };
-        analytics.SNIPPET_VERSION = "4.1.0"; //eslint-disable-line
-        // @ts-ignore
-        analytics.load(LittledataLayer.writeKey);
-    }
 (function () {
-    window.dataLayer = window.dataLayer || [];
     Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["validateLittledataLayer"])();
+    Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["initSegment"])();
     Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["advertiseLD"])();
     Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["identifyCustomer"])();
     Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["pageView"])(function () {
@@ -533,6 +515,7 @@ if (!analytics.initialize)
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "identifyCustomer", function() { return identifyCustomer; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "trackEvents", function() { return trackEvents; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "initSegment", function() { return initSegment; });
 /* harmony import */ var _common_helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
 /* harmony import */ var _common_productListViews__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(5);
 
@@ -602,6 +585,26 @@ const trackEvents = () => {
             });
         }
     }
+};
+const initSegment = () => {
+    // @ts-ignore
+    window.analytics = window.analytics || [];
+    if (!analytics.initialize)
+        if (analytics.invoked)
+            window.console && console.error && console.error("Segment snippet included twice.");
+        else {
+            analytics.invoked = !0;
+            analytics.methods = ["trackSubmit", "trackClick", "trackLink", "trackForm", "pageview", "identify", "reset", "group", "track", "ready", "alias", "debug", "page", "once", "off", "on"];
+            analytics.factory = function (t) { return function () { var e = Array.prototype.slice.call(arguments); e.unshift(t); analytics.push(e); return analytics; }; };
+            for (var t = 0; t < analytics.methods.length; t++) {
+                var e = analytics.methods[t];
+                analytics[e] = analytics.factory(e);
+            }
+            analytics.load = function (t, e) { var n = document.createElement("script"); n.type = "text/javascript"; n.async = !0; n.src = "https://cdn.segment.com/analytics.js/v1/" + t + "/analytics.min.js"; var a = document.getElementsByTagName("script")[0]; a.parentNode.insertBefore(n, a); analytics._loadOptions = e; };
+            analytics.SNIPPET_VERSION = "4.1.0"; //eslint-disable-line
+            window.analytics.load(LittledataLayer.writeKey);
+        }
+    window.dataLayer = window.dataLayer || [];
 };
 
 

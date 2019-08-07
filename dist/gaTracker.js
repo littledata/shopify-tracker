@@ -97,15 +97,11 @@ __webpack_require__.r(__webpack_exports__);
 
 
 (function () {
-    Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["initGtag"])();
     Object(_common_helpers__WEBPACK_IMPORTED_MODULE_1__["validateLittledataLayer"])();
+    Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["initGtag"])();
     Object(_common_helpers__WEBPACK_IMPORTED_MODULE_1__["advertiseLD"])();
     Object(_common_helpers__WEBPACK_IMPORTED_MODULE_1__["pageView"])(function () {
-        gtag('config', LittledataLayer.webPropertyID, Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["getConfig"])());
-        const googleAds = LittledataLayer.googleAdsConversionIds;
-        if (typeof googleAds === 'object' && googleAds.length > 0) {
-            googleAds.forEach(adId => gtag('config', adId));
-        }
+        Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["sendPageview"])();
         Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["trackEvents"])();
     });
 })();
@@ -118,6 +114,7 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "initGtag", function() { return initGtag; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sendPageview", function() { return sendPageview; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "trackEvents", function() { return trackEvents; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getConfig", function() { return getConfig; });
 /* harmony import */ var _common_helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
@@ -130,6 +127,17 @@ const initGtag = () => {
     window.gtag = window.gtag || stubFunction;
     // @ts-ignore
     gtag('js', new Date());
+    gtag('config', LittledataLayer.webPropertyID, getConfig());
+};
+const sendPageview = () => {
+    gtag('config', LittledataLayer.webPropertyID, {
+        page_title: Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["removePii"])(document.title),
+        page_location: Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["removePii"])(document.location.href),
+    });
+    const googleAds = LittledataLayer.googleAdsConversionIds;
+    if (typeof googleAds === 'object' && googleAds.length > 0) {
+        googleAds.forEach(adId => gtag('config', adId));
+    }
 };
 const trackEvents = () => {
     Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["getPersistentClientId"]);
@@ -223,19 +231,13 @@ const getConfig = () => {
         },
         anonymize_ip: !!anonymizeIp,
         allow_ad_personalization_signals: !!googleSignals,
-        page_title: Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["removePii"])(document.title),
-        page_location: Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["removePii"])(document.location.href),
         currency: ecommerce.currencyCode,
         link_attribution: true,
         clientId: Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["getPersistentClientId"])(),
         optimize_id: optimizeId,
         page_referrer: excludeReferal ? document.referrer : null,
+        send_page_view: false,
     };
-    if (optimizeId) {
-        console.log('configuring optimize container', optimizeId);
-    }
-    if (LittledataLayer.referralExclusion.test(document.referrer))
-        config.page_referrer = null;
     return config;
 };
 
