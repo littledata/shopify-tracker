@@ -92,31 +92,26 @@
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getGaCookie", function() { return getGaCookie; });
-var getGaCookie = function getGaCookie() {
-  var name = '_ga';
-
-  if (document.cookie.length > 0) {
-    var cookieStart = document.cookie.indexOf("".concat(name, "="));
-
-    if (cookieStart !== -1) {
-      cookieStart = cookieStart + name.length + 1;
-      var cookieEnd = document.cookie.indexOf(';', cookieStart);
-
-      if (cookieEnd === -1) {
-        cookieEnd = document.cookie.length;
-      }
-
-      var gaCookie = unescape(document.cookie.substring(cookieStart, cookieEnd));
-
-      if (gaCookie) {
-        var match = gaCookie.match(/(\d{2,11})\.(\d{2,11})/g);
-        return match ? match[0] : '';
-      }
+const getGaCookie = () => {
+    const name = '_ga';
+    if (document.cookie.length > 0) {
+        let cookieStart = document.cookie.indexOf(`${name}=`);
+        if (cookieStart !== -1) {
+            cookieStart = cookieStart + name.length + 1;
+            let cookieEnd = document.cookie.indexOf(';', cookieStart);
+            if (cookieEnd === -1) {
+                cookieEnd = document.cookie.length;
+            }
+            const gaCookie = unescape(document.cookie.substring(cookieStart, cookieEnd));
+            if (gaCookie) {
+                const match = gaCookie.match(/(\d{2,11})\.(\d{2,11})/g);
+                return match ? match[0] : '';
+            }
+        }
     }
-  }
-
-  return '';
+    return '';
 };
+
 
 /***/ }),
 
@@ -126,12 +121,14 @@ var getGaCookie = function getGaCookie() {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _common_getGaCookie__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
-/* global $, CHDataObject */
+/* global $ */
+var CHDataObject;
 
 $.post('https://transactions.littledata.io/clientID', {
-  clientID: Object(_common_getGaCookie__WEBPACK_IMPORTED_MODULE_0__["getGaCookie"])(),
-  cartID: CHDataObject.checkout_session
+    clientID: Object(_common_getGaCookie__WEBPACK_IMPORTED_MODULE_0__["getGaCookie"])(),
+    cartID: CHDataObject.checkout_session,
 });
+
 
 /***/ })
 
