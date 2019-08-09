@@ -10,7 +10,21 @@ import { identifyCustomer, trackEvents, initSegment } from './helpers';
     advertiseLD();
     identifyCustomer();
     pageView(function() {
-        window.analytics.page();
-        trackEvents();
+        window.analytics.ready(() => {
+            // @ts-ignore 'Integrations' property does, in fact exist
+            if (window.analytics.Integrations['Google Analytics']) {
+                window.ga(() => {
+                    const tracker = window.ga.getAll()[0];
+                    if (tracker) {
+                        const clientId = tracker.get('clientId');
+                        window.analytics.user().anonymousId(clientId);
+                    }
+                    window.analytics.page();
+                });
+            } else {
+                window.analytics.page();
+            }
+            trackEvents();
+        });
     });
 })();
