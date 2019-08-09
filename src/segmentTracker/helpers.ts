@@ -1,6 +1,6 @@
 /* global LittledataLayer */
 declare let window: CustomWindow;
-import { productListClicks, setClientID, trackProductImageClicks, trackSocialShares } from '../common/helpers';
+import { productListClicks, trackProductImageClicks, trackSocialShares } from '../common/helpers';
 import productListViews from '../common/productListViews';
 
 interface SegmentProduct {
@@ -36,10 +36,6 @@ export const identifyCustomer = () => {
 };
 
 export const trackEvents = () => {
-    window.analytics.ready(() => {
-        //@ts-ignore
-        setClientID(window.analytics.user().anonymousId, window.analytics.Integrations['Google Analytics']);
-    });
     if (LittledataLayer) {
         /* run list, product, and clientID scripts everywhere */
         if (LittledataLayer.ecommerce.impressions.length) {

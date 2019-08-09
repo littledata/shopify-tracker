@@ -65,7 +65,7 @@ export const productListClicks = (clickTag: ListClickCallback): void => {
     });
 };
 
-function postClientID(getClientId: () => string, googleClientID?: string) {
+function postClientID(getClientId: () => string) {
     setTimeout(function() {
         const clientID = getClientId();
         const updatedAt = new Date().getTime();
@@ -73,7 +73,6 @@ function postClientID(getClientId: () => string, googleClientID?: string) {
         const attributes = {
             clientID,
             updatedAt,
-            googleClientID,
         };
         cartUpdateReq.onload = function() {
             const updatedCart = JSON.parse(cartUpdateReq.response);
@@ -104,13 +103,10 @@ function postCartToLittledata(cart: Cart.RootObject) {
     httpRequest.send(JSON.stringify(cart));
 }
 
-function getGAClientId() {
-    return window.ga.getAll()[0].get('clientId');
-}
-export function setClientID(getClientId: () => string, fetchGAClientId?: boolean) {
+export function setClientID(getClientId: () => string) {
     const { cart } = LittledataLayer;
     if (!cart || !cart.attributes || !cart.attributes.clientID || !cart.attributes.updatedAt) {
-        return postClientID(getClientId, fetchGAClientId && getGAClientId());
+        return postClientID(getClientId);
     }
 
     const clientIdCreated = new Date(cart.attributes.updatedAt);
@@ -120,11 +116,7 @@ export function setClientID(getClientId: () => string, fetchGAClientId?: boolean
     if (timePassed > timeout) {
         postCartToLittledata(cart);
         setTimeout(() => {
-            if (!fetchGAClientId) return postClientID(getClientId);
-
-            window.ga(() => {
-                postClientID(getClientId, getGAClientId());
-            });
+            postClientID(getClientId);
         }, 10000); // allow 10 seconds for our server to register cart until updating it, otherwise there's a race condition between storing and a webhook triggered by this
     }
 }
