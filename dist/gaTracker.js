@@ -353,7 +353,7 @@ var productListClicks = function productListClicks(clickTag) {
   });
 };
 
-function postClientID(getClientId, googleClientID) {
+function postClientID(getClientId) {
   setTimeout(function () {
     var clientID = getClientId();
     var updatedAt = new Date().getTime();
@@ -361,8 +361,7 @@ function postClientID(getClientId, googleClientID) {
 
     var attributes = {
       clientID: clientID,
-      updatedAt: updatedAt,
-      googleClientID: googleClientID
+      updatedAt: updatedAt
     };
 
     cartUpdateReq.onload = function () {
@@ -391,16 +390,12 @@ function postCartToLittledata(cart) {
   httpRequest.send(JSON.stringify(cart));
 }
 
-function getGAClientId() {
-  return window.ga.getAll()[0].get('clientId');
-}
-
-function setClientID(getClientId, fetchGAClientId) {
+function setClientID(getClientId) {
   var _LittledataLayer = LittledataLayer,
       cart = _LittledataLayer.cart;
 
   if (!cart || !cart.attributes || !cart.attributes.clientID || !cart.attributes.updatedAt) {
-    return postClientID(getClientId, fetchGAClientId && getGAClientId());
+    return postClientID(getClientId);
   }
 
   var clientIdCreated = new Date(cart.attributes.updatedAt);
@@ -411,10 +406,7 @@ function setClientID(getClientId, fetchGAClientId) {
   if (timePassed > timeout) {
     postCartToLittledata(cart);
     setTimeout(function () {
-      if (!fetchGAClientId) return postClientID(getClientId);
-      window.ga(function () {
-        postClientID(getClientId, getGAClientId());
-      });
+      postClientID(getClientId);
     }, 10000); // allow 10 seconds for our server to register cart until updating it, otherwise there's a race condition between storing and a webhook triggered by this
   }
 }
