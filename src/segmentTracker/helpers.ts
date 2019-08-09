@@ -35,32 +35,9 @@ export const identifyCustomer = () => {
     }
 };
 
-export const getPersistentClientIdSegment = (): string => {
-    // needed because Safari wipes 1st party cookies
-    // so we need to persist over localStorage, if available
-
-    if (!window.analytics || !window.analytics.user()) return '';
-
-    if (window.localStorage && LittledataLayer.persistentUserId) {
-        const localClientId = window.localStorage.getItem('_ga');
-        // prefer local storage version, as it was set by this function
-        if (localClientId) return localClientId;
-
-        const cookieClientId = window.analytics.user().anonymousId();
-        if (cookieClientId) {
-            // set it to local storage for next time
-            window.localStorage.setItem('_ga', cookieClientId);
-            return cookieClientId;
-        }
-    }
-
-    // returning an empty client id will cause gtag to create a new one
-    return '';
-};
-
 export const trackEvents = () => {
     window.analytics.ready(() => {
-        setClientID(getPersistentClientIdSegment);
+        setClientID(window.analytics.user().anonymousId);
     });
     if (LittledataLayer) {
         /* run list, product, and clientID scripts everywhere */
