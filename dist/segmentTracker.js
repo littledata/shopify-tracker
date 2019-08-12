@@ -218,7 +218,7 @@ function setClientID(getClientId) {
     return postClientID(getClientId);
   }
 
-  var clientIdCreated = new Date(cart.attributes.updatedAt);
+  var clientIdCreated = new Date(Number(cart.attributes.updatedAt));
   var timeout = 60 * 60 * 1000; // 60 minutes
 
   var timePassed = Date.now() - Number(clientIdCreated); // only need to resent client ID if it's expired from our Redis cache
