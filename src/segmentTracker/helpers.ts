@@ -17,6 +17,14 @@ interface SegmentProduct {
     image_url?: string;
 }
 
+interface Customer {
+    id: number;
+    email: string;
+    name: string;
+    phone: string;
+    address: object;
+}
+
 const segmentProduct = (dataLayerProduct: Detail): SegmentProduct => ({
     brand: dataLayerProduct.brand,
     category: dataLayerProduct.category,
@@ -29,9 +37,14 @@ const segmentProduct = (dataLayerProduct: Detail): SegmentProduct => ({
     variant: dataLayerProduct.variant,
 });
 
-export const identifyCustomer = () => {
-    if (LittledataLayer.customer) {
-        window.analytics.identify(LittledataLayer.customer.id, LittledataLayer.customer);
+export const identifyCustomer = (customer: Customer) => {
+    if (customer) {
+        window.analytics.identify(customer.id, {
+        	email: customer.email,
+        	name: customer.name,
+        	phone: customer.phone,
+        	address: parseAddress(customer.address),
+        });
     }
 };
 
@@ -96,3 +109,15 @@ export const initSegment = () => {
         }
     window.dataLayer = window.dataLayer || [];
 };
+
+const parseAddress = a => {
+	const output = {}
+	if (a.address1) output.street = a.address1
+	if (a.address2) output.street += `, ${a.address2}`
+	if (a.city) output.city = a.city
+	if (a.zip) output.postalCode = a.zip
+	if (a.province) output.state = a.province
+	if (a.country) output.country = a.country
+
+	return output
+}
