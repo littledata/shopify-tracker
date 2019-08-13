@@ -519,7 +519,7 @@ __webpack_require__.r(__webpack_exports__);
   Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["validateLittledataLayer"])();
   Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["initSegment"])();
   Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["advertiseLD"])();
-  Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["identifyCustomer"])();
+  Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["identifyCustomer"])(LittledataLayer.customer);
   Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["pageView"])(function () {
     window.analytics.ready(function () {
       // @ts-ignore 'Integrations' property does, in fact exist
@@ -577,9 +577,14 @@ var segmentProduct = function segmentProduct(dataLayerProduct) {
   };
 };
 
-var identifyCustomer = function identifyCustomer() {
-  if (LittledataLayer.customer) {
-    window.analytics.identify(LittledataLayer.customer.id, LittledataLayer.customer);
+var identifyCustomer = function identifyCustomer(customer) {
+  if (customer) {
+    window.analytics.identify(customer.id, {
+      email: customer.email,
+      name: customer.name,
+      phone: customer.phone || customer.default_address && customer.default_address.phone,
+      address: parseAddress(customer.default_address)
+    });
   }
 };
 var trackEvents = function trackEvents() {
@@ -666,6 +671,17 @@ var initSegment = function initSegment() {
     window.analytics.load(LittledataLayer.writeKey);
   }
   window.dataLayer = window.dataLayer || [];
+};
+
+var parseAddress = function parseAddress(a) {
+  var output = {};
+  if (a.address1) output.street = a.address1;
+  if (a.address2) output.street += ", ".concat(a.address2);
+  if (a.city) output.city = a.city;
+  if (a.zip) output.postalCode = a.zip;
+  if (a.province) output.state = a.province;
+  if (a.country) output.country = a.country;
+  return output;
 };
 
 /***/ })
