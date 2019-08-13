@@ -29,9 +29,14 @@ const segmentProduct = (dataLayerProduct: Detail): SegmentProduct => ({
     variant: dataLayerProduct.variant,
 });
 
-export const identifyCustomer = () => {
-    if (LittledataLayer.customer) {
-        window.analytics.identify(LittledataLayer.customer.id, LittledataLayer.customer);
+export const identifyCustomer = (customer: Customer) => {
+    if (customer) {
+        window.analytics.identify(customer.id, {
+            email: customer.email,
+            name: customer.name,
+            phone: customer.phone || (customer.default_address && customer.default_address.phone),
+            address: parseAddress(customer.default_address),
+        });
     }
 };
 
@@ -95,4 +100,16 @@ export const initSegment = () => {
             window.analytics.load(LittledataLayer.writeKey);
         }
     window.dataLayer = window.dataLayer || [];
+};
+
+const parseAddress = (a: Customer['default_address']): SegmentAddressFormat => {
+    const output: SegmentAddressFormat = {};
+    if (a.address1) output.street = a.address1;
+    if (a.address2) output.street += `, ${a.address2}`;
+    if (a.city) output.city = a.city;
+    if (a.zip) output.postalCode = a.zip;
+    if (a.province) output.state = a.province;
+    if (a.country) output.country = a.country;
+
+    return output;
 };
