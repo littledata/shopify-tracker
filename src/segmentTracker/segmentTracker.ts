@@ -8,7 +8,7 @@ import { identifyCustomer, trackEvents, initSegment } from './helpers';
     validateLittledataLayer();
     initSegment();
     advertiseLD();
-    identifyCustomer();
+    identifyCustomer(LittledataLayer.customer);
     pageView(function() {
         window.analytics.ready(() => {
             // @ts-ignore 'Integrations' property does, in fact exist
