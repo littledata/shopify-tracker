@@ -17,14 +17,6 @@ interface SegmentProduct {
     image_url?: string;
 }
 
-interface Customer {
-    id: number;
-    email: string;
-    name: string;
-    phone: string;
-    address: object;
-}
-
 const segmentProduct = (dataLayerProduct: Detail): SegmentProduct => ({
     brand: dataLayerProduct.brand,
     category: dataLayerProduct.category,
@@ -40,10 +32,10 @@ const segmentProduct = (dataLayerProduct: Detail): SegmentProduct => ({
 export const identifyCustomer = (customer: Customer) => {
     if (customer) {
         window.analytics.identify(customer.id, {
-        	email: customer.email,
-        	name: customer.name,
-        	phone: customer.phone || (customer.address && customer.address.phone),
-        	address: parseAddress(customer.address),
+            email: customer.email,
+            name: customer.name,
+            phone: customer.phone || (customer.default_address && customer.default_address.phone),
+            address: parseAddress(customer.default_address),
         });
     }
 };
@@ -110,14 +102,14 @@ export const initSegment = () => {
     window.dataLayer = window.dataLayer || [];
 };
 
-const parseAddress = a => {
-	const output = {}
-	if (a.address1) output.street = a.address1
-	if (a.address2) output.street += `, ${a.address2}`
-	if (a.city) output.city = a.city
-	if (a.zip) output.postalCode = a.zip
-	if (a.province) output.state = a.province
-	if (a.country) output.country = a.country
+const parseAddress = (a: Customer['default_address']): SegmentAddressFormat => {
+    const output: SegmentAddressFormat = {};
+    if (a.address1) output.street = a.address1;
+    if (a.address2) output.street += `, ${a.address2}`;
+    if (a.city) output.city = a.city;
+    if (a.zip) output.postalCode = a.zip;
+    if (a.province) output.state = a.province;
+    if (a.country) output.country = a.country;
 
-	return output
-}
+    return output;
+};
