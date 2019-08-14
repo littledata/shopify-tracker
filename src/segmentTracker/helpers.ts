@@ -34,8 +34,8 @@ export const identifyCustomer = (customer: Customer) => {
         window.analytics.identify(customer.id, {
             email: customer.email,
             name: customer.name,
-            phone: customer.phone || (customer.default_address && customer.default_address.phone),
-            address: parseAddress(customer.default_address),
+            phone: customer.phone || (customer.address && customer.address.phone),
+            address: parseAddress(customer.address),
         });
     }
 };
