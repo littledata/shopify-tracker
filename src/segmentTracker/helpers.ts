@@ -102,12 +102,12 @@ export const initSegment = () => {
     window.dataLayer = window.dataLayer || [];
 };
 
-const parseAddress = (a: Customer['default_address']): SegmentAddressFormat => {
+const parseAddress = (a: Customer['address']): SegmentAddressFormat => {
     const output: SegmentAddressFormat = {};
     if (!a) return output;
     if (a.address1) {
-    	output.street = a.address1;
-    	if (a.address2) output.street += `, ${a.address2}`;
+        output.street = a.address1;
+        if (a.address2) output.street += `, ${a.address2}`;
     }
     if (a.city) output.city = a.city;
     if (a.zip) output.postalCode = a.zip;
