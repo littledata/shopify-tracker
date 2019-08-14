@@ -148,7 +148,7 @@ declare global {
         last_name: string;
         name: string;
         phone: string;
-        default_address: {
+        address: {
             address1: string;
             address2: string;
             city: string;
