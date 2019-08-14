@@ -582,8 +582,8 @@ var identifyCustomer = function identifyCustomer(customer) {
     window.analytics.identify(customer.id, {
       email: customer.email,
       name: customer.name,
-      phone: customer.phone || customer.default_address && customer.default_address.phone,
-      address: parseAddress(customer.default_address)
+      phone: customer.phone || customer.address && customer.address.phone,
+      address: parseAddress(customer.address)
     });
   }
 };
@@ -675,8 +675,13 @@ var initSegment = function initSegment() {
 
 var parseAddress = function parseAddress(a) {
   var output = {};
-  if (a.address1) output.street = a.address1;
-  if (a.address2) output.street += ", ".concat(a.address2);
+  if (!a) return output;
+
+  if (a.address1) {
+    output.street = a.address1;
+    if (a.address2) output.street += ", ".concat(a.address2);
+  }
+
   if (a.city) output.city = a.city;
   if (a.zip) output.postalCode = a.zip;
   if (a.province) output.state = a.province;
