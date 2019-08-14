@@ -104,8 +104,11 @@ export const initSegment = () => {
 
 const parseAddress = (a: Customer['default_address']): SegmentAddressFormat => {
     const output: SegmentAddressFormat = {};
-    if (a.address1) output.street = a.address1;
-    if (a.address2) output.street += `, ${a.address2}`;
+    if (!a) return output;
+    if (a.address1) {
+    	output.street = a.address1;
+    	if (a.address2) output.street += `, ${a.address2}`;
+    }
     if (a.city) output.city = a.city;
     if (a.zip) output.postalCode = a.zip;
     if (a.province) output.state = a.province;
