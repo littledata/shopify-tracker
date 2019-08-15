@@ -1,12 +1,24 @@
 # Shopify Tracker
 Littledata's tracking script for Shopify stores.
 
-Shopify apps:
+Shopify apps
 ---
+
+This code is used by two Littledata apps:
 
 - [Google Analytics by Littledata](https://apps.shopify.com/littledata)
 
 - [Segment.com by Littedata](https://apps.shopify.com/segment-com-by-littledata)
+
+
+Latest version
+---
+
+The latest minified versions of these scripts are hosted on a CDN:
+
+- https://cdn.jsdelivr.net/gh/littledata/shopify-tracker/dist/gaTracker.js
+
+- https://cdn.jsdelivr.net/gh/littledata/shopify-tracker/dist/segmentTracker.js
 
 
 Dependencies

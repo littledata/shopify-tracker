@@ -2,17 +2,26 @@
 	"scripts": {
 		"build-master": "node ./node_modules/webpack/bin/webpack.js",
 		"build-staging": "node ./node_modules/webpack/bin/webpack.js --mode none",
-		"lint": "node ./node_modules/eslint/bin/eslint.js ./src --quiet"
+		"start": "node ./node_modules/webpack/bin/webpack.js --watch",
+		"lint": "node ./node_modules/eslint/bin/eslint.js --ext .ts ./src"
 	},
 	"devDependencies": {
-		"@babel/core": "^7.4.5",
-		"@babel/preset-env": "^7.4.5",
+		"@babel/core": "^7.5.5",
+		"@babel/preset-env": "^7.5.5",
+		"@types/gtag.js": "0.0.2",
+		"@types/jquery": "^3.3.31",
+		"@types/segment-analytics": "0.0.31",
+		"@typescript-eslint/eslint-plugin": "^1.13.0",
+		"@typescript-eslint/parser": "^1.13.0",
 		"babel-loader": "^8.0.6",
-		"eslint": "^5.16.0",
-		"eslint-config-airbnb-base": "^13.1.0",
-		"eslint-plugin-import": "^2.17.3",
-		"webpack": "^4.32.2",
-		"webpack-cli": "^3.1.2"
+		"eslint": "^6.1.0",
+		"eslint-config-prettier": "^6.0.0",
+		"eslint-plugin-prettier": "^3.1.0",
+		"prettier": "^1.18.2",
+		"ts-loader": "^6.0.4",
+		"typescript": "^3.5.3",
+		"webpack": "^4.39.2",
+		"webpack-cli": "^3.3.6"
 	},
 	"dependencies": {},
 	"repository": {
