@@ -15,6 +15,7 @@ interface SegmentProduct {
     variant: string;
     list_id?: string;
     image_url?: string;
+    currency?: string;
 }
 
 const segmentProduct = (dataLayerProduct: Detail): SegmentProduct => ({
@@ -54,6 +55,7 @@ export const trackEvents = () => {
                 const p = segmentProduct(product);
                 window.analytics.track('Product Clicked', {
                     ...p,
+                    currency: LittledataLayer.ecommerce.currencyCode,
                     list_id: document.location.pathname,
                     category: 'EnhancedEcommerce',
                 });
@@ -74,6 +76,7 @@ export const trackEvents = () => {
         if (rawProduct) {
             const product = segmentProduct(rawProduct);
             product.list_id = document.location.href;
+            product.currency = LittledataLayer.ecommerce.currencyCode;
             product.category = 'EnhancedEcommerce';
             product.position = parseInt(window.localStorage.getItem('position')) || 1;
             window.analytics.track('Product Viewed', product);
