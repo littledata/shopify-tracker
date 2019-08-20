@@ -15,6 +15,7 @@ interface SegmentProduct {
     variant: string;
     list_id?: string;
     image_url?: string;
+    currency?: string;
 }
 
 const segmentProduct = (dataLayerProduct: Detail): SegmentProduct => ({
