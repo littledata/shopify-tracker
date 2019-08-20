@@ -603,6 +603,7 @@ var trackEvents = function trackEvents() {
         window.localStorage.setItem('position', String(pos));
         var p = segmentProduct(product);
         window.analytics.track('Product Clicked', _objectSpread({}, p, {
+          currency: LittledataLayer.ecommerce.currencyCode,
           list_id: document.location.pathname,
           category: 'EnhancedEcommerce'
         }));
@@ -623,6 +624,7 @@ var trackEvents = function trackEvents() {
     if (rawProduct) {
       var product = segmentProduct(rawProduct);
       product.list_id = document.location.href;
+      product.currency = LittledataLayer.ecommerce.currencyCode;
       product.category = 'EnhancedEcommerce';
       product.position = parseInt(window.localStorage.getItem('position')) || 1;
       window.analytics.track('Product Viewed', product); // if PDP, we can also track clicks on images and social shares
