@@ -16,17 +16,22 @@ import { identifyCustomer, trackEvents, initSegment } from './helpers';
                 window.ga(() => {
                     const tracker = window.ga.getAll()[0];
                     if (tracker) {
+                        console.log('set anonymous id to GA');
                         const clientId = tracker.get('clientId');
                         window.analytics.user().anonymousId(clientId);
                     }
-                    window.analytics.page();
+                    // window.analytics.page();
                     setClientID(window.analytics.user().anonymousId);
                 });
             } else {
-                window.analytics.page();
+                // window.analytics.page();
                 setClientID(window.analytics.user().anonymousId);
             }
             trackEvents();
         });
+        console.log('window.analytics.user().anonymousId(clientId)', window.analytics.user().anonymousId());
+        // @ts-ignore
+        console.log('gaIntegration', window.analytics.Integrations['Google Analytics']);
+        window.analytics.page();
     });
 })();
