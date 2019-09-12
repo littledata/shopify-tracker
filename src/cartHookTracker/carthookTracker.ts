@@ -1,5 +1,5 @@
 /* global $ */
-var CHDataObject: {
+var CHDataObject = {
     checkout_session: string;
 };
 
