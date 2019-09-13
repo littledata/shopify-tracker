@@ -128,6 +128,7 @@ export const trackEvents = () => {
 
 export const getConfig = (): Gtag.CustomParams => {
     const { anonymizeIp, googleSignals, ecommerce, optimizeId, referralExclusion } = LittledataLayer;
+    const userId = LittledataLayer.customer && LittledataLayer.customer.id
 
     const excludeReferal = referralExclusion.test(document.referrer);
     const config: Gtag.CustomParams = {
@@ -142,6 +143,7 @@ export const getConfig = (): Gtag.CustomParams => {
         optimize_id: optimizeId,
         page_referrer: excludeReferal ? document.referrer : null,
         send_page_view: false,
+        user_id: userId
     };
 
     return config;
