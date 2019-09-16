@@ -136,9 +136,16 @@ var initGtag = function initGtag() {
   gtag('config', LittledataLayer.webPropertyID, getConfig());
 };
 var sendPageview = function sendPageview() {
+  var page_title = Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["removePii"])(document.title);
+  var page_location = Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["removePii"])(document.location.href);
   gtag('config', LittledataLayer.webPropertyID, {
-    page_title: Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["removePii"])(document.title),
-    page_location: Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["removePii"])(document.location.href)
+    page_title: page_title,
+    page_location: page_location
+  });
+  dataLayer.push({
+    event: 'pageview',
+    page_title: page_title,
+    page_location: page_location
   });
   var googleAds = LittledataLayer.googleAdsConversionIds;
 
@@ -247,6 +254,7 @@ var getConfig = function getConfig() {
       ecommerce = _LittledataLayer.ecommerce,
       optimizeId = _LittledataLayer.optimizeId,
       referralExclusion = _LittledataLayer.referralExclusion;
+  var userId = LittledataLayer.customer && LittledataLayer.customer.id;
   var excludeReferal = referralExclusion.test(document.referrer);
   var config = {
     linker: {
@@ -259,7 +267,8 @@ var getConfig = function getConfig() {
     clientId: Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["getPersistentClientId"])(),
     optimize_id: optimizeId,
     page_referrer: excludeReferal ? document.referrer : null,
-    send_page_view: false
+    send_page_view: false,
+    user_id: userId
   };
   return config;
 };
