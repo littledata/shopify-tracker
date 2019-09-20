@@ -530,25 +530,20 @@ __webpack_require__.r(__webpack_exports__);
           var tracker = window.ga.getAll()[0];
 
           if (tracker) {
-            console.log('set anonymous id to GA');
             var clientId = tracker.get('clientId');
             window.analytics.user().anonymousId(clientId);
-          } // window.analytics.page();
+          }
 
-
+          window.analytics.page();
           Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(window.analytics.user().anonymousId);
         });
       } else {
-        // window.analytics.page();
+        window.analytics.page();
         Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(window.analytics.user().anonymousId);
       }
 
       Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["trackEvents"])();
     });
-    console.log('window.analytics.user().anonymousId(clientId)', window.analytics.user().anonymousId()); // @ts-ignore
-
-    console.log('gaIntegration', window.analytics.Integrations['Google Analytics']);
-    window.analytics.page();
   });
 })();
 
