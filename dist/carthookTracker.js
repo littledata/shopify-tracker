@@ -125,13 +125,74 @@ var getGaCookie = function getGaCookie() {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _common_getGaCookie__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
+/* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9);
+/* eslint-env browser */
 
-$.post('https://transactions.littledata.io/clientID', {
-  clientID: Object(_common_getGaCookie__WEBPACK_IMPORTED_MODULE_0__["getGaCookie"])(),
-  // @ts-ignore
-  cartID: CHDataObject.checkout_session
-});
+
+(function () {
+  var webPropertyID = Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["getWebPropertyId"])();
+  Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["insertGtag"])(webPropertyID);
+  Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["sendCartId"])();
+  Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["initGtag"])(webPropertyID);
+})();
+
+/***/ }),
+
+/***/ 9:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getWebPropertyId", function() { return getWebPropertyId; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "insertGtag", function() { return insertGtag; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "initGtag", function() { return initGtag; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sendCartId", function() { return sendCartId; });
+/* harmony import */ var _common_getGaCookie__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
+/* eslint-env browser */
+
+var getWebPropertyId = function getWebPropertyId() {
+  var urlParams = new URLSearchParams(location.search);
+  console.log('urlParams', urlParams);
+  console.log('id', urlParams.get('id'));
+  return urlParams.get('id');
+};
+function insertGtag(webPropertyId) {
+  var script = document.createElement('script');
+  script.src = "https://www.googletagmanager.com/test/gtag/js?id=".concat(webPropertyId);
+  script.type = 'text/javascript';
+  script.async = true;
+  document.getElementsByTagName('head')[0].appendChild(script);
+}
+function initGtag(webPropertyId) {
+  window.dataLayer = window.dataLayer || [];
+
+  var stubFunction = function stubFunction() {
+    dataLayer.push(arguments);
+  }; //eslint-disable-line
+
+
+  window.gtag = window.gtag || stubFunction; // @ts-ignore
+
+  gtag('js', new Date());
+  gtag('config', webPropertyId, getConfig());
+}
+
+var getConfig = function getConfig() {
+  var config = {
+    linker: {
+      domains: ['shopify.com', 'rechargeapps.com', 'recurringcheckout.com', 'carthook.com', 'checkout.com']
+    }
+  };
+  return config;
+};
+
+var sendCartId = function sendCartId() {
+  $.post('https://transactions.littledata.io/clientID', {
+    clientID: Object(_common_getGaCookie__WEBPACK_IMPORTED_MODULE_0__["getGaCookie"])(),
+    // @ts-ignore
+    cartID: CHDataObject.checkout_session
+  });
+};
 
 /***/ })
 
