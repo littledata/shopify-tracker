@@ -1,3 +1,4 @@
+/* eslint-env browser */
 import { getWebPropertyId, insertGtag, sendCartId, initGtag } from './helpers';
 
 (function() {

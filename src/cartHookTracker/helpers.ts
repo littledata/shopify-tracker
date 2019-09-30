@@ -1,5 +1,7 @@
+/* eslint-env browser */
 import { getGaCookie } from '../common/getGaCookie';
 
+declare let window: CustomWindow;
 export const getWebPropertyId = (): string => {
     var urlParams = new URLSearchParams(location.search);
     console.log('urlParams', urlParams);
@@ -13,7 +15,7 @@ export function insertGtag(webPropertyId: string): void {
     script.type = 'text/javascript';
     script.async = true;
     document.getElementsByTagName('head')[0].appendChild(script);
-};
+}
 
 export function initGtag(webPropertyId: string): void {
     window.dataLayer = window.dataLayer || [];
@@ -24,7 +26,7 @@ export function initGtag(webPropertyId: string): void {
     // @ts-ignore
     gtag('js', new Date());
     gtag('config', webPropertyId, getConfig());
-};
+}
 
 const getConfig = (): Gtag.CustomParams => {
     const config: Gtag.CustomParams = {
