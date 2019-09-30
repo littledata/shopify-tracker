@@ -1,20 +1,19 @@
 import { getGaCookie } from '../common/getGaCookie';
 
-export const getWebPropertyId = (): String => {
+export const getWebPropertyId = (): string => {
     var urlParams = new URLSearchParams(location.search);
     return urlParams.get('id');
-} 
+};
 
-export function insertGtag(webPropertyId: String): void {
+export function insertGtag(webPropertyId: string): void {
     var script = document.createElement('script');
     script.src = `https://www.googletagmanager.com/gtag/js?id=${webPropertyId}`;
     script.type = 'text/javascript';
     script.async = true;
     document.getElementsByTagName('head')[0].appendChild(script);
-}
+};
 
-
-export function initGtag(webPropertyId: String): void {
+export function initGtag(webPropertyId: string): void {
     window.dataLayer = window.dataLayer || [];
     const stubFunction = function() {
         dataLayer.push(arguments);
@@ -41,4 +40,4 @@ export const sendCartId = () => {
         // @ts-ignore
         cartID: CHDataObject.checkout_session,
     });
-}
+};
