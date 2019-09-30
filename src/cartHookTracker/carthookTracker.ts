@@ -1,7 +1,8 @@
-import { getGaCookie } from '../common/getGaCookie';
+import { getWebPropertyId, insertGtag, sendCartId, initGtag } from './helpers';
 
-$.post('https://transactions.littledata.io/clientID', {
-    clientID: getGaCookie(),
-    // @ts-ignore
-    cartID: CHDataObject.checkout_session,
-});
+(function() {
+    const webPropertyID = getWebPropertyId();
+    insertGtag(webPropertyID);
+    sendCartId();
+    initGtag(webPropertyID);
+})();
