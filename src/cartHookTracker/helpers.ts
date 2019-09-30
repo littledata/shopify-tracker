@@ -2,12 +2,14 @@ import { getGaCookie } from '../common/getGaCookie';
 
 export const getWebPropertyId = (): string => {
     var urlParams = new URLSearchParams(location.search);
+    console.log('urlParams', urlParams);
+    console.log('id', urlParams.get('id'));
     return urlParams.get('id');
 };
 
 export function insertGtag(webPropertyId: string): void {
     var script = document.createElement('script');
-    script.src = `https://www.googletagmanager.com/gtag/js?id=${webPropertyId}`;
+    script.src = `https://www.googletagmanager.com/test/gtag/js?id=${webPropertyId}`;
     script.type = 'text/javascript';
     script.async = true;
     document.getElementsByTagName('head')[0].appendChild(script);
