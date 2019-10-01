@@ -130,6 +130,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 (function () {
+  console.log('location', JSON.stringify(location));
   var webPropertyID = Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["getWebPropertyId"])();
   Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["sendCartId"])();
   Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["initGtag"])(webPropertyID);
