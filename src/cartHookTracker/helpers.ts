@@ -3,19 +3,12 @@ import { getGaCookie } from '../common/getGaCookie';
 
 declare let window: CustomWindow;
 export const getWebPropertyId = (): string => {
-    var urlParams = new URLSearchParams(location.search);
-    console.log('urlParams', urlParams);
-    console.log('id', urlParams.get('id'));
-    return urlParams.get('id');
-};
+    const scriptSrc = document
+        .querySelector('script[src*="https://www.googletagmanager.com/test/gtag/js"]')
+        .getAttribute('src');
 
-export function insertGtag(webPropertyId: string): void {
-    var script = document.createElement('script');
-    script.src = `https://www.googletagmanager.com/test/gtag/js?id=${webPropertyId}`;
-    script.type = 'text/javascript';
-    script.async = true;
-    document.getElementsByTagName('head')[0].appendChild(script);
-}
+    return scriptSrc.split('id=')[1];
+};
 
 export function initGtag(webPropertyId: string): void {
     window.dataLayer = window.dataLayer || [];
