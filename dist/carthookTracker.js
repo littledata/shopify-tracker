@@ -131,7 +131,6 @@ __webpack_require__.r(__webpack_exports__);
 
 (function () {
   var webPropertyID = Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["getWebPropertyId"])();
-  Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["insertGtag"])(webPropertyID);
   Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["sendCartId"])();
   Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["initGtag"])(webPropertyID);
 })();
@@ -144,25 +143,15 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getWebPropertyId", function() { return getWebPropertyId; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "insertGtag", function() { return insertGtag; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "initGtag", function() { return initGtag; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sendCartId", function() { return sendCartId; });
 /* harmony import */ var _common_getGaCookie__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
 /* eslint-env browser */
 
 var getWebPropertyId = function getWebPropertyId() {
-  var urlParams = new URLSearchParams(location.search);
-  console.log('urlParams', urlParams);
-  console.log('id', urlParams.get('id'));
-  return urlParams.get('id');
+  var scriptSrc = document.querySelector('script[src*="https://www.googletagmanager.com/test/gtag/js"]').getAttribute('src');
+  return scriptSrc.split('id=')[1];
 };
-function insertGtag(webPropertyId) {
-  var script = document.createElement('script');
-  script.src = "https://www.googletagmanager.com/test/gtag/js?id=".concat(webPropertyId);
-  script.type = 'text/javascript';
-  script.async = true;
-  document.getElementsByTagName('head')[0].appendChild(script);
-}
 function initGtag(webPropertyId) {
   window.dataLayer = window.dataLayer || [];
 
