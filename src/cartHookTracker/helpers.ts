@@ -3,10 +3,9 @@ import { getGaCookie } from '../common/getGaCookie';
 
 declare let window: CustomWindow;
 export const getWebPropertyId = (): string => {
-    const scriptSrc =
-        document
-            .querySelector('script[src*="https://www.googletagmanager.com/test/gtag/js"]')
-            .getAttribute('src');
+    const scriptSrc = document
+        .querySelector('script[src*="https://www.googletagmanager.com/test/gtag/js"]')
+        .getAttribute('src');
 
     return scriptSrc.split('id=')[1];
 };
