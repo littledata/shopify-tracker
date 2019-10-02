@@ -2,25 +2,25 @@
 import { getGaCookie } from '../common/getGaCookie';
 
 declare let window: CustomWindow;
-export const getWebPropertyId = (): string => {
-    let script;
-    for (const elem of document.getElementsByTagName('script')) {
-        if (elem.src.includes('carthookTracker.js')) {
-            script = elem;
-            break;
-        }
+export const getWebPropertyId = async (): Promise<string> => {
+    let baseUrl = 'https://transactions.littledata.io';
+    if (location.pathname.includes('sandbox')) {
+        baseUrl = 'https://transactions-staging.littledata.io';
     }
 
-    if (!script) return '';
+    const storeUrl = getStoreUrl();
 
-    const regex = /(?!\?.*)webPropertyId=UA-\d+-\d+/;
+    const webPropertyId = await fetch(`${baseUrl}/webProperty/${storeUrl}`)
+        .then(response => response.json())
+        .then(json => json.webPropertyId);
 
-    const matches = script.src.match(regex);
-
-    if (!matches) return '';
-
-    return matches[0].split('=')[1];
+    return webPropertyId;
 };
+
+function getStoreUrl() {
+    // @ts-ignore
+    return CHDataObject && CHDataObject.store_urls && CHDataObject.store_urls.store_url;
+}
 
 export function loadGtagScript(webPropertyId: string) {
     const gtagLink = `https://www.googletagmanager.com/gtag/js?id=${webPropertyId}`;
