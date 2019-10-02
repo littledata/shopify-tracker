@@ -22,6 +22,27 @@ export const getWebPropertyId = (): string => {
     return matches[0].split('=')[1];
 };
 
+export function loadGtagScript(webPropertyId: string) {
+    const gtagLink = `https://www.googletagmanager.com/gtag/js?id=${webPropertyId}`;
+    loadScript(gtagLink, function() {});
+};
+
+function loadScript(src: string, cb: any) {
+    var script = document.createElement('script');
+    script.async = true;
+    script.src = src;
+
+    script.onerror = function() {
+      cb(new Error("Failed to load" + src));
+    };
+
+    script.onload = function() {
+      cb();
+    };
+
+    document.getElementsByTagName("head")[0].appendChild(script);
+};
+
 export function initGtag(webPropertyId: string): void {
     window.dataLayer = window.dataLayer || [];
     const stubFunction = function() {
