@@ -25,23 +25,24 @@ export const getWebPropertyId = (): string => {
 export function loadGtagScript(webPropertyId: string) {
     const gtagLink = `https://www.googletagmanager.com/gtag/js?id=${webPropertyId}`;
     loadScript(gtagLink, function() {});
-};
+}
 
+// @ts-ignore
 function loadScript(src: string, cb: any) {
     var script = document.createElement('script');
     script.async = true;
     script.src = src;
 
     script.onerror = function() {
-      cb(new Error("Failed to load" + src));
+        cb(new Error('Failed to load' + src));
     };
 
     script.onload = function() {
-      cb();
+        cb();
     };
 
-    document.getElementsByTagName("head")[0].appendChild(script);
-};
+    document.getElementsByTagName('head')[0].appendChild(script);
+}
 
 export function initGtag(webPropertyId: string): void {
     window.dataLayer = window.dataLayer || [];
