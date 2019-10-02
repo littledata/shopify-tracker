@@ -4,6 +4,7 @@ import { getWebPropertyId, sendCartId, initGtag, loadGtagScript } from './helper
 (function() {
     console.log('location', JSON.stringify(location));
     const webPropertyID = getWebPropertyId();
+    console.log('webPropertyID', webPropertyID);
     loadGtagScript(webPropertyID);
     sendCartId();
     initGtag(webPropertyID);
