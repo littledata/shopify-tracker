@@ -150,8 +150,40 @@ __webpack_require__.r(__webpack_exports__);
 /* eslint-env browser */
 
 var getWebPropertyId = function getWebPropertyId() {
-  var scriptSrc = document.querySelector('script[src*="https://www.googletagmanager.com/test/gtag/js"]').getAttribute('src');
-  return scriptSrc.split('id=')[1];
+  var script;
+  var _iteratorNormalCompletion = true;
+  var _didIteratorError = false;
+  var _iteratorError = undefined;
+
+  try {
+    for (var _iterator = document.getElementsByTagName('script')[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      var elem = _step.value;
+
+      if (elem.src.includes('carthookTracker.js')) {
+        script = elem;
+        break;
+      }
+    }
+  } catch (err) {
+    _didIteratorError = true;
+    _iteratorError = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+        _iterator["return"]();
+      }
+    } finally {
+      if (_didIteratorError) {
+        throw _iteratorError;
+      }
+    }
+  }
+
+  if (!script) return '';
+  var regex = /(?!\?.*)webPropertyId=UA-\d+-\d+/;
+  var matches = script.src.match(regex);
+  if (!matches) return '';
+  return matches[0].split('=')[1];
 };
 function initGtag(webPropertyId) {
   window.dataLayer = window.dataLayer || [];
