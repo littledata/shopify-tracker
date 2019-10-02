@@ -8,7 +8,7 @@ import { getWebPropertyId, sendCartId, initGtag, loadGtagScript } from './helper
     webPropertyPromise.then(webPropertyID => {
         console.log('webPropertyID', webPropertyID);
         loadGtagScript(webPropertyID);
-        sendCartId();
         initGtag(webPropertyID);
+        sendCartId();
     });
 })();
