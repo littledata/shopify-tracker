@@ -8,14 +8,13 @@ export const getWebPropertyId = async (): Promise<string> => {
         baseUrl = 'https://transactions-staging.littledata.io';
     }
 
-    const storeUrl = getStoreUrl()
+    const storeUrl = getStoreUrl();
 
     const webPropertyId = await fetch(`${baseUrl}/webProperty/${storeUrl}`)
         .then(response => response.json())
-        .then(json => json.webPropertyId)
+        .then(json => json.webPropertyId);
 
     return webPropertyId;
-
 };
 
 function getStoreUrl() {
