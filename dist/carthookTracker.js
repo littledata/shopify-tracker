@@ -132,6 +132,7 @@ __webpack_require__.r(__webpack_exports__);
 (function () {
   console.log('location', JSON.stringify(location));
   var webPropertyID = Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["getWebPropertyId"])();
+  Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["loadGtagScript"])(webPropertyID);
   Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["sendCartId"])();
   Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["initGtag"])(webPropertyID);
 })();
@@ -144,6 +145,7 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getWebPropertyId", function() { return getWebPropertyId; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "loadGtagScript", function() { return loadGtagScript; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "initGtag", function() { return initGtag; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sendCartId", function() { return sendCartId; });
 /* harmony import */ var _common_getGaCookie__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
@@ -185,6 +187,27 @@ var getWebPropertyId = function getWebPropertyId() {
   if (!matches) return '';
   return matches[0].split('=')[1];
 };
+function loadGtagScript(webPropertyId) {
+  var gtagLink = "https://www.googletagmanager.com/gtag/js?id=".concat(webPropertyId);
+  loadScript(gtagLink, function () {});
+} // @ts-ignore
+
+function loadScript(src, cb) {
+  var script = document.createElement('script');
+  script.async = true;
+  script.src = src;
+
+  script.onerror = function () {
+    cb(new Error('Failed to load' + src));
+  };
+
+  script.onload = function () {
+    cb();
+  };
+
+  document.getElementsByTagName('head')[0].appendChild(script);
+}
+
 function initGtag(webPropertyId) {
   window.dataLayer = window.dataLayer || [];
 
