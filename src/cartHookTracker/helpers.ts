@@ -2,7 +2,7 @@
 import { getGaCookie } from '../common/getGaCookie';
 
 declare let window: CustomWindow;
-export const getWebPropertyId = async (): Promise<string> => {
+export const getWebPropertyId = (): Promise<string> => {
     let baseUrl = 'https://transactions.littledata.io';
     if (location.pathname.includes('sandbox')) {
         baseUrl = 'https://transactions-staging.littledata.io';
@@ -10,7 +10,7 @@ export const getWebPropertyId = async (): Promise<string> => {
 
     const storeUrl = getStoreUrl();
 
-    const webPropertyId = await fetch(`${baseUrl}/webProperty/${storeUrl}`)
+    const webPropertyId = fetch(`${baseUrl}/webProperty/${storeUrl}`)
         .then(response => response.json())
         .then(json => json.webPropertyId);
 
