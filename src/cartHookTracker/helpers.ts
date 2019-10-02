@@ -3,11 +3,23 @@ import { getGaCookie } from '../common/getGaCookie';
 
 declare let window: CustomWindow;
 export const getWebPropertyId = (): string => {
-    const scriptSrc = document
-        .querySelector('script[src*="https://www.googletagmanager.com/test/gtag/js"]')
-        .getAttribute('src');
+    let script;
+    for (const elem of document.getElementsByTagName('script')) {
+        if (elem.src.includes('carthookTracker.js')) {
+            script = elem;
+            break;
+        }
+    }
 
-    return scriptSrc.split('id=')[1];
+    if (!script) return '';
+
+    const regex = /(?!\?.*)webPropertyId=UA-\d+-\d+/;
+
+    const matches = script.src.match(regex);
+
+    if (!matches) return '';
+
+    return matches[0].split('=')[1];
 };
 
 export function initGtag(webPropertyId: string): void {
