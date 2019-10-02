@@ -135,8 +135,8 @@ __webpack_require__.r(__webpack_exports__);
   webPropertyPromise.then(function (webPropertyID) {
     console.log('webPropertyID', webPropertyID);
     Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["loadGtagScript"])(webPropertyID);
-    Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["sendCartId"])();
     Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["initGtag"])(webPropertyID);
+    Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["sendCartId"])();
   });
 })();
 
@@ -220,6 +220,9 @@ var getConfig = function getConfig() {
 };
 
 var sendCartId = function sendCartId() {
+  console.log('getGaCookie()', Object(_common_getGaCookie__WEBPACK_IMPORTED_MODULE_0__["getGaCookie"])()); // @ts-ignore
+
+  console.log('cartID', CHDataObject.checkout_session);
   $.post('https://transactions.littledata.io/clientID', {
     clientID: Object(_common_getGaCookie__WEBPACK_IMPORTED_MODULE_0__["getGaCookie"])(),
     // @ts-ignore
