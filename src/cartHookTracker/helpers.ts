@@ -66,6 +66,9 @@ const getConfig = (): Gtag.CustomParams => {
 };
 
 export const sendCartId = () => {
+    console.log('getGaCookie()', getGaCookie());
+    // @ts-ignore
+    console.log('cartID', CHDataObject.checkout_session);
     $.post('https://transactions.littledata.io/clientID', {
         clientID: getGaCookie(),
         // @ts-ignore
