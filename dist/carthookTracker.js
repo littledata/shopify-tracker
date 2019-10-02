@@ -126,39 +126,19 @@ var getGaCookie = function getGaCookie() {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9);
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
 /* eslint-env browser */
 
 
-_asyncToGenerator(
-/*#__PURE__*/
-regeneratorRuntime.mark(function _callee() {
-  var webPropertyID;
-  return regeneratorRuntime.wrap(function _callee$(_context) {
-    while (1) {
-      switch (_context.prev = _context.next) {
-        case 0:
-          console.log('location', JSON.stringify(location));
-          _context.next = 3;
-          return Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["getWebPropertyId"])();
-
-        case 3:
-          webPropertyID = _context.sent;
-          console.log('webPropertyID', webPropertyID);
-          Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["loadGtagScript"])(webPropertyID);
-          Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["sendCartId"])();
-          Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["initGtag"])(webPropertyID);
-
-        case 8:
-        case "end":
-          return _context.stop();
-      }
-    }
-  }, _callee);
-}))();
+(function () {
+  console.log('location', JSON.stringify(location));
+  var webPropertyPromise = Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["getWebPropertyId"])();
+  webPropertyPromise.then(function (webPropertyID) {
+    console.log('webPropertyID', webPropertyID);
+    Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["loadGtagScript"])(webPropertyID);
+    Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["sendCartId"])();
+    Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["initGtag"])(webPropertyID);
+  });
+})();
 
 /***/ }),
 
@@ -172,53 +152,23 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "initGtag", function() { return initGtag; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sendCartId", function() { return sendCartId; });
 /* harmony import */ var _common_getGaCookie__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
 /* eslint-env browser */
 
-var getWebPropertyId =
-/*#__PURE__*/
-function () {
-  var _ref = _asyncToGenerator(
-  /*#__PURE__*/
-  regeneratorRuntime.mark(function _callee() {
-    var baseUrl, storeUrl, webPropertyId;
-    return regeneratorRuntime.wrap(function _callee$(_context) {
-      while (1) {
-        switch (_context.prev = _context.next) {
-          case 0:
-            baseUrl = 'https://transactions.littledata.io';
+var getWebPropertyId = function getWebPropertyId() {
+  var baseUrl = 'https://transactions.littledata.io';
 
-            if (location.pathname.includes('sandbox')) {
-              baseUrl = 'https://transactions-staging.littledata.io';
-            }
+  if (location.pathname.includes('sandbox')) {
+    baseUrl = 'https://transactions-staging.littledata.io';
+  }
 
-            storeUrl = getStoreUrl();
-            _context.next = 5;
-            return fetch("".concat(baseUrl, "/webProperty/").concat(storeUrl)).then(function (response) {
-              return response.json();
-            }).then(function (json) {
-              return json.webPropertyId;
-            });
-
-          case 5:
-            webPropertyId = _context.sent;
-            return _context.abrupt("return", webPropertyId);
-
-          case 7:
-          case "end":
-            return _context.stop();
-        }
-      }
-    }, _callee);
-  }));
-
-  return function getWebPropertyId() {
-    return _ref.apply(this, arguments);
-  };
-}();
+  var storeUrl = getStoreUrl();
+  var webPropertyId = fetch("".concat(baseUrl, "/webProperty/").concat(storeUrl)).then(function (response) {
+    return response.json();
+  }).then(function (json) {
+    return json.webPropertyId;
+  });
+  return webPropertyId;
+};
 
 function getStoreUrl() {
   // @ts-ignore
