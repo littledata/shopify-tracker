@@ -1,13 +1,13 @@
 /* eslint-env browser */
-import { getWebPropertyId, sendCartId, initGtag, loadGtagScript } from './helpers';
+import { getWebPropertyIdPromise, sendCartId, initGtag, loadGtagScript } from './helpers';
 
 (function() {
-    const webPropertyPromise = getWebPropertyId();
+    const webPropertyPromise = getWebPropertyIdPromise();
 
-    webPropertyPromise.then(webPropertyID => {
+    webPropertyPromise.then(async webPropertyID => {
         console.log('webPropertyID', webPropertyID);
         loadGtagScript(webPropertyID);
         initGtag(webPropertyID);
-        sendCartId();
+        await sendCartId();
     });
 })();
