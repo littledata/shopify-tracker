@@ -126,17 +126,43 @@ var getGaCookie = function getGaCookie() {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9);
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 /* eslint-env browser */
 
 
 (function () {
-  var webPropertyPromise = Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["getWebPropertyId"])();
-  webPropertyPromise.then(function (webPropertyID) {
-    console.log('webPropertyID', webPropertyID);
-    Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["loadGtagScript"])(webPropertyID);
-    Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["initGtag"])(webPropertyID);
-    Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["sendCartId"])();
-  });
+  var webPropertyPromise = Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["getWebPropertyIdPromise"])();
+  webPropertyPromise.then(
+  /*#__PURE__*/
+  function () {
+    var _ref = _asyncToGenerator(
+    /*#__PURE__*/
+    regeneratorRuntime.mark(function _callee(webPropertyID) {
+      return regeneratorRuntime.wrap(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              console.log('webPropertyID', webPropertyID);
+              Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["loadGtagScript"])(webPropertyID);
+              Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["initGtag"])(webPropertyID);
+              _context.next = 5;
+              return Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["sendCartId"])();
+
+            case 5:
+            case "end":
+              return _context.stop();
+          }
+        }
+      }, _callee);
+    }));
+
+    return function (_x) {
+      return _ref.apply(this, arguments);
+    };
+  }());
 })();
 
 /***/ }),
@@ -146,13 +172,31 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getWebPropertyId", function() { return getWebPropertyId; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getWebPropertyIdPromise", function() { return getWebPropertyIdPromise; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "loadGtagScript", function() { return loadGtagScript; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "initGtag", function() { return initGtag; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sendCartId", function() { return sendCartId; });
 /* harmony import */ var _common_getGaCookie__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 /* eslint-env browser */
 
+var getWebPropertyIdPromise = function getWebPropertyIdPromise() {
+  var baseUrl = getMonitorBaseUrl();
+  var storeUrl = getStoreUrl();
+  var isCheckout = location.pathname.includes('/checkout/');
+  var webPropertyId = window.localStorage && window.localStorage.getItem('webPropertyId');
+
+  if (!isCheckout && webPropertyId) {
+    return new Promise(function (resolve) {
+      resolve(webPropertyId);
+    });
+  }
+
+  return requestWebPropertyIdFromAPI(baseUrl, storeUrl);
+};
 
 function getMonitorBaseUrl() {
   var STAGING_URL = 'https://transactions-staging.littledata.io';
@@ -161,20 +205,25 @@ function getMonitorBaseUrl() {
   return isSandbox ? STAGING_URL : PROD_URL;
 }
 
-var getWebPropertyId = function getWebPropertyId() {
-  var baseUrl = getMonitorBaseUrl();
-  var storeUrl = getStoreUrl();
+function getStoreUrl() {
+  // @ts-ignore
+  return CHDataObject && CHDataObject.store_urls && CHDataObject.store_urls.store_url;
+}
+
+function requestWebPropertyIdFromAPI(baseUrl, storeUrl) {
   var webPropertyId = fetch("".concat(baseUrl, "/webProperty/").concat(storeUrl)).then(function (response) {
     return response.json();
   }).then(function (json) {
     return json.webPropertyId;
+  }).then(function (webPropertyId) {
+    return saveToLocalStorage(webPropertyId);
   });
   return webPropertyId;
-};
+}
 
-function getStoreUrl() {
-  // @ts-ignore
-  return CHDataObject && CHDataObject.store_urls && CHDataObject.store_urls.store_url;
+function saveToLocalStorage(webPropertyId) {
+  window.localStorage && window.localStorage.setItem('webPropertyId', webPropertyId);
+  return webPropertyId;
 }
 
 function loadGtagScript(webPropertyId) {
@@ -221,17 +270,54 @@ var getConfig = function getConfig() {
   return config;
 };
 
-var sendCartId = function sendCartId() {
-  console.log('getGaCookie()', Object(_common_getGaCookie__WEBPACK_IMPORTED_MODULE_0__["getGaCookie"])()); // @ts-ignore
+var sendCartId =
+/*#__PURE__*/
+function () {
+  var _ref = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee() {
+    var baseUrl, apiUrl, data, params;
+    return regeneratorRuntime.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            console.log('getGaCookie()', Object(_common_getGaCookie__WEBPACK_IMPORTED_MODULE_0__["getGaCookie"])()); // @ts-ignore
 
-  console.log('cartID', CHDataObject.checkout_session);
-  var baseUrl = getMonitorBaseUrl();
-  $.post("".concat(baseUrl, "/clientID"), {
-    clientID: Object(_common_getGaCookie__WEBPACK_IMPORTED_MODULE_0__["getGaCookie"])(),
-    // @ts-ignore
-    cartID: CHDataObject.checkout_session
-  });
-};
+            console.log('cartID', CHDataObject.checkout_session);
+            baseUrl = getMonitorBaseUrl();
+            apiUrl = "".concat(baseUrl, "/clientID");
+            data = {
+              clientID: Object(_common_getGaCookie__WEBPACK_IMPORTED_MODULE_0__["getGaCookie"])(),
+              // @ts-ignore
+              cartID: CHDataObject.checkout_session
+            };
+            params = buildPostRequestParams(data);
+            _context.next = 8;
+            return fetch(apiUrl, params);
+
+          case 8:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee);
+  }));
+
+  return function sendCartId() {
+    return _ref.apply(this, arguments);
+  };
+}();
+
+function buildPostRequestParams(data) {
+  var params = {
+    headers: {
+      'content-type': 'application/json; charset=UTF-8'
+    },
+    body: JSON.stringify(data),
+    method: 'POST'
+  };
+  return params;
+}
 
 /***/ })
 
