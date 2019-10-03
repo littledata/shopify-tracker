@@ -4,10 +4,10 @@ import { getWebPropertyIdPromise, sendCartId, initGtag, loadGtagScript } from '.
 (function() {
     const webPropertyPromise = getWebPropertyIdPromise();
 
-    webPropertyPromise.then(async webPropertyID => {
+    webPropertyPromise.then(webPropertyID => {
         console.log('webPropertyID', webPropertyID);
         loadGtagScript(webPropertyID);
         initGtag(webPropertyID);
-        await sendCartId();
+        sendCartId();
     });
 })();
