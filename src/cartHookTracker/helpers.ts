@@ -11,7 +11,7 @@ export const getWebPropertyIdPromise = (): Promise<string> => {
 
     const webPropertyId: string = window.localStorage && window.localStorage.getItem('webPropertyId');
     if (!isCheckout && webPropertyId) {
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             resolve(webPropertyId);
         });
     }
@@ -98,21 +98,21 @@ export const sendCartId = async () => {
     const data = {
         clientID: getGaCookie(),
         // @ts-ignore
-        cartID:  CHDataObject.checkout_session ,
+        cartID:  CHDataObject.checkout_session,
     };
 
     const params = buildPostRequestParams(data);
 
-    await fetch(apiUrl, params)
+    await fetch(apiUrl, params);
 };
 
 function buildPostRequestParams(data: object): object {
     const params = {
         headers: {
-            'content-type': 'application/json; charset=UTF-8'
+            'content-type': 'application/json; charset=UTF-8';
         },
         body: JSON.stringify(data),
-        method: 'POST'
-    }
+        method: 'POST',
+    };
     return params;
 }
