@@ -98,7 +98,7 @@ export const sendCartId = async () => {
     const data = {
         clientID: getGaCookie(),
         // @ts-ignore
-        cartID:  CHDataObject.checkout_session,
+        cartID: CHDataObject.checkout_session,
     };
 
     const params = buildPostRequestParams(data);
