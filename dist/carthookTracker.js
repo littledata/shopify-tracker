@@ -130,7 +130,6 @@ __webpack_require__.r(__webpack_exports__);
 
 
 (function () {
-  console.log('location', JSON.stringify(location));
   var webPropertyPromise = Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["getWebPropertyId"])();
   webPropertyPromise.then(function (webPropertyID) {
     console.log('webPropertyID', webPropertyID);
@@ -154,13 +153,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _common_getGaCookie__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
 /* eslint-env browser */
 
+
+function getMonitorBaseUrl() {
+  var STAGING_URL = 'https://transactions-staging.littledata.io';
+  var PROD_URL = 'https://transactions.littledata.io';
+  var isSandbox = location.pathname.includes('sandbox');
+  return isSandbox ? STAGING_URL : PROD_URL;
+}
+
 var getWebPropertyId = function getWebPropertyId() {
-  var baseUrl = 'https://transactions.littledata.io';
-
-  if (location.pathname.includes('sandbox')) {
-    baseUrl = 'https://transactions-staging.littledata.io';
-  }
-
+  var baseUrl = getMonitorBaseUrl();
   var storeUrl = getStoreUrl();
   var webPropertyId = fetch("".concat(baseUrl, "/webProperty/").concat(storeUrl)).then(function (response) {
     return response.json();
@@ -223,7 +225,8 @@ var sendCartId = function sendCartId() {
   console.log('getGaCookie()', Object(_common_getGaCookie__WEBPACK_IMPORTED_MODULE_0__["getGaCookie"])()); // @ts-ignore
 
   console.log('cartID', CHDataObject.checkout_session);
-  $.post('https://transactions.littledata.io/clientID', {
+  var baseUrl = getMonitorBaseUrl();
+  $.post("".concat(baseUrl, "/clientID"), {
     clientID: Object(_common_getGaCookie__WEBPACK_IMPORTED_MODULE_0__["getGaCookie"])(),
     // @ts-ignore
     cartID: CHDataObject.checkout_session
