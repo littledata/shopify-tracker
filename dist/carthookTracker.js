@@ -158,6 +158,7 @@ var getWebPropertyIdPromise = function getWebPropertyIdPromise() {
   var storeUrl = getStoreUrl();
   var isCheckout = location.pathname.includes('/checkout/');
   var webPropertyId = window.localStorage && window.localStorage.getItem('webPropertyId');
+  console.log('webPropertyId', webPropertyId);
 
   if (!isCheckout && webPropertyId) {
     return new Promise(function (resolve) {
@@ -193,6 +194,7 @@ function requestWebPropertyIdFromAPI(baseUrl, storeUrl) {
 
 function saveToLocalStorage(webPropertyId) {
   window.localStorage && window.localStorage.setItem('webPropertyId', webPropertyId);
+  console.log('window.localStorage', window.localStorage);
   return webPropertyId;
 }
 
