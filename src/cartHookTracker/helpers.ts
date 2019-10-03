@@ -10,6 +10,7 @@ export const getWebPropertyIdPromise = (): Promise<string> => {
     const isCheckout = location.pathname.includes('/checkout/');
 
     const webPropertyId: string = window.localStorage && window.localStorage.getItem('webPropertyId');
+    console.log('webPropertyId', webPropertyId);
     if (!isCheckout && webPropertyId) {
         return new Promise(resolve => {
             resolve(webPropertyId);
@@ -43,6 +44,7 @@ function requestWebPropertyIdFromAPI(baseUrl: string, storeUrl: string): Promise
 
 function saveToLocalStorage(webPropertyId: string): string {
     window.localStorage && window.localStorage.setItem('webPropertyId', webPropertyId);
+    console.log('window.localStorage', window.localStorage);
     return webPropertyId;
 }
 
