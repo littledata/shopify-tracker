@@ -109,7 +109,7 @@ export const sendCartId = async () => {
 function buildPostRequestParams(data: object): object {
     const params = {
         headers: {
-            'content-type': 'application/json; charset=UTF-8';
+            'content-type': 'application/json; charset=UTF-8',
         },
         body: JSON.stringify(data),
         method: 'POST',
