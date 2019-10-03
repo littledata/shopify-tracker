@@ -89,7 +89,7 @@ const getConfig = (): Gtag.CustomParams => {
     return config;
 };
 
-export const sendCartId = async () => {
+export const sendCartId = () => {
     console.log('getGaCookie()', getGaCookie());
     // @ts-ignore
     console.log('cartID', CHDataObject.checkout_session);
@@ -103,7 +103,7 @@ export const sendCartId = async () => {
 
     const params = buildPostRequestParams(data);
 
-    await fetch(apiUrl, params);
+    fetch(apiUrl, params);
 };
 
 function buildPostRequestParams(data: object): object {
