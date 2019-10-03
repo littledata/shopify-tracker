@@ -3,6 +3,22 @@ import { getGaCookie } from '../common/getGaCookie';
 
 declare let window: CustomWindow;
 
+export const getWebPropertyIdPromise = (): Promise<string> => {
+    const baseUrl = getMonitorBaseUrl();
+    const storeUrl = getStoreUrl();
+
+    const isCheckout = location.pathname.includes('/checkout/');
+
+    const webPropertyId: string = window.localStorage && window.localStorage.getItem('webPropertyId');
+    if (!isCheckout && webPropertyId) {
+        return new Promise(resolve => {
+            resolve(webPropertyId);
+        });
+    }
+
+    return requestWebPropertyIdFromAPI(baseUrl, storeUrl);
+};
+
 function getMonitorBaseUrl(): string {
     const STAGING_URL = 'https://transactions-staging.littledata.io';
     const PROD_URL = 'https://transactions.littledata.io';
@@ -10,20 +26,24 @@ function getMonitorBaseUrl(): string {
 
     return isSandbox ? STAGING_URL : PROD_URL;
 }
-export const getWebPropertyId = (): Promise<string> => {
-    const baseUrl = getMonitorBaseUrl();
-    const storeUrl = getStoreUrl();
-
-    const webPropertyId = fetch(`${baseUrl}/webProperty/${storeUrl}`)
-        .then(response => response.json())
-        .then(json => json.webPropertyId);
-
-    return webPropertyId;
-};
 
 function getStoreUrl() {
     // @ts-ignore
     return CHDataObject && CHDataObject.store_urls && CHDataObject.store_urls.store_url;
+}
+
+function requestWebPropertyIdFromAPI(baseUrl: string, storeUrl: string): Promise<string> {
+    const webPropertyId = fetch(`${baseUrl}/webProperty/${storeUrl}`)
+        .then(response => response.json())
+        .then(json => json.webPropertyId)
+        .then(webPropertyId => saveToLocalStorage(webPropertyId));
+
+    return webPropertyId;
+}
+
+function saveToLocalStorage(webPropertyId: string): string {
+    window.localStorage && window.localStorage.setItem('webPropertyId', webPropertyId);
+    return webPropertyId;
 }
 
 export function loadGtagScript(webPropertyId: string) {
@@ -69,14 +89,30 @@ const getConfig = (): Gtag.CustomParams => {
     return config;
 };
 
-export const sendCartId = () => {
+export const sendCartId = async () => {
     console.log('getGaCookie()', getGaCookie());
     // @ts-ignore
     console.log('cartID', CHDataObject.checkout_session);
     const baseUrl = getMonitorBaseUrl();
-    $.post(`${baseUrl}/clientID`, {
+    const apiUrl = `${baseUrl}/clientID`;
+    const data = {
         clientID: getGaCookie(),
         // @ts-ignore
         cartID: CHDataObject.checkout_session,
-    });
+    };
+
+    const params = buildPostRequestParams(data);
+
+    await fetch(apiUrl, params);
 };
+
+function buildPostRequestParams(data: object): object {
+    const params = {
+        headers: {
+            'content-type': 'application/json; charset=UTF-8',
+        },
+        body: JSON.stringify(data),
+        method: 'POST',
+    };
+    return params;
+}
