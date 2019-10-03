@@ -2,12 +2,16 @@
 import { getGaCookie } from '../common/getGaCookie';
 
 declare let window: CustomWindow;
-export const getWebPropertyId = (): Promise<string> => {
-    let baseUrl = 'https://transactions.littledata.io';
-    if (location.pathname.includes('sandbox')) {
-        baseUrl = 'https://transactions-staging.littledata.io';
-    }
 
+function getMonitorBaseUrl(): string {
+    const STAGING_URL = 'https://transactions-staging.littledata.io';
+    const PROD_URL = 'https://transactions.littledata.io';
+    const isSandbox = location.pathname.includes('sandbox');
+
+    return isSandbox ? STAGING_URL : PROD_URL;
+}
+export const getWebPropertyId = (): Promise<string> => {
+    const baseUrl = getMonitorBaseUrl();
     const storeUrl = getStoreUrl();
 
     const webPropertyId = fetch(`${baseUrl}/webProperty/${storeUrl}`)
@@ -69,7 +73,8 @@ export const sendCartId = () => {
     console.log('getGaCookie()', getGaCookie());
     // @ts-ignore
     console.log('cartID', CHDataObject.checkout_session);
-    $.post('https://transactions.littledata.io/clientID', {
+    const baseUrl = getMonitorBaseUrl();
+    $.post(`${baseUrl}/clientID`, {
         clientID: getGaCookie(),
         // @ts-ignore
         cartID: CHDataObject.checkout_session,
