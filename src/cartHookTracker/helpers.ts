@@ -105,7 +105,11 @@ export const sendCartId = () => {
 
     const params = buildPostRequestParams(data);
 
-    fetch(apiUrl, params);
+    fetch(apiUrl, params).then(response => {
+        console.log('resp:', JSON.stringify(response));
+        console.log('status:', JSON.stringify(response.status));
+        console.log('statusText:', JSON.stringify(response.statusText));
+    });
 };
 
 function buildPostRequestParams(data: object): object {
