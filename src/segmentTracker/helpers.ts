@@ -8,9 +8,9 @@ const trackEvent = (eventName: string, params: object) => {
 	const version = '8.0.3';
 	const context = {
 		integration: {
-			name;
-			version;
-		};
+			name,
+			version,
+		},
 	};
 	window.analytics.track(eventName, params, context);
 };
