@@ -114,10 +114,9 @@ export const initSegment = () => {
     // @ts-ignore
     window.analytics = window.analytics || [];
     // @ts-ignore
-    if (!analytics.initialize)
+    if (!analytics.initialize) {
         // @ts-ignore
         if (analytics.invoked) {
-            // @ts-ignore
             window.console && console.error && console.error('Segment snippet included twice.');
         } else {
             // @ts-ignore
@@ -173,6 +172,7 @@ export const initSegment = () => {
             analytics.SNIPPET_VERSION = '4.1.0'; //eslint-disable-line
             window.analytics.load(LittledataLayer.writeKey);
         }
+    }
     window.dataLayer = window.dataLayer || [];
 };
 
