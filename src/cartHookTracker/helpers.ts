@@ -10,7 +10,6 @@ export const getWebPropertyIdPromise = (): Promise<string> => {
     const isCheckout = location.pathname.includes('/checkout/');
 
     const webPropertyId: string = window.localStorage && window.localStorage.getItem('webPropertyId');
-    console.log('webPropertyId', webPropertyId);
     if (!isCheckout && webPropertyId) {
         return new Promise(resolve => {
             resolve(webPropertyId);
@@ -44,7 +43,6 @@ function requestWebPropertyIdFromAPI(baseUrl: string, storeUrl: string): Promise
 
 function saveToLocalStorage(webPropertyId: string): string {
     window.localStorage && window.localStorage.setItem('webPropertyId', webPropertyId);
-    console.log('window.localStorage', window.localStorage);
     return webPropertyId;
 }
 
@@ -92,9 +90,6 @@ const getConfig = (): Gtag.CustomParams => {
 };
 
 export const sendCartId = () => {
-    console.log('getGaCookie()', getGaCookie());
-    // @ts-ignore
-    console.log('cartID', CHDataObject.checkout_session);
     const baseUrl = getMonitorBaseUrl();
     const apiUrl = `${baseUrl}/clientID`;
     const data = {
@@ -105,11 +100,7 @@ export const sendCartId = () => {
 
     const params = buildPostRequestParams(data);
 
-    fetch(apiUrl, params).then(response => {
-        console.log('resp:', JSON.stringify(response));
-        console.log('status:', JSON.stringify(response.status));
-        console.log('statusText:', JSON.stringify(response.statusText));
-    });
+    fetch(apiUrl, params);
 };
 
 function buildPostRequestParams(data: object): object {

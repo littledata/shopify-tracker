@@ -5,7 +5,6 @@ import { getWebPropertyIdPromise, sendCartId, initGtag, loadGtagScript } from '.
     const webPropertyPromise = getWebPropertyIdPromise();
 
     webPropertyPromise.then(webPropertyID => {
-        console.log('webPropertyID', webPropertyID);
         loadGtagScript(webPropertyID);
         initGtag(webPropertyID);
         sendCartId();
