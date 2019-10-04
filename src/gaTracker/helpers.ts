@@ -12,7 +12,9 @@ import productListViews from '../common/productListViews';
 
 export const initGtag = () => {
     window.dataLayer = window.dataLayer || [];
-	const stubFunction = function () { dataLayer.push(arguments) } //eslint-disable-line
+    const stubFunction = function() {
+        dataLayer.push(arguments);
+	}; //eslint-disable-line
     window.gtag = window.gtag || stubFunction;
     // @ts-ignore
     gtag('js', new Date());
@@ -20,9 +22,18 @@ export const initGtag = () => {
 };
 
 export const sendPageview = () => {
+    const page_title = removePii(document.title);
+    const page_location = removePii(document.location.href);
+
     gtag('config', LittledataLayer.webPropertyID, {
-        page_title: removePii(document.title),
-        page_location: removePii(document.location.href),
+        page_title,
+        page_location,
+    });
+
+    dataLayer.push({
+        event: 'pageview',
+        page_title,
+        page_location,
     });
 
     const googleAds = LittledataLayer.googleAdsConversionIds;
@@ -128,6 +139,7 @@ export const trackEvents = () => {
 
 export const getConfig = (): Gtag.CustomParams => {
     const { anonymizeIp, googleSignals, ecommerce, optimizeId, referralExclusion } = LittledataLayer;
+    const userId = LittledataLayer.customer && LittledataLayer.customer.id;
 
     const excludeReferal = referralExclusion.test(document.referrer);
     const config: Gtag.CustomParams = {
@@ -142,6 +154,7 @@ export const getConfig = (): Gtag.CustomParams => {
         optimize_id: optimizeId,
         page_referrer: excludeReferal ? document.referrer : null,
         send_page_view: false,
+        user_id: userId,
     };
 
     return config;
