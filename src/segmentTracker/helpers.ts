@@ -115,6 +115,7 @@ export const initSegment = () => {
     window.analytics = window.analytics || [];
     // @ts-ignore
     if (!analytics.initialize)
+        // @ts-ignore
         if (analytics.invoked) {
             // @ts-ignore
             window.console && console.error && console.error('Segment snippet included twice.');
