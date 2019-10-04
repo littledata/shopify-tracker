@@ -4,7 +4,7 @@ module.exports = {
     entry: {
         gaTracker: './src/gaTracker/gaTracker.ts',
         segmentTracker: './src/segmentTracker/segmentTracker.ts',
-        cartHookTracker: './src/cartHookTracker/cartHookTracker.ts',
+        carthookTracker: './src/cartHookTracker/carthookTracker.ts',
     },
     module: {
         rules: [
