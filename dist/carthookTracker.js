@@ -132,7 +132,6 @@ __webpack_require__.r(__webpack_exports__);
 (function () {
   var webPropertyPromise = Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["getWebPropertyIdPromise"])();
   webPropertyPromise.then(function (webPropertyID) {
-    console.log('webPropertyID', webPropertyID);
     Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["loadGtagScript"])(webPropertyID);
     Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["initGtag"])(webPropertyID);
     Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["sendCartId"])();
@@ -158,7 +157,6 @@ var getWebPropertyIdPromise = function getWebPropertyIdPromise() {
   var storeUrl = getStoreUrl();
   var isCheckout = location.pathname.includes('/checkout/');
   var webPropertyId = window.localStorage && window.localStorage.getItem('webPropertyId');
-  console.log('webPropertyId', webPropertyId);
 
   if (!isCheckout && webPropertyId) {
     return new Promise(function (resolve) {
@@ -194,7 +192,6 @@ function requestWebPropertyIdFromAPI(baseUrl, storeUrl) {
 
 function saveToLocalStorage(webPropertyId) {
   window.localStorage && window.localStorage.setItem('webPropertyId', webPropertyId);
-  console.log('window.localStorage', window.localStorage);
   return webPropertyId;
 }
 
@@ -243,9 +240,6 @@ var getConfig = function getConfig() {
 };
 
 var sendCartId = function sendCartId() {
-  console.log('getGaCookie()', Object(_common_getGaCookie__WEBPACK_IMPORTED_MODULE_0__["getGaCookie"])()); // @ts-ignore
-
-  console.log('cartID', CHDataObject.checkout_session);
   var baseUrl = getMonitorBaseUrl();
   var apiUrl = "".concat(baseUrl, "/clientID");
   var data = {
@@ -254,11 +248,7 @@ var sendCartId = function sendCartId() {
     cartID: CHDataObject.checkout_session
   };
   var params = buildPostRequestParams(data);
-  fetch(apiUrl, params).then(function (response) {
-    console.log('resp:', JSON.stringify(response));
-    console.log('status:', JSON.stringify(response.status));
-    console.log('statusText:', JSON.stringify(response.statusText));
-  });
+  fetch(apiUrl, params);
 };
 
 function buildPostRequestParams(data) {
