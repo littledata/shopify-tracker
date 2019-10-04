@@ -567,6 +567,19 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 
+var trackEvent = function trackEvent(eventName, params) {
+  var name = 'shopify_littledata';
+  var version = '8.0.3';
+  var context = {
+    integration: {
+      name: name,
+      version: version
+    }
+  }; // @ts-ignore
+
+  window.analytics.track(eventName, params, context);
+};
+
 var segmentProduct = function segmentProduct(dataLayerProduct) {
   return {
     brand: dataLayerProduct.brand,
@@ -602,7 +615,7 @@ var trackEvents = function trackEvents() {
         var pos = productFromImpressions && productFromImpressions.list_position;
         window.localStorage.setItem('position', String(pos));
         var p = segmentProduct(product);
-        window.analytics.track('Product Clicked', _objectSpread({}, p, {
+        trackEvent('Product Clicked', _objectSpread({}, p, {
           currency: LittledataLayer.ecommerce.currencyCode,
           list_id: document.location.pathname,
           category: 'EnhancedEcommerce'
@@ -611,7 +624,7 @@ var trackEvents = function trackEvents() {
       Object(_common_productListViews__WEBPACK_IMPORTED_MODULE_1__["default"])(function (products) {
         var listId = products && products[0].list;
         var segmentProducts = products.map(segmentProduct);
-        window.analytics.track('Product List Viewed', {
+        trackEvent('Product List Viewed', {
           list_id: listId,
           category: 'EnhancedEcommerce',
           products: segmentProducts
@@ -627,14 +640,14 @@ var trackEvents = function trackEvents() {
       product.currency = LittledataLayer.ecommerce.currencyCode;
       product.category = 'EnhancedEcommerce';
       product.position = parseInt(window.localStorage.getItem('position')) || 1;
-      window.analytics.track('Product Viewed', product); // if PDP, we can also track clicks on images and social shares
+      trackEvent('Product Viewed', product); // if PDP, we can also track clicks on images and social shares
 
       Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["trackProductImageClicks"])(function (name) {
         product.image_url = name;
-        window.analytics.track('Product Image Clicked', product);
+        trackEvent('Product Image Clicked', product);
       });
       Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["trackSocialShares"])(function (network) {
-        window.analytics.track('Product Shared', _objectSpread({}, product, {
+        trackEvent('Product Shared', _objectSpread({}, product, {
           share_via: network
         }));
       });
@@ -643,39 +656,55 @@ var trackEvents = function trackEvents() {
 };
 var initSegment = function initSegment() {
   // @ts-ignore
-  window.analytics = window.analytics || [];
-  if (!analytics.initialize) if (analytics.invoked) window.console && console.error && console.error("Segment snippet included twice.");else {
-    analytics.invoked = !0;
-    analytics.methods = ["trackSubmit", "trackClick", "trackLink", "trackForm", "pageview", "identify", "reset", "group", "track", "ready", "alias", "debug", "page", "once", "off", "on"];
+  window.analytics = window.analytics || []; // @ts-ignore
 
-    analytics.factory = function (t) {
-      return function () {
-        var e = Array.prototype.slice.call(arguments);
-        e.unshift(t);
-        analytics.push(e);
-        return analytics;
-      };
-    };
+  if (!analytics.initialize) {
+    // @ts-ignore
+    if (analytics.invoked) {
+      window.console && console.error && console.error('Segment snippet included twice.');
+    } else {
+      // @ts-ignore
+      analytics.invoked = !0; // @ts-ignore
 
-    for (var t = 0; t < analytics.methods.length; t++) {
-      var e = analytics.methods[t];
-      analytics[e] = analytics.factory(e);
+      analytics.methods = ['trackSubmit', 'trackClick', 'trackLink', 'trackForm', 'pageview', 'identify', 'reset', 'group', 'track', 'ready', 'alias', 'debug', 'page', 'once', 'off', 'on']; // @ts-ignore
+
+      analytics.factory = function (t) {
+        return function () {
+          var e = Array.prototype.slice.call(arguments);
+          e.unshift(t); // @ts-ignore
+
+          analytics.push(e);
+          return analytics;
+        };
+      }; // @ts-ignore
+
+
+      for (var t = 0; t < analytics.methods.length; t++) {
+        // @ts-ignore
+        var e = analytics.methods[t]; // @ts-ignore
+
+        analytics[e] = analytics.factory(e);
+      } // @ts-ignore
+
+
+      analytics.load = function (t, e) {
+        var n = document.createElement('script');
+        n.type = 'text/javascript';
+        n.async = !0;
+        n.src = 'https://cdn.segment.com/analytics.js/v1/' + t + '/analytics.min.js';
+        var a = document.getElementsByTagName('script')[0];
+        a.parentNode.insertBefore(n, a); // @ts-ignore
+
+        analytics._loadOptions = e;
+      }; // @ts-ignore
+
+
+      analytics.SNIPPET_VERSION = '4.1.0'; //eslint-disable-line
+
+      window.analytics.load(LittledataLayer.writeKey);
     }
-
-    analytics.load = function (t, e) {
-      var n = document.createElement("script");
-      n.type = "text/javascript";
-      n.async = !0;
-      n.src = "https://cdn.segment.com/analytics.js/v1/" + t + "/analytics.min.js";
-      var a = document.getElementsByTagName("script")[0];
-      a.parentNode.insertBefore(n, a);
-      analytics._loadOptions = e;
-    };
-
-    analytics.SNIPPET_VERSION = "4.1.0"; //eslint-disable-line
-
-    window.analytics.load(LittledataLayer.writeKey);
   }
+
   window.dataLayer = window.dataLayer || [];
 };
 
