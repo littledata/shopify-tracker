@@ -614,7 +614,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 var trackEvent = function trackEvent(eventName, params) {
   var name = 'shopify_littledata';
-  var version = '8.0.3';
+  var version = typeof LittledataLayer.version === 'string' ? LittledataLayer.version.substr(1, LittledataLayer.version.length - 1) //first character is v
+  : '8.0.3';
   var context = {
     integration: {
       name: name,
