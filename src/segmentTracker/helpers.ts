@@ -5,7 +5,10 @@ import productListViews from '../common/productListViews';
 
 const trackEvent = (eventName: string, params: object) => {
 	const name = 'shopify_littledata';
-	const version = '8.0.3';
+	const version =
+		typeof LittledataLayer.version === 'string'
+			? LittledataLayer.version.substr(1, LittledataLayer.version.length - 1) //first character is v
+			: '8.0.3';
 	const context = {
 		integration: {
 			name,

@@ -101,6 +101,7 @@ declare global {
 	}
 
 	interface OwnLayer {
+		version?: string;
 		persistentUserId?: string;
 		customer?: Customer;
 		hideBranding: boolean;
