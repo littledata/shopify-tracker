@@ -1,5 +1,6 @@
 module.exports = {
 	parser: '@typescript-eslint/parser', // Specifies the ESLint parser
+	plugins: ['prettier'],
 	extends: [
 		'plugin:@typescript-eslint/recommended', // Uses the recommended rules from the @typescript-eslint/eslint-plugin
 		'prettier/@typescript-eslint', // Uses eslint-config-prettier to disable ESLint rules from @typescript-eslint/eslint-plugin that would conflict with prettier
@@ -11,6 +12,7 @@ module.exports = {
 	},
 	rules: {
 		// Place to specify ESLint rules. Can be used to overwrite rules specified from the extended configs
+		'prettier/prettier': ['error'],
 		'@typescript-eslint/explicit-function-return-type': 'off',
 		'@typescript-eslint/camelcase': 'off', // both segment and google are fond ot this
 		'@typescript-eslint/no-use-before-define': 'off',
