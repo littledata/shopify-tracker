@@ -3,7 +3,8 @@
 		"build-master": "node ./node_modules/webpack/bin/webpack.js",
 		"build-staging": "node ./node_modules/webpack/bin/webpack.js --mode none",
 		"start": "node ./node_modules/webpack/bin/webpack.js --watch",
-		"lint": "node ./node_modules/eslint/bin/eslint.js --ext .ts ./src"
+		"lint": "node ./node_modules/eslint/bin/eslint.js --ext .ts ./src",
+		"prettier": "prettier --write \"**/*.js\""
 	},
 	"devDependencies": {
 		"@babel/core": "^7.5.5",
