@@ -15,6 +15,7 @@ const trackEvent = (eventName: string, params: object) => {
 			version,
 		},
 	};
+	// @ts-ignore
 	window.analytics.track(eventName, params, context);
 };
 
@@ -115,10 +116,15 @@ export const trackEvents = () => {
 export const initSegment = () => {
 	// @ts-ignore
 	window.analytics = window.analytics || [];
-	if (!analytics.initialize)
-		if (analytics.invoked) window.console && console.error && console.error('Segment snippet included twice.');
-		else {
+	// @ts-ignore
+	if (!analytics.initialize) {
+		// @ts-ignore
+		if (analytics.invoked) {
+			window.console && console.error && console.error('Segment snippet included twice.');
+		} else {
+			// @ts-ignore
 			analytics.invoked = !0;
+			// @ts-ignore
 			analytics.methods = [
 				'trackSubmit',
 				'trackClick',
@@ -137,18 +143,24 @@ export const initSegment = () => {
 				'off',
 				'on',
 			];
+			// @ts-ignore
 			analytics.factory = function(t) {
 				return function() {
 					var e = Array.prototype.slice.call(arguments);
 					e.unshift(t);
+					// @ts-ignore
 					analytics.push(e);
 					return analytics;
 				};
 			};
+			// @ts-ignore
 			for (var t = 0; t < analytics.methods.length; t++) {
+				// @ts-ignore
 				var e = analytics.methods[t];
+				// @ts-ignore
 				analytics[e] = analytics.factory(e);
 			}
+			// @ts-ignore
 			analytics.load = function(t, e) {
 				var n = document.createElement('script');
 				n.type = 'text/javascript';
@@ -156,11 +168,14 @@ export const initSegment = () => {
 				n.src = 'https://cdn.segment.com/analytics.js/v1/' + t + '/analytics.min.js';
 				var a = document.getElementsByTagName('script')[0];
 				a.parentNode.insertBefore(n, a);
+				// @ts-ignore
 				analytics._loadOptions = e;
 			};
+			// @ts-ignore
 			analytics.SNIPPET_VERSION = '4.1.0'; //eslint-disable-line
 			window.analytics.load(LittledataLayer.writeKey);
 		}
+	}
 	window.dataLayer = window.dataLayer || [];
 };
 
