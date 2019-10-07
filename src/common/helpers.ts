@@ -65,7 +65,7 @@ export const productListClicks = (clickTag: ListClickCallback): void => {
 	});
 };
 
-function postClientID(getClientId: () => string) {
+function postClientID(getClientId: () => string, platform: string) {
 	setTimeout(function() {
 		const clientID = getClientId();
 		const updatedAt = new Date().getTime();
@@ -82,7 +82,7 @@ function postClientID(getClientId: () => string) {
 			clientIDReq.send(
 				JSON.stringify({
 					...attributes,
-					cartID: updatedCart.token,
+					cartID: `${platform}-${updatedCart.token}`,
 				}),
 			);
 		};
@@ -103,10 +103,10 @@ function postCartToLittledata(cart: Cart.RootObject) {
 	httpRequest.send(JSON.stringify(cart));
 }
 
-export function setClientID(getClientId: () => string) {
+export function setClientID(getClientId: () => string, platform: string) {
 	const { cart } = LittledataLayer;
 	if (!cart || !cart.attributes || !cart.attributes.clientID || !cart.attributes.updatedAt) {
-		return postClientID(getClientId);
+		return postClientID(getClientId, platform);
 	}
 
 	const clientIdCreated = new Date(Number(cart.attributes.updatedAt));
@@ -116,7 +116,7 @@ export function setClientID(getClientId: () => string) {
 	if (timePassed > timeout) {
 		postCartToLittledata(cart);
 		setTimeout(() => {
-			postClientID(getClientId);
+			postClientID(getClientId, platform);
 		}, 10000); // allow 10 seconds for our server to register cart until updating it, otherwise there's a race condition between storing and a webhook triggered by this
 	}
 }
