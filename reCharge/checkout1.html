@@ -16,10 +16,16 @@
 
 {% if store.google_analytics_type == 'UNIVERSAL' and store.google_analytics_id %}
 <script>
+	var emailRegex = /[\s&amp;\/,=]([a-zA-Z0-9_.+-]+(\@|%40)[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)($|[\s&amp;\/,])/;
+	function removePii(str) {
+		return str.replace(emailRegex, 'REMOVED');
+	};
 	gtag('config', '{{store.google_analytics_id}}', {
 		linker: {
 			domains: ['{{store.domain}}', 'myshopify.com'],
 		},
+		page_title: removePii(document.title);,
+		page_location: removePii(document.location.href);,
 	});
 </script>
 {% elif store.google_analytics_id %}
