@@ -245,7 +245,7 @@ var sendCartId = function sendCartId() {
   var data = {
     clientID: Object(_common_getGaCookie__WEBPACK_IMPORTED_MODULE_0__["getGaCookie"])(),
     // @ts-ignore
-    cartID: CHDataObject.checkout_session
+    cartID: "carthook-".concat(CHDataObject.checkout_session)
   };
   var params = buildPostRequestParams(data);
   fetch(apiUrl, params);

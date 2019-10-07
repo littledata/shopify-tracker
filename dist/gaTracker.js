@@ -156,7 +156,7 @@ var sendPageview = function sendPageview() {
   }
 };
 var trackEvents = function trackEvents() {
-  Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["getPersistentClientId"]);
+  Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["getPersistentClientId"], 'google');
   /* run list, product, and clientID scripts everywhere */
 
   if (LittledataLayer.ecommerce.impressions.length) {
@@ -362,7 +362,7 @@ var productListClicks = function productListClicks(clickTag) {
   });
 };
 
-function postClientID(getClientId) {
+function postClientID(getClientId, platform) {
   setTimeout(function () {
     var clientID = getClientId();
     var updatedAt = new Date().getTime();
@@ -379,7 +379,7 @@ function postClientID(getClientId) {
       clientIDReq.open('POST', "".concat(LittledataLayer.transactionWatcherURL, "/clientID"));
       clientIDReq.setRequestHeader('Content-Type', 'application/json');
       clientIDReq.send(JSON.stringify(_objectSpread({}, attributes, {
-        cartID: updatedCart.token
+        cartID: "".concat(platform, "-").concat(updatedCart.token)
       })));
     };
 
@@ -399,12 +399,12 @@ function postCartToLittledata(cart) {
   httpRequest.send(JSON.stringify(cart));
 }
 
-function setClientID(getClientId) {
+function setClientID(getClientId, platform) {
   var _LittledataLayer = LittledataLayer,
       cart = _LittledataLayer.cart;
 
   if (!cart || !cart.attributes || !cart.attributes.clientID || !cart.attributes.updatedAt) {
-    return postClientID(getClientId);
+    return postClientID(getClientId, platform);
   }
 
   var clientIdCreated = new Date(Number(cart.attributes.updatedAt));
@@ -415,7 +415,7 @@ function setClientID(getClientId) {
   if (timePassed > timeout) {
     postCartToLittledata(cart);
     setTimeout(function () {
-      postClientID(getClientId);
+      postClientID(getClientId, platform);
     }, 10000); // allow 10 seconds for our server to register cart until updating it, otherwise there's a race condition between storing and a webhook triggered by this
   }
 }
