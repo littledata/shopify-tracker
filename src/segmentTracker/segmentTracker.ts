@@ -20,11 +20,11 @@ import { identifyCustomer, trackEvents, initSegment } from './helpers';
 						window.analytics.user().anonymousId(clientId);
 					}
 					window.analytics.page();
-					setClientID(window.analytics.user().anonymousId);
+					setClientID(window.analytics.user().anonymousId, 'segment');
 				});
 			} else {
 				window.analytics.page();
-				setClientID(window.analytics.user().anonymousId);
+				setClientID(window.analytics.user().anonymousId, 'segment');
 			}
 			trackEvents();
 		});
