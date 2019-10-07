@@ -95,7 +95,7 @@ export const sendCartId = () => {
 	const data = {
 		clientID: getGaCookie(),
 		// @ts-ignore
-		cartID: CHDataObject.checkout_session,
+		cartID: `carthook-${CHDataObject.checkout_session}`,
 	};
 
 	const params = buildPostRequestParams(data);

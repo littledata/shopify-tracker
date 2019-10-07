@@ -1,0 +1,73 @@
+{% if first_time_load %} {% if store.little_data_integration %}
+<!-- little data integration installed, so skipping default google analytics-->
+{% elif store.google_analytics_type == 'UNIVERSAL' and store.google_analytics_id %}
+
+<script>
+
+	   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	   })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	   ga('create', '{{store.google_analytics_id}}', 'auto', {'allowLinker': true});
+	ga('require', 'linker');
+	ga('linker:autoLink', ['{{store.domain}}'] );
+	ga('send', 'pageview');
+	   ga('require', 'ecommerce');
+
+	   ga('ecommerce:addTransaction', {
+	     'id': '{{charge.order_number}}',
+	     'affiliation': '{{store.domain}}',
+	     'revenue': '{{charge.amount}}',
+	     'shipping': '{{ "%.2f"%charge.shipping_amount }}',
+	     'tax': '{{ "%.2f"%charge.tax_amount }}'
+	   });
+
+	   {% for item in shopify_order_response_json['line_items'] %}
+	   ga('ecommerce:addItem', {
+	     'id': '{{charge.order_number}}',
+	     'name': '{{item["title"]}}',
+	     'sku': '{{item["sku"]}}',
+	     'category': '{{item["variant_title"]}}',
+	     'price': '{{item["price"]}}',
+	     'quantity': '{{item["quantity"]}}'
+	   });
+	    {% endfor %}
+	    ga('ecommerce:send');
+
+	    ga('create', 'UA-57833108-2', 'auto', {'name': 'rechargeTracker'});
+	    ga('rechargeTracker.send', 'pageview');
+</script>
+{% elif store.google_analytics_id %}
+<script type="text/javascript">
+	var _gaq = _gaq || [];
+	_gaq.push(['_setAccount', '{{store.google_analytics_id}}']);
+	_gaq.push(['_trackPageview']);
+	(function() {
+		var ga = document.createElement('script');
+		ga.type = 'text/javascript';
+		ga.async = true;
+		ga.src =
+			('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		var s = document.getElementsByTagName('script')[0];
+		s.parentNode.insertBefore(ga, s);
+	})();
+
+	(function(i, s, o, g, r, a, m) {
+		i['GoogleAnalyticsObject'] = r;
+		(i[r] =
+			i[r] ||
+			function() {
+				(i[r].q = i[r].q || []).push(arguments);
+			}),
+			(i[r].l = 1 * new Date());
+		(a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+		a.async = 1;
+		a.src = g;
+		m.parentNode.insertBefore(a, m);
+	})(window, document, 'script', '//www.google-analytics.com/analytics.js', '_ga');
+	_ga('create', 'UA-57833108-2', 'auto', { name: 'rechargeTracker' });
+	_ga('rechargeTracker.send', 'pageview');
+</script>
+
+{% endif %} {% endif %}
