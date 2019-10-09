@@ -2,8 +2,8 @@ declare global {
 	namespace Cart {
 		export interface Attributes {
 			updatedAt?: string;
-			clientID?: string;
-			googleClientID?: string;
+			['segment-clientID']?: string;
+			['google-clientID']?: string;
 		}
 
 		export interface Properties {}
