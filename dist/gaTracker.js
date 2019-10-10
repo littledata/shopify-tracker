@@ -368,10 +368,9 @@ function postClientID(getClientId, platform) {
     var updatedAt = new Date().getTime();
     var cartUpdateReq = new XMLHttpRequest(); // new HttpRequest instance
 
-    var attributes = {
-      clientID: clientID,
+    var attributes = _defineProperty({
       updatedAt: updatedAt
-    };
+    }, "".concat(platform, "-clientID"), clientID);
 
     cartUpdateReq.onload = function () {
       var updatedCart = JSON.parse(cartUpdateReq.response);
@@ -402,8 +401,9 @@ function postCartToLittledata(cart) {
 function setClientID(getClientId, platform) {
   var _LittledataLayer = LittledataLayer,
       cart = _LittledataLayer.cart;
+  var clientIDProperty = "".concat(platform, "-clientID");
 
-  if (!cart || !cart.attributes || !cart.attributes.clientID || !cart.attributes.updatedAt) {
+  if (!cart || !cart.attributes || !cart.attributes[clientIDProperty] || !cart.attributes.updatedAt) {
     return postClientID(getClientId, platform);
   }
 
