@@ -181,7 +181,9 @@ export function getPersistentClientId() {
 }
 
 export const trackProductImageClicks = (clickTag: (name: string) => void) => {
-	if (LittledataLayer.productPageClicks === false) return false;
+	if (LittledataLayer.productPageClicks === false) {
+		return false;
+	}
 	getElementsByHref('^https://cdn.shopify.com/s/files/.*/products/').forEach(element => {
 		element.addEventListener('click', function() {
 			// only add event to product images
@@ -194,7 +196,9 @@ export const trackProductImageClicks = (clickTag: (name: string) => void) => {
 };
 
 export const trackSocialShares = (clickTag: (name?: string) => void) => {
-	if (LittledataLayer.productPageClicks === false) return false;
+	if (LittledataLayer.productPageClicks === false) {
+		return false;
+	}
 	const networks = '(facebook|pinterest|twitter|linkedin|plus.google|instagram)';
 	getElementsByHref(`${networks}\.com/(share|pin|intent)`).forEach(element => {
 		element.addEventListener('click', function() {
