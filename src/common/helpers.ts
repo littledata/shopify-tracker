@@ -104,7 +104,7 @@ function postCartToLittledata(cart: Cart.RootObject) {
 	httpRequest.send(JSON.stringify(cart));
 }
 
-export function setClientID(getClientId: () => string, platform: 'google|segment') {
+export function setClientID(getClientId: () => string, platform: 'google' | 'segment') {
 	const { cart } = LittledataLayer;
 	const clientIDProperty: 'google-clientID' | 'segment-clientID' = `${platform}-clientID` as
 		| 'google-clientID'
