@@ -144,7 +144,13 @@ export const getConfig = (): Gtag.CustomParams => {
 	const excludeReferal = referralExclusion.test(document.referrer);
 	const config: Gtag.CustomParams = {
 		linker: {
-			domains: ['shopify.com', 'rechargeapps.com', 'recurringcheckout.com', 'carthook.com', 'checkout.com'],
+			domains: [
+				'^(?!cdn.)(.*)shopify.com',
+				'rechargeapps.com',
+				'recurringcheckout.com',
+				'carthook.com',
+				'checkout.com',
+			],
 		},
 		anonymize_ip: !!anonymizeIp,
 		allow_ad_personalization_signals: !!googleSignals,
