@@ -71,9 +71,10 @@ function postClientID(getClientId: () => string, platform: string) {
 		const updatedAt = new Date().getTime();
 		const cartUpdateReq = new XMLHttpRequest(); // new HttpRequest instance
 		const attributes = {
-			clientID,
 			updatedAt,
+			[`${platform}-clientID`]: clientID,
 		};
+
 		cartUpdateReq.onload = function() {
 			const updatedCart = JSON.parse(cartUpdateReq.response);
 			const clientIDReq = new XMLHttpRequest();
@@ -103,9 +104,13 @@ function postCartToLittledata(cart: Cart.RootObject) {
 	httpRequest.send(JSON.stringify(cart));
 }
 
-export function setClientID(getClientId: () => string, platform: string) {
+export function setClientID(getClientId: () => string, platform: 'google' | 'segment') {
 	const { cart } = LittledataLayer;
-	if (!cart || !cart.attributes || !cart.attributes.clientID || !cart.attributes.updatedAt) {
+	const clientIDProperty: 'google-clientID' | 'segment-clientID' = `${platform}-clientID` as
+		| 'google-clientID'
+		| 'segment-clientID';
+
+	if (!cart || !cart.attributes || !cart.attributes[clientIDProperty] || !cart.attributes.updatedAt) {
 		return postClientID(getClientId, platform);
 	}
 
