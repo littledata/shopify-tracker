@@ -155,8 +155,17 @@ var sendPageview = function sendPageview() {
     });
   }
 };
+
+function getGtagClientId() {
+  // @ts-ignore
+  var trackers = ga.getAll();
+  if (!trackers || !trackers.length) return '';
+  return trackers[0].get('clientId');
+}
+
 var trackEvents = function trackEvents() {
-  Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["getPersistentClientId"], 'google');
+  // getPersistentCLientId might return empty string for gtag to create a new one
+  Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(getGtagClientId, 'google');
   /* run list, product, and clientID scripts everywhere */
 
   if (LittledataLayer.ecommerce.impressions.length) {
@@ -258,7 +267,7 @@ var getConfig = function getConfig() {
   var excludeReferal = referralExclusion.test(document.referrer);
   var config = {
     linker: {
-      domains: ['shopify.com', 'rechargeapps.com', 'recurringcheckout.com', 'carthook.com', 'checkout.com']
+      domains: ['^(?!cdn.)(.*)shopify.com', 'rechargeapps.com', 'recurringcheckout.com', 'carthook.com', 'checkout.com']
     },
     anonymize_ip: !!anonymizeIp,
     allow_ad_personalization_signals: !!googleSignals,
