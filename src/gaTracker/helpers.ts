@@ -42,8 +42,17 @@ export const sendPageview = () => {
 	}
 };
 
+function getGtagClientId(): string {
+	// @ts-ignore
+	const trackers = ga.getAll();
+	if (!trackers || !trackers.length) return '';
+
+	return trackers[0].get('clientId');
+}
+
 export const trackEvents = () => {
-	setClientID(getPersistentClientId, 'google');
+	// getPersistentCLientId might return empty string for gtag to create a new one
+	setClientID(getGtagClientId, 'google');
 	/* run list, product, and clientID scripts everywhere */
 	if (LittledataLayer.ecommerce.impressions.length) {
 		productListClicks((product, self) => {
