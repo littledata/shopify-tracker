@@ -10,23 +10,21 @@ import { identifyCustomer, trackEvents, initSegment } from './helpers';
 	advertiseLD();
 	identifyCustomer(LittledataLayer.customer);
 	pageView(function() {
-		window.analytics.ready(() => {
-			// @ts-ignore 'Integrations' property does, in fact exist
-			if (window.analytics.Integrations['Google Analytics']) {
-				window.ga(() => {
-					const tracker = window.ga.getAll()[0];
-					if (tracker) {
-						const clientId = tracker.get('clientId');
-						window.analytics.user().anonymousId(clientId);
-					}
-					window.analytics.page();
-					setClientID(window.analytics.user().anonymousId, 'segment');
-				});
-			} else {
+		// @ts-ignore 'Integrations' property does, in fact exist
+		if (window.analytics.Integrations['Google Analytics']) {
+			window.ga(() => {
+				const tracker = window.ga.getAll()[0];
+				if (tracker) {
+					const clientId = tracker.get('clientId');
+					window.analytics.user().anonymousId(clientId);
+				}
 				window.analytics.page();
 				setClientID(window.analytics.user().anonymousId, 'segment');
-			}
+			});
+		} else {
+			window.analytics.page();
+			setClientID(window.analytics.user().anonymousId, 'segment');
 			trackEvents();
-		});
+		}
 	});
 })();
