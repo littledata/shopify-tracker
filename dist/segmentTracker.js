@@ -568,24 +568,27 @@ __webpack_require__.r(__webpack_exports__);
   Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["advertiseLD"])();
   Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["identifyCustomer"])(LittledataLayer.customer);
   Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["pageView"])(function () {
-    // @ts-ignore 'Integrations' property does, in fact exist
-    if (window.analytics.Integrations['Google Analytics']) {
-      window.ga(function () {
-        var tracker = window.ga.getAll()[0];
+    window.analytics.ready(function () {
+      // @ts-ignore 'Integrations' property does, in fact exist
+      if (window.analytics.Integrations['Google Analytics']) {
+        window.ga(function () {
+          var tracker = window.ga.getAll()[0];
 
-        if (tracker) {
-          var clientId = tracker.get('clientId');
-          window.analytics.user().anonymousId(clientId);
-        }
+          if (tracker) {
+            var clientId = tracker.get('clientId');
+            window.analytics.user().anonymousId(clientId);
+          }
 
+          window.analytics.page();
+          Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(window.analytics.user().anonymousId, 'segment');
+        });
+      } else {
         window.analytics.page();
         Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(window.analytics.user().anonymousId, 'segment');
-      });
-    } else {
-      window.analytics.page();
-      Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(window.analytics.user().anonymousId, 'segment');
+      }
+
       Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["trackEvents"])();
-    }
+    });
   });
 })();
 
