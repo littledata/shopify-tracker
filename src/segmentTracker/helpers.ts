@@ -1,6 +1,6 @@
 /* global LittledataLayer */
 declare let window: CustomWindow;
-import { productListClicks, trackProductImageClicks, trackSocialShares, setClientID } from '../common/helpers';
+import { productListClicks, trackProductImageClicks, trackSocialShares } from '../common/helpers';
 import productListViews from '../common/productListViews';
 
 const trackEvent = (eventName: string, params: object) => {
@@ -194,10 +194,10 @@ const parseAddress = (a: Customer['address']): SegmentAddressFormat => {
 	return output;
 };
 
-export const callSegmentPage = () => {
+export const callSegmentPage = (callback: Function) => {
 	// https://segment.com/docs/sources/website/analytics.js/#page
 	const pageName = document.title;
 	window.analytics.page(pageName, {}, {}, () => {
-		setClientID(window.analytics.user().anonymousId, 'segment');
+		callback();
 	});
 };
