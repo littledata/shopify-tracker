@@ -1,8 +1,8 @@
 /* eslint-env browser */
 /* global LittledataLayer */
 declare let window: CustomWindow;
-import { pageView, validateLittledataLayer, advertiseLD, setClientID } from '../common/helpers';
-import { identifyCustomer, trackEvents, initSegment } from './helpers';
+import { pageView, validateLittledataLayer, advertiseLD } from '../common/helpers';
+import { identifyCustomer, trackEvents, initSegment, callSegmentPage } from './helpers';
 
 (function() {
 	validateLittledataLayer();
@@ -19,12 +19,10 @@ import { identifyCustomer, trackEvents, initSegment } from './helpers';
 						const clientId = tracker.get('clientId');
 						window.analytics.user().anonymousId(clientId);
 					}
-					window.analytics.page();
-					setClientID(window.analytics.user().anonymousId, 'segment');
+					callSegmentPage();
 				});
 			} else {
-				window.analytics.page();
-				setClientID(window.analytics.user().anonymousId, 'segment');
+				callSegmentPage();
 			}
 			trackEvents();
 		});
