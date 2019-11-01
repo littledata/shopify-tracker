@@ -10,8 +10,8 @@ import { identifyCustomer, trackEvents, initSegment, callSegmentPage } from './h
 	advertiseLD();
 	identifyCustomer(LittledataLayer.customer);
 	pageView(function() {
-		//this initializes libraries other than Google Analytics
 		callSegmentPage({
+			//this initializes libraries other than Google Analytics
 			'Google Analytics': false,
 		});
 		window.analytics.ready(() => {
@@ -25,6 +25,7 @@ import { identifyCustomer, trackEvents, initSegment, callSegmentPage } from './h
 					}
 					setClientID(window.analytics.user().anonymousId, 'segment');
 					callSegmentPage({
+						//this only calls page() for GA
 						All: false,
 						'Google Analytics': true,
 					});
