@@ -122,6 +122,7 @@ declare global {
 		googleSignals: boolean;
 		optimizeId?: string;
 		productPageClicks?: boolean;
+		extraLinkerDomains?: string[];
 	}
 
 	var LittledataLayer: OwnLayer;
