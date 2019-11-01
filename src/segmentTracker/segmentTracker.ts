@@ -2,7 +2,7 @@
 /* global LittledataLayer */
 declare let window: CustomWindow;
 import { pageView, validateLittledataLayer, advertiseLD, setClientID } from '../common/helpers';
-import { identifyCustomer, trackEvents, initSegment } from './helpers';
+import { identifyCustomer, trackEvents, initSegment, callSegmentPage } from './helpers';
 
 (function() {
 	validateLittledataLayer();
@@ -10,6 +10,10 @@ import { identifyCustomer, trackEvents, initSegment } from './helpers';
 	advertiseLD();
 	identifyCustomer(LittledataLayer.customer);
 	pageView(function() {
+		callSegmentPage({
+			//this initializes libraries other than Google Analytics
+			'Google Analytics': false,
+		});
 		window.analytics.ready(() => {
 			// @ts-ignore 'Integrations' property does, in fact exist
 			if (window.analytics.Integrations['Google Analytics']) {
@@ -19,12 +23,13 @@ import { identifyCustomer, trackEvents, initSegment } from './helpers';
 						const clientId = tracker.get('clientId');
 						window.analytics.user().anonymousId(clientId);
 					}
-					window.analytics.page();
 					setClientID(window.analytics.user().anonymousId, 'segment');
+					callSegmentPage({
+						//this only calls page() for GA
+						All: false,
+						'Google Analytics': true,
+					});
 				});
-			} else {
-				window.analytics.page();
-				setClientID(window.analytics.user().anonymousId, 'segment');
 			}
 			trackEvents();
 		});
