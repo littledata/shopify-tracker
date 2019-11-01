@@ -150,16 +150,19 @@ export const getConfig = (): Gtag.CustomParams => {
 	const { anonymizeIp, googleSignals, ecommerce, optimizeId, referralExclusion } = LittledataLayer;
 	const userId = LittledataLayer.customer && LittledataLayer.customer.id;
 
+	const DEFAULT_LINKER_DOMAINS = [
+		'^(?!cdn.)(.*)shopify.com',
+		'rechargeapps.com',
+		'recurringcheckout.com',
+		'carthook.com',
+		'checkout.com',
+	];
+
+	const extraLinkerDomains = LittledataLayer.extraLinkerDomains || [];
 	const excludeReferal = referralExclusion.test(document.referrer);
 	const config: Gtag.CustomParams = {
 		linker: {
-			domains: [
-				'^(?!cdn.)(.*)shopify.com',
-				'rechargeapps.com',
-				'recurringcheckout.com',
-				'carthook.com',
-				'checkout.com',
-			],
+			domains: [...DEFAULT_LINKER_DOMAINS, ...extraLinkerDomains],
 		},
 		anonymize_ip: !!anonymizeIp,
 		allow_ad_personalization_signals: !!googleSignals,
