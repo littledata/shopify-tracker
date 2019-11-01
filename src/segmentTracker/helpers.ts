@@ -194,10 +194,14 @@ const parseAddress = (a: Customer['address']): SegmentAddressFormat => {
 	return output;
 };
 
-export const callSegmentPage = (callback: Function) => {
+export const callSegmentPage = (integrations: Object) => {
 	// https://segment.com/docs/sources/website/analytics.js/#page
 	const pageName = document.title;
-	window.analytics.page(pageName, {}, {}, () => {
-		callback();
-	});
+	window.analytics.page(
+		pageName,
+		{},
+		{
+			integrations,
+		},
+	);
 };
