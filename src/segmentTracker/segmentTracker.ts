@@ -9,29 +9,23 @@ import { identifyCustomer, trackEvents, initSegment, callSegmentPage } from './h
 	initSegment();
 	advertiseLD();
 	identifyCustomer(LittledataLayer.customer);
-	pageView(function() {
-		callSegmentPage({
-			//this initializes libraries other than Google Analytics
-			'Google Analytics': false,
-		});
-		window.analytics.ready(() => {
-			// @ts-ignore 'Integrations' property does, in fact exist
-			if (window.analytics.Integrations['Google Analytics']) {
-				window.ga(() => {
-					const tracker = window.ga.getAll()[0];
-					if (tracker) {
-						const clientId = tracker.get('clientId');
-						window.analytics.user().anonymousId(clientId);
-					}
-					setClientID(window.analytics.user().anonymousId, 'segment');
-					callSegmentPage({
-						//this only calls page() for GA
-						All: false,
-						'Google Analytics': true,
-					});
+	window.analytics.ready(() => {
+		// @ts-ignore 'Integrations' property does, in fact, exist
+		if (window.analytics.Integrations['Google Analytics']) {
+			window.ga(() => {
+				const tracker = window.ga.getAll()[0];
+				if (tracker) {
+					const clientId = tracker.get('clientId');
+					window.analytics.user().anonymousId(clientId);
+				}
+				setClientID(window.analytics.user().anonymousId, 'segment');
+				callSegmentPage({
+					//this only calls page() for GA
+					All: false,
+					'Google Analytics': true,
 				});
-			}
-			trackEvents();
-		});
+			});
+		}
+		trackEvents();
 	});
 })();
