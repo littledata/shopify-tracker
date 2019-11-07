@@ -177,6 +177,10 @@ export const initSegment = () => {
 		}
 	}
 	window.dataLayer = window.dataLayer || [];
+	callSegmentPage({
+		//this initializes libraries other than Google Analytics
+		'Google Analytics': false,
+	});
 };
 
 const parseAddress = (a: Customer['address']): SegmentAddressFormat => {
@@ -192,4 +196,16 @@ const parseAddress = (a: Customer['address']): SegmentAddressFormat => {
 	if (a.country) output.country = a.country;
 
 	return output;
+};
+
+export const callSegmentPage = (integrations: Record<string, any>) => {
+	// https://segment.com/docs/sources/website/analytics.js/#page
+	const pageName = document.title;
+	window.analytics.page(
+		pageName,
+		{},
+		{
+			integrations,
+		},
+	);
 };
