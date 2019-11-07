@@ -579,12 +579,13 @@ __webpack_require__.r(__webpack_exports__);
             window.analytics.user().anonymousId(clientId);
           }
 
-          window.analytics.page();
           Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(window.analytics.user().anonymousId, 'segment');
+          Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["callSegmentPage"])({
+            //this only calls page() for GA
+            All: false,
+            'Google Analytics': true
+          });
         });
-      } else {
-        window.analytics.page();
-        Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(window.analytics.user().anonymousId, 'segment');
       }
 
       Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["trackEvents"])();
@@ -601,6 +602,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "identifyCustomer", function() { return identifyCustomer; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "trackEvents", function() { return trackEvents; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "initSegment", function() { return initSegment; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "callSegmentPage", function() { return callSegmentPage; });
 /* harmony import */ var _common_helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
 /* harmony import */ var _common_productListViews__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(5);
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
@@ -752,6 +754,10 @@ var initSegment = function initSegment() {
   }
 
   window.dataLayer = window.dataLayer || [];
+  callSegmentPage({
+    //this initializes libraries other than Google Analytics
+    'Google Analytics': false
+  });
 };
 
 var parseAddress = function parseAddress(a) {
@@ -768,6 +774,14 @@ var parseAddress = function parseAddress(a) {
   if (a.province) output.state = a.province;
   if (a.country) output.country = a.country;
   return output;
+};
+
+var callSegmentPage = function callSegmentPage(integrations) {
+  // https://segment.com/docs/sources/website/analytics.js/#page
+  var pageName = document.title;
+  window.analytics.page(pageName, {}, {
+    integrations: integrations
+  });
 };
 
 /***/ })
