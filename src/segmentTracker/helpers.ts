@@ -198,7 +198,7 @@ const parseAddress = (a: Customer['address']): SegmentAddressFormat => {
 	return output;
 };
 
-export const callSegmentPage = (integrations: Record<string, string>) => {
+export const callSegmentPage = (integrations: Record<string, any>) => {
 	// https://segment.com/docs/sources/website/analytics.js/#page
 	const pageName = document.title;
 	window.analytics.page(

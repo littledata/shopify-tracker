@@ -28,6 +28,7 @@ function getMonitorBaseUrl(): string {
 }
 
 function getStoreUrl() {
+	// @ts-ignore
 	return CHDataObject && CHDataObject.store_urls && CHDataObject.store_urls.store_url;
 }
 
