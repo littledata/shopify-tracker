@@ -738,7 +738,10 @@ __webpack_require__.r(__webpack_exports__);
 
     if (impressions.length > 0) {
       //now send impressions to GA and dataLayer
-      impressionTag(impressions);
+      //maximum batch size is 20
+      chunk(impressions, 20).forEach(function (batch) {
+        return impressionTag(batch);
+      });
     }
   }
 
@@ -756,6 +759,14 @@ __webpack_require__.r(__webpack_exports__);
     }, 300);
   });
 });
+
+var chunk = function chunk(arr, size) {
+  return Array.from({
+    length: Math.ceil(arr.length / size)
+  }, function (v, i) {
+    return arr.slice(i * size, i * size + size);
+  });
+};
 
 /***/ })
 /******/ ]);
