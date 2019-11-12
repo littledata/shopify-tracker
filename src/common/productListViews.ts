@@ -41,7 +41,7 @@ export default (impressionTag: impressionCallback) => {
 			//now send impressions to GA and dataLayer
 			//maximum batch size is 20
 
-			chunk(impressions, 20).forEach((batch: Impression[]) => impressionTag(impressions));
+			chunk(impressions, 20).forEach((batch: Impression[]) => impressionTag(batch));
 		}
 	}
 
@@ -61,4 +61,3 @@ export default (impressionTag: impressionCallback) => {
 
 const chunk = (arr: Impression[], size: number) =>
 	Array.from({ length: Math.ceil(arr.length / size) }, (v, i) => arr.slice(i * size, i * size + size));
-
