@@ -43,6 +43,9 @@ export const sendPageview = () => {
 };
 
 function getGtagClientId(): string {
+	if (LittledataLayer.customer && LittledataLayer.customer.generatedClientID) {
+		return LittledataLayer.customer.generatedClientID;
+	}
 	// @ts-ignore
 	const trackers = ga.getAll();
 	if (!trackers || !trackers.length) return '';
