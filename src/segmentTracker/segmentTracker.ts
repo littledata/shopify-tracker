@@ -11,6 +11,9 @@ import { identifyCustomer, trackEvents, initSegment } from './helpers';
 	identifyCustomer(LittledataLayer.customer);
 	pageView(function() {
 		window.analytics.ready(() => {
+			const defaultClientID = LittledataLayer.customer && LittledataLayer.customer.generatedClientID;
+			const getDefaultClientID = () => defaultClientID;
+			const getClientID = defaultClientID ? getDefaultClientID : window.analytics.user().anonymousId;
 			// @ts-ignore 'Integrations' property does, in fact exist
 			if (window.analytics.Integrations['Google Analytics']) {
 				window.ga(() => {
@@ -20,11 +23,11 @@ import { identifyCustomer, trackEvents, initSegment } from './helpers';
 						window.analytics.user().anonymousId(clientId);
 					}
 					window.analytics.page();
-					setClientID(window.analytics.user().anonymousId, 'segment');
+					setClientID(getClientID, 'segment');
 				});
 			} else {
 				window.analytics.page();
-				setClientID(window.analytics.user().anonymousId, 'segment');
+				setClientID(getClientID, 'segment');
 			}
 			trackEvents();
 		});
