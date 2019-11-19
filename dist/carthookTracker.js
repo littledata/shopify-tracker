@@ -242,8 +242,10 @@ var getConfig = function getConfig() {
 var sendCartId = function sendCartId() {
   var baseUrl = getMonitorBaseUrl();
   var apiUrl = "".concat(baseUrl, "/clientID");
+  var clientID = Object(_common_getGaCookie__WEBPACK_IMPORTED_MODULE_0__["getGaCookie"])();
+  if (!clientID) return;
   var data = {
-    clientID: Object(_common_getGaCookie__WEBPACK_IMPORTED_MODULE_0__["getGaCookie"])(),
+    clientID: clientID,
     // @ts-ignore
     cartID: "carthook-".concat(CHDataObject.checkout_session)
   };

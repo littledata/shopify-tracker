@@ -165,7 +165,11 @@ var sendPageview = function sendPageview() {
 };
 
 function getGtagClientId() {
-  // @ts-ignore
+  if (LittledataLayer.customer && LittledataLayer.customer.generatedClientID) {
+    return LittledataLayer.customer.generatedClientID;
+  } // @ts-ignore
+
+
   var trackers = ga.getAll();
   if (!trackers || !trackers.length) return '';
   return trackers[0].get('clientId');

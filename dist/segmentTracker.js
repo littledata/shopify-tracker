@@ -580,7 +580,14 @@ __webpack_require__.r(__webpack_exports__);
   Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["identifyCustomer"])(LittledataLayer.customer);
   Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["pageView"])(function () {
     window.analytics.ready(function () {
-      // @ts-ignore 'Integrations' property does, in fact exist
+      var defaultClientID = LittledataLayer.customer && LittledataLayer.customer.generatedClientID;
+
+      var getDefaultClientID = function getDefaultClientID() {
+        return defaultClientID;
+      };
+
+      var getClientID = defaultClientID ? getDefaultClientID : window.analytics.user().anonymousId; // @ts-ignore 'Integrations' property does, in fact exist
+
       if (window.analytics.Integrations['Google Analytics']) {
         window.ga(function () {
           var tracker = window.ga.getAll()[0];
@@ -590,7 +597,7 @@ __webpack_require__.r(__webpack_exports__);
             window.analytics.user().anonymousId(clientId);
           }
 
-          Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(window.analytics.user().anonymousId, 'segment');
+          Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(getClientID, 'segment');
           Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["callSegmentPage"])({
             //this only calls page() for GA
             All: false,
