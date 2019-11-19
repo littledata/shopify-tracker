@@ -2,7 +2,7 @@
 /* global LittledataLayer */
 declare let window: CustomWindow;
 import { pageView, validateLittledataLayer, advertiseLD, setClientID } from '../common/helpers';
-import { identifyCustomer, trackEvents, initSegment } from './helpers';
+import { identifyCustomer, trackEvents, initSegment, callSegmentPage } from './helpers';
 
 (function() {
 	validateLittledataLayer();
@@ -22,12 +22,13 @@ import { identifyCustomer, trackEvents, initSegment } from './helpers';
 						const clientId = tracker.get('clientId');
 						window.analytics.user().anonymousId(clientId);
 					}
-					window.analytics.page();
 					setClientID(getClientID, 'segment');
+					callSegmentPage({
+						//this only calls page() for GA
+						All: false,
+						'Google Analytics': true,
+					});
 				});
-			} else {
-				window.analytics.page();
-				setClientID(getClientID, 'segment');
 			}
 			trackEvents();
 		});
