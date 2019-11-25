@@ -167,6 +167,7 @@ declare global {
 			street: string;
 			zip: string;
 		};
+		generatedClientID?: string;
 	}
 
 	interface SegmentAddressFormat {

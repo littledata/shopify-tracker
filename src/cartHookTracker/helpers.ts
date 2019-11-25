@@ -92,8 +92,12 @@ const getConfig = (): Gtag.CustomParams => {
 export const sendCartId = () => {
 	const baseUrl = getMonitorBaseUrl();
 	const apiUrl = `${baseUrl}/clientID`;
+	const clientID = getGaCookie();
+
+	if (!clientID) return;
+
 	const data = {
-		clientID: getGaCookie(),
+		clientID,
 		// @ts-ignore
 		cartID: `carthook-${CHDataObject.checkout_session}`,
 	};

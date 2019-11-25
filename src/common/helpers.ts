@@ -65,9 +65,14 @@ export const productListClicks = (clickTag: ListClickCallback): void => {
 	});
 };
 
+let postCartTimeout;
+
 function postClientID(getClientId: () => string, platform: string) {
-	setTimeout(function() {
+	clearTimeout(postCartTimeout); //don't send multiple requests within a second
+	postCartTimeout = setTimeout(function() {
 		const clientID = getClientId();
+		if (typeof clientID !== 'string') return;
+
 		const updatedAt = new Date().getTime();
 		const cartUpdateReq = new XMLHttpRequest(); // new HttpRequest instance
 		const attributes = {

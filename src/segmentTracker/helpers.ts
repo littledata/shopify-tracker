@@ -181,6 +181,9 @@ export const initSegment = () => {
 		//this initializes libraries other than Google Analytics
 		'Google Analytics': false,
 	});
+	//this will get called again if GA is installed with updated anonmyousId
+	//but dedeuplicated if that happens with 1 second
+	setClientID(window.analytics.user().anonymousId, 'segment');
 };
 
 const parseAddress = (a: Customer['address']): SegmentAddressFormat => {
