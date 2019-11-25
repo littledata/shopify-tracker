@@ -71,6 +71,8 @@ function postClientID(getClientId: () => string, platform: string) {
 	clearTimeout(postCartTimeout); //don't send multiple requests within a second
 	postCartTimeout = setTimeout(function() {
 		const clientID = getClientId();
+		if (typeof clientID !== 'string') return;
+
 		const updatedAt = new Date().getTime();
 		const cartUpdateReq = new XMLHttpRequest(); // new HttpRequest instance
 		const attributes = {
