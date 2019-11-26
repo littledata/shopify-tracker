@@ -29,6 +29,8 @@ import { identifyCustomer, trackEvents, initSegment, callSegmentPage } from './h
 						'Google Analytics': true,
 					});
 				});
+			} else {
+				setClientID(getClientID, 'segment');
 			}
 			trackEvents();
 		});
