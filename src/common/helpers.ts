@@ -65,7 +65,7 @@ export const productListClicks = (clickTag: ListClickCallback): void => {
 	});
 };
 
-let postCartTimeout;
+let postCartTimeout: any;
 
 function postClientID(getClientId: () => string, platform: string) {
 	clearTimeout(postCartTimeout); //don't send multiple requests within a second
