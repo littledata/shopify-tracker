@@ -384,10 +384,14 @@ var productListClicks = function productListClicks(clickTag) {
     });
   });
 };
+var postCartTimeout;
 
 function postClientID(getClientId, platform) {
-  setTimeout(function () {
+  clearTimeout(postCartTimeout); //don't send multiple requests within a second
+
+  postCartTimeout = setTimeout(function () {
     var clientID = getClientId();
+    if (typeof clientID !== 'string') return;
     var updatedAt = new Date().getTime();
     var cartUpdateReq = new XMLHttpRequest(); // new HttpRequest instance
 
@@ -397,6 +401,7 @@ function postClientID(getClientId, platform) {
 
     cartUpdateReq.onload = function () {
       var updatedCart = JSON.parse(cartUpdateReq.response);
+      LittledataLayer.cart = updatedCart;
       var clientIDReq = new XMLHttpRequest();
       clientIDReq.open('POST', "".concat(LittledataLayer.transactionWatcherURL, "/clientID"));
       clientIDReq.setRequestHeader('Content-Type', 'application/json');
