@@ -65,7 +65,7 @@ export const productListClicks = (clickTag: ListClickCallback): void => {
 	});
 };
 
-let postCartTimeout;
+let postCartTimeout: any;
 
 function postClientID(getClientId: () => string, platform: string) {
 	clearTimeout(postCartTimeout); //don't send multiple requests within a second
@@ -82,6 +82,7 @@ function postClientID(getClientId: () => string, platform: string) {
 
 		cartUpdateReq.onload = function() {
 			const updatedCart = JSON.parse(cartUpdateReq.response);
+			LittledataLayer.cart = updatedCart;
 			const clientIDReq = new XMLHttpRequest();
 			clientIDReq.open('POST', `${LittledataLayer.transactionWatcherURL}/clientID`);
 			clientIDReq.setRequestHeader('Content-Type', 'application/json');
