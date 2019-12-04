@@ -690,7 +690,7 @@ var trackEvents = function trackEvents() {
         var p = segmentProduct(product);
         trackEvent('Product Clicked', _objectSpread({}, p, {
           currency: LittledataLayer.ecommerce.currencyCode,
-          list_id: document.location.pathname,
+          list_id: product.list,
           category: 'EnhancedEcommerce'
         }));
       });
@@ -709,7 +709,6 @@ var trackEvents = function trackEvents() {
 
     if (rawProduct) {
       var product = segmentProduct(rawProduct);
-      product.list_id = document.location.href;
       product.currency = LittledataLayer.ecommerce.currencyCode;
       product.category = 'EnhancedEcommerce';
       product.position = parseInt(window.localStorage.getItem('position')) || 1;
