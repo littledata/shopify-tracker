@@ -385,19 +385,18 @@ var productListClicks = function productListClicks(clickTag) {
   });
 };
 var postCartTimeout;
+var postAttributes = {}; //persist any previous attributes sent from this page
 
 function postClientID(getClientId, platform) {
+  var attribute = "".concat(platform, "-clientID");
   clearTimeout(postCartTimeout); //don't send multiple requests within a second
 
   postCartTimeout = setTimeout(function () {
     var clientID = getClientId();
     if (typeof clientID !== 'string') return;
-    var updatedAt = new Date().getTime();
+    postAttributes.updatedAt = new Date().getTime();
+    postAttributes[attribute] = clientID;
     var cartUpdateReq = new XMLHttpRequest(); // new HttpRequest instance
-
-    var attributes = _defineProperty({
-      updatedAt: updatedAt
-    }, "".concat(platform, "-clientID"), clientID);
 
     cartUpdateReq.onload = function () {
       var updatedCart = JSON.parse(cartUpdateReq.response);
@@ -405,7 +404,7 @@ function postClientID(getClientId, platform) {
       var clientIDReq = new XMLHttpRequest();
       clientIDReq.open('POST', "".concat(LittledataLayer.transactionWatcherURL, "/clientID"));
       clientIDReq.setRequestHeader('Content-Type', 'application/json');
-      clientIDReq.send(JSON.stringify(_objectSpread({}, attributes, {
+      clientIDReq.send(JSON.stringify(_objectSpread({}, postAttributes, {
         cartID: "".concat(platform, "-").concat(updatedCart.token)
       })));
     };
@@ -413,7 +412,7 @@ function postClientID(getClientId, platform) {
     cartUpdateReq.open('POST', '/cart/update.json');
     cartUpdateReq.setRequestHeader('Content-Type', 'application/json');
     cartUpdateReq.send(JSON.stringify({
-      attributes: attributes
+      postAttributes: postAttributes
     }));
   }, 1000);
 }

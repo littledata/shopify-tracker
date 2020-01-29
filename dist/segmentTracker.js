@@ -175,19 +175,18 @@ var productListClicks = function productListClicks(clickTag) {
   });
 };
 var postCartTimeout;
+var postAttributes = {}; //persist any previous attributes sent from this page
 
 function postClientID(getClientId, platform) {
+  var attribute = "".concat(platform, "-clientID");
   clearTimeout(postCartTimeout); //don't send multiple requests within a second
 
   postCartTimeout = setTimeout(function () {
     var clientID = getClientId();
     if (typeof clientID !== 'string') return;
-    var updatedAt = new Date().getTime();
+    postAttributes.updatedAt = new Date().getTime();
+    postAttributes[attribute] = clientID;
     var cartUpdateReq = new XMLHttpRequest(); // new HttpRequest instance
-
-    var attributes = _defineProperty({
-      updatedAt: updatedAt
-    }, "".concat(platform, "-clientID"), clientID);
 
     cartUpdateReq.onload = function () {
       var updatedCart = JSON.parse(cartUpdateReq.response);
@@ -195,7 +194,7 @@ function postClientID(getClientId, platform) {
       var clientIDReq = new XMLHttpRequest();
       clientIDReq.open('POST', "".concat(LittledataLayer.transactionWatcherURL, "/clientID"));
       clientIDReq.setRequestHeader('Content-Type', 'application/json');
-      clientIDReq.send(JSON.stringify(_objectSpread({}, attributes, {
+      clientIDReq.send(JSON.stringify(_objectSpread({}, postAttributes, {
         cartID: "".concat(platform, "-").concat(updatedCart.token)
       })));
     };
@@ -203,7 +202,7 @@ function postClientID(getClientId, platform) {
     cartUpdateReq.open('POST', '/cart/update.json');
     cartUpdateReq.setRequestHeader('Content-Type', 'application/json');
     cartUpdateReq.send(JSON.stringify({
-      attributes: attributes
+      postAttributes: postAttributes
     }));
   }, 1000);
 }
@@ -584,35 +583,27 @@ __webpack_require__.r(__webpack_exports__);
   Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["advertiseLD"])();
   Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["identifyCustomer"])(LittledataLayer.customer);
   Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["pageView"])(function () {
+    Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["callSegmentPage"])({});
     window.analytics.ready(function () {
-      var defaultClientID = LittledataLayer.customer && LittledataLayer.customer.generatedClientID;
-
-      var getDefaultClientID = function getDefaultClientID() {
-        return defaultClientID;
-      };
-
-      var getClientID = defaultClientID ? getDefaultClientID : window.analytics.user().anonymousId; // @ts-ignore 'Integrations' property does, in fact exist
-
+      // @ts-ignore 'Integrations' property does, in fact exist
       if (window.analytics.Integrations['Google Analytics']) {
         window.ga(function () {
           var tracker = window.ga.getAll()[0];
 
           if (tracker) {
             var clientId = tracker.get('clientId');
-            window.analytics.user().anonymousId(clientId);
-          }
+            var generatedClientID = LittledataLayer.customer && LittledataLayer.customer.generatedClientID;
 
-          Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(getClientID, 'segment');
-          Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["callSegmentPage"])({
-            //this only calls page() for GA
-            All: false,
-            'Google Analytics': true
-          });
+            var getClientID = function getClientID() {
+              return generatedClientID ? generatedClientID : clientId;
+            };
+
+            Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(getClientID, 'google');
+          }
         });
-      } else {
-        Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(getClientID, 'segment');
       }
 
+      Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(window.analytics.user().anonymousId, 'segment');
       Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["trackEvents"])();
     });
   });
@@ -778,10 +769,6 @@ var initSegment = function initSegment() {
   }
 
   window.dataLayer = window.dataLayer || [];
-  callSegmentPage({
-    //this initializes libraries other than Google Analytics
-    'Google Analytics': false
-  });
 };
 
 var parseAddress = function parseAddress(a) {
