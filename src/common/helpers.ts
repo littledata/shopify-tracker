@@ -76,14 +76,14 @@ const postAttributes: PostAttributes = {}; //persist any previous attributes sen
 
 function postClientID(getClientId: () => string, platform: string) {
 	const attribute = `${platform}-clientID`;
+	const clientID = getClientId();
+	if (typeof clientID !== 'string') return;
+
+	postAttributes.updatedAt = new Date().getTime();
+	(postAttributes as any)[attribute] = clientID;
+
 	clearTimeout(postCartTimeout); //don't send multiple requests within a second
 	postCartTimeout = setTimeout(function() {
-		const clientID = getClientId();
-		if (typeof clientID !== 'string') return;
-
-		postAttributes.updatedAt = new Date().getTime();
-		(postAttributes as any)[attribute] = clientID;
-		console.log('Posting attributes to transaction-monitor:', postAttributes);
 		const cartUpdateReq = new XMLHttpRequest(); // new HttpRequest instance
 		cartUpdateReq.onload = function() {
 			const updatedCart = JSON.parse(cartUpdateReq.response);
@@ -94,7 +94,7 @@ function postClientID(getClientId: () => string, platform: string) {
 			clientIDReq.send(
 				JSON.stringify({
 					...postAttributes,
-					cartID: `${platform}-${updatedCart.token}`,
+					cartID: `${updatedCart.token}`,
 				}),
 			);
 		};

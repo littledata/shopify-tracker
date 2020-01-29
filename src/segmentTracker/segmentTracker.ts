@@ -21,7 +21,6 @@ import { identifyCustomer, trackEvents, initSegment, callSegmentPage } from './h
 						const generatedClientID =
 							LittledataLayer.customer && LittledataLayer.customer.generatedClientID;
 						const getClientID = () => (generatedClientID ? generatedClientID : clientId);
-						console.log('Sending clientID to transaction-monitor:', getClientID());
 						setClientID(getClientID, 'google');
 					}
 				});
