@@ -5,6 +5,7 @@ import { pageView, validateLittledataLayer, advertiseLD, setClientID } from '../
 import { identifyCustomer, trackEvents, initSegment, callSegmentPage } from './helpers';
 
 (function() {
+	window.LittledataScriptVersion = '9.0';
 	validateLittledataLayer();
 	initSegment();
 	advertiseLD();
