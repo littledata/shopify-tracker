@@ -396,6 +396,7 @@ function postClientID(getClientId, platform) {
     if (typeof clientID !== 'string') return;
     postAttributes.updatedAt = new Date().getTime();
     postAttributes[attribute] = clientID;
+    console.log('Posting attributes to transaction-monitor:', postAttributes);
     var cartUpdateReq = new XMLHttpRequest(); // new HttpRequest instance
 
     cartUpdateReq.onload = function () {

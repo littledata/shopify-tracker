@@ -186,6 +186,7 @@ function postClientID(getClientId, platform) {
     if (typeof clientID !== 'string') return;
     postAttributes.updatedAt = new Date().getTime();
     postAttributes[attribute] = clientID;
+    console.log('Posting attributes to transaction-monitor:', postAttributes);
     var cartUpdateReq = new XMLHttpRequest(); // new HttpRequest instance
 
     cartUpdateReq.onload = function () {
@@ -598,6 +599,7 @@ __webpack_require__.r(__webpack_exports__);
               return generatedClientID ? generatedClientID : clientId;
             };
 
+            console.log('Sending clientID to transaction-monitor:', getClientID());
             Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(getClientID, 'google');
           }
         });
