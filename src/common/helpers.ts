@@ -72,7 +72,7 @@ interface PostAttributes {
 	'google-clientID'?: string;
 	'segment-clientID'?: string;
 }
-const postAttributes = {} as PostAttributes; //persist any previous attributes sent from this page
+const postAttributes: PostAttributes = {}; //persist any previous attributes sent from this page
 
 function postClientID(getClientId: () => string, platform: string) {
 	const attribute = `${platform}-clientID`;
