@@ -134,6 +134,7 @@ declare global {
 		analytics: SegmentAnalytics.AnalyticsJS;
 		gtag: Gtag.Gtag;
 		dataLayer: any[];
+		LittledataScriptVersion: string;
 	}
 
 	interface TimeBombHTMLAnchor extends HTMLAnchorElement {
