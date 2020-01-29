@@ -176,10 +176,6 @@ export const initSegment = () => {
 		}
 	}
 	window.dataLayer = window.dataLayer || [];
-	callSegmentPage({
-		//this initializes libraries other than Google Analytics
-		'Google Analytics': false,
-	});
 };
 
 const parseAddress = (a: Customer['address']): SegmentAddressFormat => {
