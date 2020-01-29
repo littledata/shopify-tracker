@@ -83,6 +83,7 @@ function postClientID(getClientId: () => string, platform: string) {
 
 		postAttributes.updatedAt = new Date().getTime();
 		(postAttributes as any)[attribute] = clientID;
+		console.log('Posting attributes to transaction-monitor:', postAttributes);
 		const cartUpdateReq = new XMLHttpRequest(); // new HttpRequest instance
 		cartUpdateReq.onload = function() {
 			const updatedCart = JSON.parse(cartUpdateReq.response);
