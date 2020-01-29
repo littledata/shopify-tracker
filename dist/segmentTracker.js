@@ -175,14 +175,14 @@ var productListClicks = function productListClicks(clickTag) {
   });
 };
 var postCartTimeout;
-var postAttributes = {}; //persist any previous attributes sent from this page
+var attributes = {}; //persist any previous attributes sent from this page
 
 function postClientID(getClientId, platform) {
   var attribute = "".concat(platform, "-clientID");
   var clientID = getClientId();
   if (typeof clientID !== 'string') return;
-  postAttributes.updatedAt = new Date().getTime();
-  postAttributes[attribute] = clientID;
+  attributes.updatedAt = new Date().getTime();
+  attributes[attribute] = clientID;
   clearTimeout(postCartTimeout); //don't send multiple requests within a second
 
   postCartTimeout = setTimeout(function () {
@@ -194,7 +194,7 @@ function postClientID(getClientId, platform) {
       var clientIDReq = new XMLHttpRequest();
       clientIDReq.open('POST', "".concat(LittledataLayer.transactionWatcherURL, "/clientID"));
       clientIDReq.setRequestHeader('Content-Type', 'application/json');
-      clientIDReq.send(JSON.stringify(_objectSpread({}, postAttributes, {
+      clientIDReq.send(JSON.stringify(_objectSpread({}, attributes, {
         cartID: "".concat(updatedCart.token)
       })));
     };
@@ -202,7 +202,7 @@ function postClientID(getClientId, platform) {
     cartUpdateReq.open('POST', '/cart/update.json');
     cartUpdateReq.setRequestHeader('Content-Type', 'application/json');
     cartUpdateReq.send(JSON.stringify({
-      postAttributes: postAttributes
+      attributes: attributes
     }));
   }, 1000);
 }
