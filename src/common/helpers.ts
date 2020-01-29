@@ -72,15 +72,15 @@ interface PostAttributes {
 	'google-clientID'?: string;
 	'segment-clientID'?: string;
 }
-const postAttributes: PostAttributes = {}; //persist any previous attributes sent from this page
+const attributes: PostAttributes = {}; //persist any previous attributes sent from this page
 
 function postClientID(getClientId: () => string, platform: string) {
 	const attribute = `${platform}-clientID`;
 	const clientID = getClientId();
 	if (typeof clientID !== 'string') return;
 
-	postAttributes.updatedAt = new Date().getTime();
-	(postAttributes as any)[attribute] = clientID;
+	attributes.updatedAt = new Date().getTime();
+	(attributes as any)[attribute] = clientID;
 
 	clearTimeout(postCartTimeout); //don't send multiple requests within a second
 	postCartTimeout = setTimeout(function() {
@@ -93,7 +93,7 @@ function postClientID(getClientId: () => string, platform: string) {
 			clientIDReq.setRequestHeader('Content-Type', 'application/json');
 			clientIDReq.send(
 				JSON.stringify({
-					...postAttributes,
+					...attributes,
 					cartID: `${updatedCart.token}`,
 				}),
 			);
@@ -102,7 +102,7 @@ function postClientID(getClientId: () => string, platform: string) {
 		cartUpdateReq.setRequestHeader('Content-Type', 'application/json');
 		cartUpdateReq.send(
 			JSON.stringify({
-				postAttributes,
+				attributes,
 			}),
 		);
 	}, 1000);
