@@ -389,14 +389,13 @@ var postAttributes = {}; //persist any previous attributes sent from this page
 
 function postClientID(getClientId, platform) {
   var attribute = "".concat(platform, "-clientID");
+  var clientID = getClientId();
+  if (typeof clientID !== 'string') return;
+  postAttributes.updatedAt = new Date().getTime();
+  postAttributes[attribute] = clientID;
   clearTimeout(postCartTimeout); //don't send multiple requests within a second
 
   postCartTimeout = setTimeout(function () {
-    var clientID = getClientId();
-    if (typeof clientID !== 'string') return;
-    postAttributes.updatedAt = new Date().getTime();
-    postAttributes[attribute] = clientID;
-    console.log('Posting attributes to transaction-monitor:', postAttributes);
     var cartUpdateReq = new XMLHttpRequest(); // new HttpRequest instance
 
     cartUpdateReq.onload = function () {
@@ -406,7 +405,7 @@ function postClientID(getClientId, platform) {
       clientIDReq.open('POST', "".concat(LittledataLayer.transactionWatcherURL, "/clientID"));
       clientIDReq.setRequestHeader('Content-Type', 'application/json');
       clientIDReq.send(JSON.stringify(_objectSpread({}, postAttributes, {
-        cartID: "".concat(platform, "-").concat(updatedCart.token)
+        cartID: "".concat(updatedCart.token)
       })));
     };
 
