@@ -21,7 +21,7 @@ export const initGtag = () => {
 	gtag('config', LittledataLayer.webPropertyID, getConfig());
 };
 
-export const sendPageview = (done: () => any) => {
+export const sendPageview = () => {
 	const page_title = removePii(document.title);
 	const page_location = removePii(document.location.href);
 
@@ -29,13 +29,13 @@ export const sendPageview = (done: () => any) => {
 		page_title,
 		page_location,
 	});
-	gtag('event', 'pageview', {
-		event_category: 'Pageview (Littledata)',
-		event_label: '',
-		non_interaction: true,
-		send_to: LittledataLayer.webPropertyID,
-		event_callback: done,
-	});
+	// gtag('event', 'pageview', {
+	// 	event_category: 'Pageview (Littledata)',
+	// 	event_label: '',
+	// 	non_interaction: true,
+	// 	send_to: LittledataLayer.webPropertyID,
+	// 	event_callback: done,
+	// });
 	dataLayer.push({
 		event: 'pageview',
 		page_title,
@@ -46,6 +46,18 @@ export const sendPageview = (done: () => any) => {
 	if (typeof googleAds === 'object' && googleAds.length > 0) {
 		googleAds.forEach(adId => gtag('config', adId));
 	}
+
+	window.ga =
+		window.ga ||
+		function() {
+			(window.ga.q = window.ga.q || []).push(arguments);
+		};
+	window.ga.l = +new Date();
+	window.ga(() => {
+		// getPersistentCLientId might return empty string for gtag to create a new one
+		// so we need to wait for GA library (part of gtag)
+		setClientID(getGtagClientId, 'google');
+	});
 };
 
 function getGtagClientId(): string {
@@ -60,16 +72,6 @@ function getGtagClientId(): string {
 }
 
 export const trackEvents = () => {
-	window.ga =
-		window.ga ||
-		function() {
-			(window.ga.q = window.ga.q || []).push(arguments);
-		};
-	window.ga(() => {
-		// getPersistentCLientId might return empty string for gtag to create a new one
-		// so we need to wait for GA library (part of gtag)
-		setClientID(getGtagClientId, 'google');
-	});
 	/* run list, product, and clientID scripts everywhere */
 	if (LittledataLayer.ecommerce.impressions.length) {
 		productListClicks((product, self) => {
