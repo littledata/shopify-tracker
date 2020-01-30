@@ -88,7 +88,7 @@ function postClientID(getClientId: () => string, platform: string) {
 			const updatedCart = JSON.parse(cartUpdateReq.response);
 			LittledataLayer.cart = updatedCart;
 			const clientIDReq = new XMLHttpRequest();
-			clientIDReq.open('POST', `${LittledataLayer.transactionWatcherURL}/clientID`);
+			clientIDReq.open('POST', `${LittledataLayer.transactionWatcherURL}/v2/clientID/store`);
 			clientIDReq.setRequestHeader('Content-Type', 'application/json');
 			clientIDReq.send(
 				JSON.stringify({
