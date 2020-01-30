@@ -176,8 +176,11 @@ function getGtagClientId() {
 }
 
 var trackEvents = function trackEvents() {
-  // getPersistentCLientId might return empty string for gtag to create a new one
-  Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(getGtagClientId, 'google');
+  window.ga(function () {
+    // getPersistentCLientId might return empty string for gtag to create a new one
+    // so we need to wait for GA library (part of gtag)
+    Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(getGtagClientId, 'google');
+  });
   /* run list, product, and clientID scripts everywhere */
 
   if (LittledataLayer.ecommerce.impressions.length) {
