@@ -96,7 +96,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 (function () {
-  window.LittledataScriptVersion = '8.0.5';
+  window.LittledataScriptVersion = '8.3';
   Object(_common_helpers__WEBPACK_IMPORTED_MODULE_1__["validateLittledataLayer"])();
   Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["initGtag"])();
   Object(_common_helpers__WEBPACK_IMPORTED_MODULE_1__["advertiseLD"])();
@@ -417,7 +417,7 @@ function postClientID(getClientId, platform) {
       var updatedCart = JSON.parse(cartUpdateReq.response);
       LittledataLayer.cart = updatedCart;
       var clientIDReq = new XMLHttpRequest();
-      clientIDReq.open('POST', "".concat(LittledataLayer.transactionWatcherURL, "/clientID"));
+      clientIDReq.open('POST', "".concat(LittledataLayer.transactionWatcherURL, "/v2/clientID/store"));
       clientIDReq.setRequestHeader('Content-Type', 'application/json');
       clientIDReq.send(JSON.stringify(_objectSpread({}, attributes, {
         cartID: "".concat(updatedCart.token)

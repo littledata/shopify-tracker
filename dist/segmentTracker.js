@@ -192,7 +192,7 @@ function postClientID(getClientId, platform) {
       var updatedCart = JSON.parse(cartUpdateReq.response);
       LittledataLayer.cart = updatedCart;
       var clientIDReq = new XMLHttpRequest();
-      clientIDReq.open('POST', "".concat(LittledataLayer.transactionWatcherURL, "/clientID"));
+      clientIDReq.open('POST', "".concat(LittledataLayer.transactionWatcherURL, "/v2/clientID/store"));
       clientIDReq.setRequestHeader('Content-Type', 'application/json');
       clientIDReq.send(JSON.stringify(_objectSpread({}, attributes, {
         cartID: "".concat(updatedCart.token)
