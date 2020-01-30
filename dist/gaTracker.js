@@ -151,11 +151,16 @@ var sendPageview = function sendPageview(done) {
     page_title: page_title,
     page_location: page_location
   });
+  gtag('event', 'pageview', {
+    event_category: 'Pageview (Littledata)',
+    event_label: '',
+    send_to: LittledataLayer.webPropertyID,
+    event_callback: done
+  });
   dataLayer.push({
     event: 'pageview',
     page_title: page_title,
-    page_location: page_location,
-    event_callback: done
+    page_location: page_location
   });
   var googleAds = LittledataLayer.googleAdsConversionIds;
 
