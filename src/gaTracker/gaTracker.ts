@@ -9,7 +9,8 @@ import { pageView, validateLittledataLayer, advertiseLD } from '../common/helper
 	initGtag();
 	advertiseLD();
 	pageView(function() {
-		sendPageview();
-		trackEvents();
+		sendPageview(() => {
+			trackEvents();
+		});
 	});
 })();
