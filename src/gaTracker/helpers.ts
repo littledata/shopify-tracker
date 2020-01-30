@@ -29,12 +29,16 @@ export const sendPageview = (done: () => any) => {
 		page_title,
 		page_location,
 	});
-
+	gtag('event', 'pageview', {
+		event_category: 'Pageview (Littledata)',
+		event_label: '',
+		send_to: LittledataLayer.webPropertyID,
+		event_callback: done,
+	});
 	dataLayer.push({
 		event: 'pageview',
 		page_title,
 		page_location,
-		event_callback: done,
 	});
 
 	const googleAds = LittledataLayer.googleAdsConversionIds;
