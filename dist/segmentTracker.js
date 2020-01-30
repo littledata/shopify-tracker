@@ -180,12 +180,12 @@ var attributes = {}; //persist any previous attributes sent from this page
 function postClientID(getClientId, platform) {
   var attribute = "".concat(platform, "-clientID");
   var clientID = getClientId();
-  if (typeof clientID !== 'string') return;
-  attributes.updatedAt = new Date().getTime();
+  if (typeof clientID !== 'string' || clientID.length === 0) return;
   attributes[attribute] = clientID;
   clearTimeout(postCartTimeout); //don't send multiple requests within a second
 
   postCartTimeout = setTimeout(function () {
+    attributes.updatedAt = new Date().getTime();
     var cartUpdateReq = new XMLHttpRequest(); // new HttpRequest instance
 
     cartUpdateReq.onload = function () {
