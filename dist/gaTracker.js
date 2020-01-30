@@ -176,6 +176,10 @@ function getGtagClientId() {
 }
 
 var trackEvents = function trackEvents() {
+  window.ga = window.ga || function () {
+    (window.ga.q = window.ga.q || []).push(arguments);
+  };
+
   window.ga(function () {
     // getPersistentCLientId might return empty string for gtag to create a new one
     // so we need to wait for GA library (part of gtag)
