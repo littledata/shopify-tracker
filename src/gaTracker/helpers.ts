@@ -54,6 +54,11 @@ function getGtagClientId(): string {
 }
 
 export const trackEvents = () => {
+	window.ga =
+		window.ga ||
+		function() {
+			(window.ga.q = window.ga.q || []).push(arguments);
+		};
 	window.ga(() => {
 		// getPersistentCLientId might return empty string for gtag to create a new one
 		// so we need to wait for GA library (part of gtag)
