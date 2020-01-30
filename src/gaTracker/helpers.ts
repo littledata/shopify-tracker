@@ -32,6 +32,7 @@ export const sendPageview = (done: () => any) => {
 	gtag('event', 'pageview', {
 		event_category: 'Pageview (Littledata)',
 		event_label: '',
+		non_interaction: true,
 		send_to: LittledataLayer.webPropertyID,
 		event_callback: done,
 	});
