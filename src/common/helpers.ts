@@ -77,13 +77,12 @@ const attributes: PostAttributes = {}; //persist any previous attributes sent fr
 function postClientID(getClientId: () => string, platform: string) {
 	const attribute = `${platform}-clientID`;
 	const clientID = getClientId();
-	if (typeof clientID !== 'string') return;
-
-	attributes.updatedAt = new Date().getTime();
+	if (typeof clientID !== 'string' || clientID.length === 0) return;
 	(attributes as any)[attribute] = clientID;
 
 	clearTimeout(postCartTimeout); //don't send multiple requests within a second
 	postCartTimeout = setTimeout(function() {
+		attributes.updatedAt = new Date().getTime();
 		const cartUpdateReq = new XMLHttpRequest(); // new HttpRequest instance
 		cartUpdateReq.onload = function() {
 			const updatedCart = JSON.parse(cartUpdateReq.response);
