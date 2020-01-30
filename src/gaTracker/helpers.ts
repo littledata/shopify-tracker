@@ -21,7 +21,7 @@ export const initGtag = () => {
 	gtag('config', LittledataLayer.webPropertyID, getConfig());
 };
 
-export const sendPageview = () => {
+export const sendPageview = (done: () => any) => {
 	const page_title = removePii(document.title);
 	const page_location = removePii(document.location.href);
 
@@ -34,6 +34,7 @@ export const sendPageview = () => {
 		event: 'pageview',
 		page_title,
 		page_location,
+		event_callback: done,
 	});
 
 	const googleAds = LittledataLayer.googleAdsConversionIds;
