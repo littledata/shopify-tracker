@@ -57,7 +57,7 @@ export const trackEvents = () => {
 	window.ga =
 		window.ga ||
 		function() {
-			(ga.qs = ga.q || []).push(arguments);
+			(window.ga.q = window.ga.q || []).push(arguments);
 		};
 	window.ga(() => {
 		// getPersistentCLientId might return empty string for gtag to create a new one
