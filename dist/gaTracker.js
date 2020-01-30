@@ -101,9 +101,8 @@ __webpack_require__.r(__webpack_exports__);
   Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["initGtag"])();
   Object(_common_helpers__WEBPACK_IMPORTED_MODULE_1__["advertiseLD"])();
   Object(_common_helpers__WEBPACK_IMPORTED_MODULE_1__["pageView"])(function () {
-    Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["sendPageview"])(function () {
-      Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["trackEvents"])();
-    });
+    Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["sendPageview"])();
+    Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["trackEvents"])();
   });
 })();
 
@@ -144,20 +143,20 @@ var initGtag = function initGtag() {
   gtag('js', new Date());
   gtag('config', LittledataLayer.webPropertyID, getConfig());
 };
-var sendPageview = function sendPageview(done) {
+var sendPageview = function sendPageview() {
   var page_title = Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["removePii"])(document.title);
   var page_location = Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["removePii"])(document.location.href);
   gtag('config', LittledataLayer.webPropertyID, {
     page_title: page_title,
     page_location: page_location
-  });
-  gtag('event', 'pageview', {
-    event_category: 'Pageview (Littledata)',
-    event_label: '',
-    non_interaction: true,
-    send_to: LittledataLayer.webPropertyID,
-    event_callback: done
-  });
+  }); // gtag('event', 'pageview', {
+  // 	event_category: 'Pageview (Littledata)',
+  // 	event_label: '',
+  // 	non_interaction: true,
+  // 	send_to: LittledataLayer.webPropertyID,
+  // 	event_callback: done,
+  // });
+
   dataLayer.push({
     event: 'pageview',
     page_title: page_title,
@@ -170,6 +169,17 @@ var sendPageview = function sendPageview(done) {
       return gtag('config', adId);
     });
   }
+
+  window.ga = window.ga || function () {
+    (window.ga.q = window.ga.q || []).push(arguments);
+  };
+
+  window.ga.l = +new Date();
+  window.ga(function () {
+    // getPersistentCLientId might return empty string for gtag to create a new one
+    // so we need to wait for GA library (part of gtag)
+    Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(getGtagClientId, 'google');
+  });
 };
 
 function getGtagClientId() {
@@ -184,17 +194,7 @@ function getGtagClientId() {
 }
 
 var trackEvents = function trackEvents() {
-  window.ga = window.ga || function () {
-    (window.ga.q = window.ga.q || []).push(arguments);
-  };
-
-  window.ga(function () {
-    // getPersistentCLientId might return empty string for gtag to create a new one
-    // so we need to wait for GA library (part of gtag)
-    Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(getGtagClientId, 'google');
-  });
   /* run list, product, and clientID scripts everywhere */
-
   if (LittledataLayer.ecommerce.impressions.length) {
     Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["productListClicks"])(function (product, self) {
       var productFromImpressions = LittledataLayer.ecommerce.impressions.find(function (prod) {
