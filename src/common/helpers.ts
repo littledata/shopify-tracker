@@ -67,29 +67,33 @@ export const productListClicks = (clickTag: ListClickCallback): void => {
 
 let postCartTimeout: any;
 
+interface PostAttributes {
+	updatedAt?: number;
+	'google-clientID'?: string;
+	'segment-clientID'?: string;
+}
+const attributes: PostAttributes = {}; //persist any previous attributes sent from this page
+
 function postClientID(getClientId: () => string, platform: string) {
+	const attribute = `${platform}-clientID`;
+	const clientID = getClientId();
+	if (typeof clientID !== 'string' || clientID.length === 0) return;
+	(attributes as any)[attribute] = clientID;
+
 	clearTimeout(postCartTimeout); //don't send multiple requests within a second
 	postCartTimeout = setTimeout(function() {
-		const clientID = getClientId();
-		if (typeof clientID !== 'string') return;
-
-		const updatedAt = new Date().getTime();
+		attributes.updatedAt = new Date().getTime();
 		const cartUpdateReq = new XMLHttpRequest(); // new HttpRequest instance
-		const attributes = {
-			updatedAt,
-			[`${platform}-clientID`]: clientID,
-		};
-
 		cartUpdateReq.onload = function() {
 			const updatedCart = JSON.parse(cartUpdateReq.response);
 			LittledataLayer.cart = updatedCart;
 			const clientIDReq = new XMLHttpRequest();
-			clientIDReq.open('POST', `${LittledataLayer.transactionWatcherURL}/clientID`);
+			clientIDReq.open('POST', `${LittledataLayer.transactionWatcherURL}/v2/clientID/store`);
 			clientIDReq.setRequestHeader('Content-Type', 'application/json');
 			clientIDReq.send(
 				JSON.stringify({
 					...attributes,
-					cartID: `${platform}-${updatedCart.token}`,
+					cartID: `${updatedCart.token}`,
 				}),
 			);
 		};

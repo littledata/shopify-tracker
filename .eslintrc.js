@@ -17,5 +17,6 @@ module.exports = {
 		'@typescript-eslint/camelcase': 'off', // both segment and google are fond of this
 		'@typescript-eslint/no-use-before-define': 'off',
 		'@typescript-eslint/no-explicit-any': 'off',
+		'@typescript-eslint/no-var-requires': 'off',
 	},
 };
