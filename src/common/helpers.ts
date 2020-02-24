@@ -1,7 +1,7 @@
 /* global LittledataLayer */
 declare let window: CustomWindow;
 import checkLinker from './checkLinker';
-import { getGaCookie } from './getGaCookie';
+import { getCookie } from './getCookie';
 
 /**
  *
@@ -67,8 +67,17 @@ export const productListClicks = (clickTag: ListClickCallback): void => {
 
 let postCartTimeout: any;
 
+let cartOnlyAttributes: any = {};
+export const setCartOnlyAttributes = (setAttributes: any) => {
+	const toSet = Object.keys(setAttributes);
+	toSet.forEach((name: string) => {
+		const littledataName = `littledata_${name}`;
+		Object.assign(cartOnlyAttributes, { littledataName: setAttributes[name] });
+	});
+};
+
 interface PostAttributes {
-	updatedAt?: number;
+	littledata_updatedAt?: number;
 	'google-clientID'?: string;
 	'segment-clientID'?: string;
 }
@@ -82,7 +91,7 @@ function postClientID(getClientId: () => string, platform: string) {
 
 	clearTimeout(postCartTimeout); //don't send multiple requests within a second
 	postCartTimeout = setTimeout(function() {
-		attributes.updatedAt = new Date().getTime();
+		attributes.littledata_updatedAt = new Date().getTime();
 		const cartUpdateReq = new XMLHttpRequest(); // new HttpRequest instance
 		cartUpdateReq.onload = function() {
 			const updatedCart = JSON.parse(cartUpdateReq.response);
@@ -99,9 +108,13 @@ function postClientID(getClientId: () => string, platform: string) {
 		};
 		cartUpdateReq.open('POST', '/cart/update.json');
 		cartUpdateReq.setRequestHeader('Content-Type', 'application/json');
+		const cartAttributes: object = {
+			...attributes,
+			...cartOnlyAttributes,
+		};
 		cartUpdateReq.send(
 			JSON.stringify({
-				attributes,
+				attributes: cartAttributes,
 			}),
 		);
 	}, 1000);
@@ -120,11 +133,16 @@ export function setClientID(getClientId: () => string, platform: 'google' | 'seg
 		| 'google-clientID'
 		| 'segment-clientID';
 
-	if (!cart || !cart.attributes || !cart.attributes[clientIDProperty] || !cart.attributes.updatedAt) {
+	if (!cart || !cart.attributes || !cart.attributes[clientIDProperty]) {
 		return postClientID(getClientId, platform);
 	}
 
-	const clientIdCreated = new Date(Number(cart.attributes.updatedAt));
+	const updatedAt = cart.attributes.littledata_updatedAt || cart.attributes.updatedAt; //old format pre v8.3
+	if (!updatedAt) {
+		return postClientID(getClientId, platform);
+	}
+	const clientIdCreated = new Date(Number(updatedAt));
+
 	const timeout = 60 * 60 * 1000; // 60 minutes
 	const timePassed = Date.now() - Number(clientIdCreated);
 	// only need to resent client ID if it's expired from our Redis cache
@@ -183,7 +201,7 @@ export function getPersistentClientId() {
 		// prefer local storage version, as it was set by this function
 		if (localClientId) return localClientId;
 
-		const cookieClientId = getGaCookie();
+		const cookieClientId = getCookie('_ga');
 		if (cookieClientId) {
 			// set it to local storage for next time
 			window.localStorage.setItem('_ga', cookieClientId);
