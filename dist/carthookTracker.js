@@ -91,10 +91,8 @@
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getGaCookie", function() { return getGaCookie; });
-var getGaCookie = function getGaCookie() {
-  var name = '_ga';
-
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getCookie", function() { return getCookie; });
+var getCookie = function getCookie(name) {
   if (document.cookie.length > 0) {
     var cookieStart = document.cookie.indexOf("".concat(name, "="));
 
@@ -106,12 +104,14 @@ var getGaCookie = function getGaCookie() {
         cookieEnd = document.cookie.length;
       }
 
-      var gaCookie = unescape(document.cookie.substring(cookieStart, cookieEnd));
+      var cookie = unescape(document.cookie.substring(cookieStart, cookieEnd));
 
-      if (gaCookie) {
-        var match = gaCookie.match(/(\d{2,11})\.(\d{2,11})/g);
+      if (name = '_ga') {
+        var match = cookie.match(/(\d{2,11})\.(\d{2,11})/g);
         return match ? match[0] : '';
       }
+
+      return cookie;
     }
   }
 
@@ -149,7 +149,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "loadGtagScript", function() { return loadGtagScript; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "initGtag", function() { return initGtag; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sendCartId", function() { return sendCartId; });
-/* harmony import */ var _common_getGaCookie__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
+/* harmony import */ var _common_getCookie__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
 /* eslint-env browser */
 
 var getWebPropertyIdPromise = function getWebPropertyIdPromise() {
@@ -242,7 +242,7 @@ var getConfig = function getConfig() {
 var sendCartId = function sendCartId() {
   var baseUrl = getMonitorBaseUrl();
   var apiUrl = "".concat(baseUrl, "/clientID");
-  var clientID = Object(_common_getGaCookie__WEBPACK_IMPORTED_MODULE_0__["getGaCookie"])();
+  var clientID = Object(_common_getCookie__WEBPACK_IMPORTED_MODULE_0__["getCookie"])('_ga');
   if (!clientID) return;
   var data = {
     clientID: clientID,

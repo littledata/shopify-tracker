@@ -321,6 +321,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getElementsByHref", function() { return getElementsByHref; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "findDataLayerProduct", function() { return findDataLayerProduct; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "productListClicks", function() { return productListClicks; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setCartOnlyAttributes", function() { return setCartOnlyAttributes; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setClientID", function() { return setClientID; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "removePii", function() { return removePii; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "guid", function() { return guid; });
@@ -330,7 +331,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "validateLittledataLayer", function() { return validateLittledataLayer; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "advertiseLD", function() { return advertiseLD; });
 /* harmony import */ var _checkLinker__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3);
-/* harmony import */ var _getGaCookie__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(4);
+/* harmony import */ var _getCookie__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(4);
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
@@ -400,6 +401,16 @@ var productListClicks = function productListClicks(clickTag) {
   });
 };
 var postCartTimeout;
+var cartOnlyAttributes = {};
+var setCartOnlyAttributes = function setCartOnlyAttributes(setAttributes) {
+  var toSet = Object.keys(setAttributes);
+  toSet.forEach(function (name) {
+    var littledataName = "littledata_".concat(name);
+    Object.assign(cartOnlyAttributes, {
+      littledataName: setAttributes[name]
+    });
+  });
+};
 var attributes = {}; //persist any previous attributes sent from this page
 
 function postClientID(getClientId, platform) {
@@ -410,7 +421,7 @@ function postClientID(getClientId, platform) {
   clearTimeout(postCartTimeout); //don't send multiple requests within a second
 
   postCartTimeout = setTimeout(function () {
-    attributes.updatedAt = new Date().getTime();
+    attributes.littledata_updatedAt = new Date().getTime();
     var cartUpdateReq = new XMLHttpRequest(); // new HttpRequest instance
 
     cartUpdateReq.onload = function () {
@@ -426,8 +437,11 @@ function postClientID(getClientId, platform) {
 
     cartUpdateReq.open('POST', '/cart/update.json');
     cartUpdateReq.setRequestHeader('Content-Type', 'application/json');
+
+    var cartAttributes = _objectSpread({}, attributes, {}, cartOnlyAttributes);
+
     cartUpdateReq.send(JSON.stringify({
-      attributes: attributes
+      attributes: cartAttributes
     }));
   }, 1000);
 }
@@ -445,11 +459,17 @@ function setClientID(getClientId, platform) {
       cart = _LittledataLayer.cart;
   var clientIDProperty = "".concat(platform, "-clientID");
 
-  if (!cart || !cart.attributes || !cart.attributes[clientIDProperty] || !cart.attributes.updatedAt) {
+  if (!cart || !cart.attributes || !cart.attributes[clientIDProperty]) {
     return postClientID(getClientId, platform);
   }
 
-  var clientIdCreated = new Date(Number(cart.attributes.updatedAt));
+  var updatedAt = cart.attributes.littledata_updatedAt || cart.attributes.updatedAt; //old format pre v8.3
+
+  if (!updatedAt) {
+    return postClientID(getClientId, platform);
+  }
+
+  var clientIdCreated = new Date(Number(updatedAt));
   var timeout = 60 * 60 * 1000; // 60 minutes
 
   var timePassed = Date.now() - Number(clientIdCreated); // only need to resent client ID if it's expired from our Redis cache
@@ -503,7 +523,7 @@ function getPersistentClientId() {
     var localClientId = window.localStorage.getItem('_ga'); // prefer local storage version, as it was set by this function
 
     if (localClientId) return localClientId;
-    var cookieClientId = Object(_getGaCookie__WEBPACK_IMPORTED_MODULE_1__["getGaCookie"])();
+    var cookieClientId = Object(_getCookie__WEBPACK_IMPORTED_MODULE_1__["getCookie"])('_ga');
 
     if (cookieClientId) {
       // set it to local storage for next time
@@ -684,10 +704,8 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getGaCookie", function() { return getGaCookie; });
-var getGaCookie = function getGaCookie() {
-  var name = '_ga';
-
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getCookie", function() { return getCookie; });
+var getCookie = function getCookie(name) {
   if (document.cookie.length > 0) {
     var cookieStart = document.cookie.indexOf("".concat(name, "="));
 
@@ -699,12 +717,14 @@ var getGaCookie = function getGaCookie() {
         cookieEnd = document.cookie.length;
       }
 
-      var gaCookie = unescape(document.cookie.substring(cookieStart, cookieEnd));
+      var cookie = unescape(document.cookie.substring(cookieStart, cookieEnd));
 
-      if (gaCookie) {
-        var match = gaCookie.match(/(\d{2,11})\.(\d{2,11})/g);
+      if (name = '_ga') {
+        var match = cookie.match(/(\d{2,11})\.(\d{2,11})/g);
         return match ? match[0] : '';
       }
+
+      return cookie;
     }
   }
 
