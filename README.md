@@ -73,3 +73,10 @@ Default: `true` (boolean)
 Our app generates a branded message in the site console log. You can disable this.
 
 Default: `false` (boolean)
+
+**cookiesToTrack** (Segment only)
+
+Grab the values from an array of named cookies and pass them as traits on Segment identify calls.
+
+Example: `['iterableEmailCampaignId]` (array)
+

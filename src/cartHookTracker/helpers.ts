@@ -1,5 +1,5 @@
 /* eslint-env browser */
-import { getGaCookie } from '../common/getGaCookie';
+import { getCookie } from '../common/getCookie';
 
 declare let window: CustomWindow;
 
@@ -92,7 +92,7 @@ const getConfig = (): Gtag.CustomParams => {
 export const sendCartId = () => {
 	const baseUrl = getMonitorBaseUrl();
 	const apiUrl = `${baseUrl}/clientID`;
-	const clientID = getGaCookie();
+	const clientID = getCookie('_ga');
 
 	if (!clientID) return;
 

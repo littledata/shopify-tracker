@@ -1,7 +1,8 @@
 declare global {
 	namespace Cart {
 		export interface Attributes {
-			updatedAt?: string;
+			littledata_updatedAt?: string;
+			updatedAt?: string; //old format pre v8.3
 			['segment-clientID']?: string;
 			['google-clientID']?: string;
 		}
@@ -123,6 +124,7 @@ declare global {
 		optimizeId?: string;
 		productPageClicks?: boolean;
 		extraLinkerDomains?: string[];
+		cookiesToTrack?: string[];
 	}
 
 	var LittledataLayer: OwnLayer;
