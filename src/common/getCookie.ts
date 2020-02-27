@@ -1,5 +1,4 @@
-export const getGaCookie = (): string => {
-	const name = '_ga';
+export const getCookie = (name: string): string => {
 	if (document.cookie.length > 0) {
 		let cookieStart = document.cookie.indexOf(`${name}=`);
 		if (cookieStart !== -1) {
@@ -8,11 +7,12 @@ export const getGaCookie = (): string => {
 			if (cookieEnd === -1) {
 				cookieEnd = document.cookie.length;
 			}
-			const gaCookie = unescape(document.cookie.substring(cookieStart, cookieEnd));
-			if (gaCookie) {
-				const match = gaCookie.match(/(\d{2,11})\.(\d{2,11})/g);
+			const cookie = unescape(document.cookie.substring(cookieStart, cookieEnd));
+			if ((name = '_ga')) {
+				const match = cookie.match(/(\d{2,11})\.(\d{2,11})/g);
 				return match ? match[0] : '';
 			}
+			return cookie;
 		}
 	}
 	return '';
