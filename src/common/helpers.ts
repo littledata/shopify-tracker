@@ -71,8 +71,9 @@ let cartOnlyAttributes: any = {};
 export const setCartOnlyAttributes = (setAttributes: any) => {
 	const toSet = Object.keys(setAttributes);
 	toSet.forEach((name: string) => {
-		const littledataName = `littledata_${name}`;
-		Object.assign(cartOnlyAttributes, { littledataName: setAttributes[name] });
+		const objectToAdd = {}
+		objectToAdd[`littledata_${name}`] = setAttributes[name]
+		Object.assign(cartOnlyAttributes, objectToAdd);
 	});
 };
 
