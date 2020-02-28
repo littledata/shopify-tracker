@@ -97,16 +97,16 @@ var getCookie = function getCookie(name) {
     var cookieStart = document.cookie.indexOf("".concat(name, "="));
 
     if (cookieStart !== -1) {
-      cookieStart = cookieStart + name.length + 1;
-      var cookieEnd = document.cookie.indexOf(';', cookieStart);
+      var valueStart = cookieStart + name.length + 1;
+      var cookieEnd = document.cookie.indexOf(';', valueStart);
 
       if (cookieEnd === -1) {
         cookieEnd = document.cookie.length;
       }
 
-      var cookie = unescape(document.cookie.substring(cookieStart, cookieEnd));
+      var cookie = unescape(document.cookie.substring(valueStart, cookieEnd));
 
-      if (name = '_ga') {
+      if (name === '_ga') {
         var match = cookie.match(/(\d{2,11})\.(\d{2,11})/g);
         return match ? match[0] : '';
       }
