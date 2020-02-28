@@ -71,7 +71,7 @@ const cartOnlyAttributes: LooseObject = {};
 export const setCartOnlyAttributes = (setAttributes: LooseObject) => {
 	const toSet = Object.keys(setAttributes);
 	toSet.forEach((name: string) => {
-		const fieldName: string = `littledata_${name}`;
+		const fieldName = `littledata_${name}`;
 		cartOnlyAttributes[fieldName] = setAttributes[name];
 	});
 };
