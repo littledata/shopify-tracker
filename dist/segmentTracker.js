@@ -180,10 +180,8 @@ var cartOnlyAttributes = {};
 var setCartOnlyAttributes = function setCartOnlyAttributes(setAttributes) {
   var toSet = Object.keys(setAttributes);
   toSet.forEach(function (name) {
-    var littledataName = "littledata_".concat(name);
-    Object.assign(cartOnlyAttributes, {
-      littledataName: setAttributes[name]
-    });
+    var fieldName = "littledata_".concat(name);
+    cartOnlyAttributes[fieldName] = setAttributes[name];
   });
 };
 var attributes = {}; //persist any previous attributes sent from this page
@@ -598,7 +596,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 (function () {
-  window.LittledataScriptVersion = '8.2';
+  window.LittledataScriptVersion = '8.21';
   Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["validateLittledataLayer"])();
   Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["initSegment"])();
   Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["advertiseLD"])();
