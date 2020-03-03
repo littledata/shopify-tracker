@@ -1,6 +1,12 @@
 /* global LittledataLayer */
 declare let window: CustomWindow;
-import { productListClicks, trackProductImageClicks, trackSocialShares } from '../common/helpers';
+import {
+	productListClicks,
+	trackProductImageClicks,
+	trackSocialShares,
+	setCartOnlyAttributes,
+} from '../common/helpers';
+import { getCookie } from '../common/getCookie';
 import productListViews from '../common/productListViews';
 
 const trackEvent = (eventName: string, params: object) => {
@@ -47,12 +53,21 @@ const segmentProduct = (dataLayerProduct: Detail): SegmentProduct => ({
 });
 
 export const identifyCustomer = (customer: Customer) => {
+	const cookieTraits: any = {};
+	const cookies = LittledataLayer.cookiesToTrack;
+	if (cookies) {
+		cookies.forEach(cookie => {
+			cookieTraits[cookie] = getCookie(cookie);
+		});
+	}
+	setCartOnlyAttributes(cookieTraits); //this will add to Shopify cart
 	if (customer) {
 		window.analytics.identify(customer.id, {
 			email: customer.email,
 			name: customer.name,
 			phone: customer.phone || (customer.address && customer.address.phone),
 			address: parseAddress(customer.address),
+			...cookieTraits,
 		});
 	}
 };
