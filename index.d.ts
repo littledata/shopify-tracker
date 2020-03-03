@@ -1,4 +1,8 @@
 declare global {
+	interface LooseObject {
+		[index: string]: any;
+	}
+
 	namespace Cart {
 		export interface Attributes {
 			littledata_updatedAt?: string;

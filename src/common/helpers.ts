@@ -67,12 +67,12 @@ export const productListClicks = (clickTag: ListClickCallback): void => {
 
 let postCartTimeout: any;
 
-let cartOnlyAttributes: any = {};
-export const setCartOnlyAttributes = (setAttributes: any) => {
+const cartOnlyAttributes: LooseObject = {};
+export const setCartOnlyAttributes = (setAttributes: LooseObject) => {
 	const toSet = Object.keys(setAttributes);
 	toSet.forEach((name: string) => {
-		const littledataName = `littledata_${name}`;
-		Object.assign(cartOnlyAttributes, { littledataName: setAttributes[name] });
+		const fieldName = `littledata_${name}`;
+		cartOnlyAttributes[fieldName] = setAttributes[name];
 	});
 };
 
