@@ -74,7 +74,6 @@ export function initGtag(webPropertyId: string): void {
 		dataLayer.push(arguments);
 	}; //eslint-disable-line
 	window.gtag = window.gtag || stubFunction;
-	// @ts-ignore
 	gtag('js', new Date());
 	gtag('config', webPropertyId, getConfig());
 }

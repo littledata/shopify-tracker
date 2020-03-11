@@ -16,9 +16,16 @@ export const initGtag = () => {
 		dataLayer.push(arguments);
 	}; //eslint-disable-line
 	window.gtag = window.gtag || stubFunction;
-	// @ts-ignore
 	gtag('js', new Date());
-	gtag('config', LittledataLayer.webPropertyID, getConfig());
+	// if OneTrust is setup, then wrap this
+	// so that it only triggers after performance cookie opt initGtag
+	if (typeof window.Optanon === 'function') {
+		function OptanonWrapper() {
+			gtag('config', LittledataLayer.webPropertyID, getConfig());
+		}
+	} else {
+		gtag('config', LittledataLayer.webPropertyID, getConfig());
+	}
 };
 
 export const sendPageview = () => {

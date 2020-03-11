@@ -141,6 +141,7 @@ declare global {
 		gtag: Gtag.Gtag;
 		dataLayer: any[];
 		LittledataScriptVersion: string;
+		Optanon?: object;
 	}
 
 	interface TimeBombHTMLAnchor extends HTMLAnchorElement {
