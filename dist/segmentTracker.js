@@ -651,18 +651,23 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 
-var trackEvent = function trackEvent(eventName, params) {
+var getContext = function getContext() {
   var name = 'shopify_littledata';
   var version = typeof LittledataLayer.version === 'string' ? LittledataLayer.version.substr(1, LittledataLayer.version.length - 1) //first character is v
   : '8.0.3';
-  var context = {
+  return {
     integration: {
       name: name,
       version: version
     }
-  }; // @ts-ignore
+  };
+};
 
-  window.analytics.track(eventName, params, context);
+var trackEvent = function trackEvent(eventName, params) {
+  // @ts-ignore
+  window.analytics.track(eventName, params, {
+    context: getContext()
+  });
 };
 
 var segmentProduct = function segmentProduct(dataLayerProduct) {
@@ -823,6 +828,7 @@ var callSegmentPage = function callSegmentPage(integrations) {
   // https://segment.com/docs/sources/website/analytics.js/#page
   var pageName = document.title;
   window.analytics.page(pageName, {}, {
+    context: getContext(),
     integrations: integrations
   });
 };
