@@ -652,13 +652,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 var getContext = function getContext() {
-  var name = 'shopify_littledata';
-  var version = typeof LittledataLayer.version === 'string' ? LittledataLayer.version.substr(1, LittledataLayer.version.length - 1) //first character is v
-  : '8.0.3';
   return {
     integration: {
-      name: name,
-      version: version
+      name: 'shopify_littledata',
+      version: window.LittledataScriptVersion
     }
   };
 };
