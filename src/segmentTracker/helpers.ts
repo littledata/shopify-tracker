@@ -10,15 +10,10 @@ import { getCookie } from '../common/getCookie';
 import productListViews from '../common/productListViews';
 
 const getContext = () => {
-	const name = 'shopify_littledata';
-	const version =
-		typeof LittledataLayer.version === 'string'
-			? LittledataLayer.version.substr(1, LittledataLayer.version.length - 1) //first character is v
-			: '8.0.3';
 	return {
 		integration: {
-			name,
-			version,
+			name: 'shopify_littledata',
+			version: window.LittledataScriptVersion,
 		},
 	};
 };
