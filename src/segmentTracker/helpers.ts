@@ -127,9 +127,7 @@ export const trackEvents = () => {
 	}
 };
 
-export const initSegment = () => {
-	// @ts-ignore
-	window.analytics = window.analytics || [];
+export const loadSegment = () => {
 	// @ts-ignore
 	if (!analytics.initialize) {
 		// @ts-ignore
@@ -190,7 +188,6 @@ export const initSegment = () => {
 			window.analytics.load(LittledataLayer.writeKey);
 		}
 	}
-	window.dataLayer = window.dataLayer || [];
 };
 
 const parseAddress = (a: Customer['address']): SegmentAddressFormat => {

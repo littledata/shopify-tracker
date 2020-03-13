@@ -10,22 +10,9 @@ import {
 } from '../common/helpers';
 import productListViews from '../common/productListViews';
 
-export const initGtag = () => {
-	window.dataLayer = window.dataLayer || [];
-	const stubFunction = function() {
-		dataLayer.push(arguments);
-	}; //eslint-disable-line
-	window.gtag = window.gtag || stubFunction;
+export const loadGtag = () => {
 	gtag('js', new Date());
-	// if OneTrust is setup, then wrap this
-	// so that it only triggers after performance cookie opt initGtag
-	if (typeof window.Optanon === 'function') {
-		function OptanonWrapper() {
-			gtag('config', LittledataLayer.webPropertyID, getConfig());
-		}
-	} else {
-		gtag('config', LittledataLayer.webPropertyID, getConfig());
-	}
+	gtag('config', LittledataLayer.webPropertyID, getConfig());
 };
 
 export const sendPageview = () => {

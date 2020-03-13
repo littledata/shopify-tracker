@@ -251,3 +251,23 @@ export const advertiseLD = () => {
 		); //eslint-disable-line
 	}
 };
+
+export const initTracker = (trackerScript: () => void): void => {
+	window.dataLayer = window.dataLayer || [];
+	const stubFunction = function() {
+		dataLayer.push(arguments);
+	}; //eslint-disable-line
+	window.gtag = window.gtag || stubFunction;
+	// @ts-ignore
+	window.analytics = window.analytics || [];
+
+	// if OneTrust is setup, then wrap this
+	// so that it only triggers after cookie opt-in
+	if (typeof window.Optanon === 'object') {
+		function OptanonWrapper() {
+			trackerScript();
+		}
+	} else {
+		trackerScript();
+	}
+};
