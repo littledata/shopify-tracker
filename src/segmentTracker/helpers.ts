@@ -9,20 +9,23 @@ import {
 import { getCookie } from '../common/getCookie';
 import productListViews from '../common/productListViews';
 
-const trackEvent = (eventName: string, params: object) => {
+const getContext = () => {
 	const name = 'shopify_littledata';
 	const version =
 		typeof LittledataLayer.version === 'string'
 			? LittledataLayer.version.substr(1, LittledataLayer.version.length - 1) //first character is v
 			: '8.0.3';
-	const context = {
+	return {
 		integration: {
 			name,
 			version,
 		},
 	};
+};
+
+const trackEvent = (eventName: string, params: object) => {
 	// @ts-ignore
-	window.analytics.track(eventName, params, context);
+	window.analytics.track(eventName, params, { context: getContext() });
 };
 
 interface SegmentProduct {
@@ -215,6 +218,7 @@ export const callSegmentPage = (integrations: Record<string, any>) => {
 		pageName,
 		{},
 		{
+			context: getContext(),
 			integrations,
 		},
 	);
