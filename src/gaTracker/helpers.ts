@@ -4,11 +4,12 @@ import {
 	productListClicks,
 	setClientID,
 	removePii,
-	getPersistentClientId,
 	trackProductImageClicks,
 	trackSocialShares,
 } from '../common/helpers';
 import productListViews from '../common/productListViews';
+
+const event_category = 'Shopify (Littledata)';
 
 export const initGtag = () => {
 	window.dataLayer = window.dataLayer || [];
@@ -29,13 +30,7 @@ export const sendPageview = () => {
 		page_title,
 		page_location,
 	});
-	// gtag('event', 'pageview', {
-	// 	event_category: 'Pageview (Littledata)',
-	// 	event_label: '',
-	// 	non_interaction: true,
-	// 	send_to: LittledataLayer.webPropertyID,
-	// 	event_callback: done,
-	// });
+
 	dataLayer.push({
 		event: 'pageview',
 		page_title,
@@ -54,8 +49,7 @@ export const sendPageview = () => {
 		};
 	window.ga.l = +new Date();
 	window.ga(() => {
-		// getPersistentCLientId might return empty string for gtag to create a new one
-		// so we need to wait for GA library (part of gtag)
+		// we need to wait for GA library (part of gtag)
 		setClientID(getGtagClientId, 'google');
 	});
 };
@@ -92,6 +86,7 @@ export const trackEvents = () => {
 			});
 
 			gtag('event', 'select_content', {
+				event_category,
 				content_type: 'product',
 				items: [product],
 				send_to: LittledataLayer.webPropertyID,
@@ -104,6 +99,7 @@ export const trackEvents = () => {
 
 		productListViews((products: Impression[]) => {
 			gtag('event', 'view_item_list', {
+				event_category,
 				items: products,
 				send_to: LittledataLayer.webPropertyID,
 				non_interaction: true,
@@ -121,6 +117,7 @@ export const trackEvents = () => {
 	if (product) {
 		product.list_position = parseInt(window.localStorage.getItem('position')) || 1;
 		gtag('event', 'view_item', {
+			event_category,
 			items: [product],
 			non_interaction: true,
 			send_to: LittledataLayer.webPropertyID,
@@ -144,7 +141,7 @@ export const trackEvents = () => {
 			});
 
 			gtag('event', 'Product image click', {
-				event_category: 'Product details page (Littledata)',
+				event_category,
 				event_label: name,
 				send_to: LittledataLayer.webPropertyID,
 			});
@@ -157,7 +154,7 @@ export const trackEvents = () => {
 			});
 
 			gtag('event', 'Social share', {
-				event_category: 'Product details page (Littledata)',
+				event_category,
 				event_label: network,
 				send_to: LittledataLayer.webPropertyID,
 			});
@@ -187,7 +184,6 @@ export const getConfig = (): Gtag.CustomParams => {
 		allow_ad_personalization_signals: !!googleSignals,
 		currency: ecommerce.currencyCode,
 		link_attribution: true,
-		clientId: getPersistentClientId(),
 		optimize_id: optimizeId,
 		page_referrer: excludeReferal ? document.referrer : null,
 		send_page_view: false,

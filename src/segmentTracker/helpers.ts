@@ -86,7 +86,6 @@ export const trackEvents = () => {
 					...p,
 					currency: LittledataLayer.ecommerce.currencyCode,
 					list_id: product.list,
-					category: 'EnhancedEcommerce',
 				});
 			});
 
@@ -96,7 +95,6 @@ export const trackEvents = () => {
 
 				trackEvent('Product List Viewed', {
 					list_id: listId,
-					category: 'EnhancedEcommerce',
 					products: segmentProducts,
 				});
 			});
@@ -105,7 +103,6 @@ export const trackEvents = () => {
 		if (rawProduct) {
 			const product = segmentProduct(rawProduct);
 			product.currency = LittledataLayer.ecommerce.currencyCode;
-			product.category = 'EnhancedEcommerce';
 			product.position = parseInt(window.localStorage.getItem('position')) || 1;
 			trackEvent('Product Viewed', product);
 
