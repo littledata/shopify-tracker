@@ -10,6 +10,7 @@ import { identifyCustomer, trackEvents, initSegment, callSegmentPage } from './h
 	initSegment();
 	advertiseLD();
 	identifyCustomer(LittledataLayer.customer);
+	trackEvents();
 	pageView(function() {
 		callSegmentPage({});
 		window.analytics.ready(() => {
@@ -27,7 +28,6 @@ import { identifyCustomer, trackEvents, initSegment, callSegmentPage } from './h
 				});
 			}
 			setClientID(window.analytics.user().anonymousId, 'segment');
-			trackEvents();
 		});
 	});
 })();

@@ -59,6 +59,26 @@ export const sendPageview = () => {
 		// so we need to wait for GA library (part of gtag)
 		setClientID(getGtagClientId, 'google');
 	});
+
+	const product = getProductDetail();
+	if (product) {
+		product.list_position = parseInt(window.localStorage.getItem('position')) || 1;
+		gtag('event', 'view_item', {
+			items: [product],
+			non_interaction: true,
+			send_to: LittledataLayer.webPropertyID,
+		});
+
+		dataLayer.push({
+			event: 'view_item',
+			ecommerce: {
+				detail: {
+					actionField: { list: product.list_name },
+					products: [product],
+				},
+			},
+		});
+	}
 };
 
 function getGtagClientId(): string {
@@ -120,23 +140,6 @@ export const trackEvents = () => {
 
 	const product = getProductDetail();
 	if (product) {
-		product.list_position = parseInt(window.localStorage.getItem('position')) || 1;
-		gtag('event', 'view_item', {
-			items: [product],
-			non_interaction: true,
-			send_to: LittledataLayer.webPropertyID,
-		});
-
-		dataLayer.push({
-			event: 'view_item',
-			ecommerce: {
-				detail: {
-					actionField: { list: product.list_name },
-					products: [product],
-				},
-			},
-		});
-
 		// if PDP, we can also track clicks on images and social shares
 		trackProductImageClicks(name => {
 			dataLayer.push({

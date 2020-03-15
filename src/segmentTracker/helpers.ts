@@ -105,10 +105,6 @@ export const trackEvents = () => {
 		const productDetail = getProductDetail();
 		if (productDetail) {
 			const product = segmentProduct(productDetail);
-			product.currency = LittledataLayer.ecommerce.currencyCode;
-			product.category = 'EnhancedEcommerce';
-			product.position = parseInt(window.localStorage.getItem('position')) || 1;
-			trackEvent('Product Viewed', product);
 
 			// if PDP, we can also track clicks on images and social shares
 			trackProductImageClicks(name => {
@@ -218,4 +214,13 @@ export const callSegmentPage = (integrations: Record<string, any>) => {
 			integrations,
 		},
 	);
+
+	const productDetail = getProductDetail();
+	if (productDetail) {
+		const product = segmentProduct(productDetail);
+		product.currency = LittledataLayer.ecommerce.currencyCode;
+		product.category = 'EnhancedEcommerce';
+		product.position = parseInt(window.localStorage.getItem('position')) || 1;
+		trackEvent('Product Viewed', product);
+	}
 };

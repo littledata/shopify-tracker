@@ -8,8 +8,8 @@ import { pageView, validateLittledataLayer, advertiseLD } from '../common/helper
 	validateLittledataLayer();
 	initGtag();
 	advertiseLD();
+	trackEvents();
 	pageView(function() {
 		sendPageview();
-		trackEvents();
 	});
 })();
