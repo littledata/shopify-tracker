@@ -28,7 +28,7 @@ export const pageView = (fireTag: () => void): void => {
 	}
 
 	// now listen for changes of URL for single page applications
-	const urlChangeTracker = new UrlChangeTracker();
+	const urlChangeTracker = new UrlChangeTracker(LittledataLayer.trackReplaceState);
 	urlChangeTracker.setCallback(fireTag);
 };
 
