@@ -24,6 +24,7 @@ export default class UrlChangeTracker {
 
 		// Binds methods.
 		this.pushStateOverride = this.pushStateOverride.bind(this);
+		this.replaceStateOverride = this.replaceStateOverride.bind(this);
 		this.handlePopState = this.handlePopState.bind(this);
 
 		// Watches for history changes.
