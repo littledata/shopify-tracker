@@ -129,6 +129,7 @@ declare global {
 		productPageClicks?: boolean;
 		extraLinkerDomains?: string[];
 		cookiesToTrack?: string[];
+		trackReplaceState?: boolean;
 	}
 
 	var LittledataLayer: OwnLayer;

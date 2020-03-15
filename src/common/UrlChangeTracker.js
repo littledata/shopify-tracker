@@ -5,7 +5,7 @@ import MethodChain from './MethodChain';
  * @implements {UrlChangeTrackerPublicInterface}
  */
 export default class UrlChangeTracker {
-	constructor() {
+	constructor(trackReplaceState) {
 		// Feature detects to prevent errors in unsupporting browsers.
 		if (!history.pushState || !window.addEventListener) return;
 
@@ -19,12 +19,16 @@ export default class UrlChangeTracker {
 		// from the location field.
 		this.path = getPath();
 
+		//
+		this.trackReplaceState = trackReplaceState;
+
 		// Binds methods.
 		this.pushStateOverride = this.pushStateOverride.bind(this);
 		this.handlePopState = this.handlePopState.bind(this);
 
 		// Watches for history changes.
 		MethodChain.add(history, 'pushState', this.pushStateOverride);
+		MethodChain.add(history, 'replaceState', this.replaceStateOverride);
 		window.addEventListener('popstate', this.handlePopState);
 	}
 
@@ -42,7 +46,20 @@ export default class UrlChangeTracker {
 	pushStateOverride(originalMethod) {
 		return (...args) => {
 			originalMethod(...args);
-			this.handleUrlChange();
+			this.handleUrlChange(true);
+		};
+	}
+
+	/**
+	 * Handles invocations of the native `history.replaceState` and calls
+	 * `handleUrlChange()` indicating that history was replaced.
+	 * @param {!Function} originalMethod A reference to the overridden method.
+	 * @return {!Function}
+	 */
+	replaceStateOverride(originalMethod) {
+		return (...args) => {
+			originalMethod(...args);
+			this.handleUrlChange(false);
 		};
 	}
 
@@ -51,7 +68,7 @@ export default class UrlChangeTracker {
 	 * `handleUrlChange()` indicating that history was updated.
 	 */
 	handlePopState() {
-		this.handleUrlChange();
+		this.handleUrlChange(true);
 	}
 
 	/**
@@ -61,7 +78,7 @@ export default class UrlChangeTracker {
 	 *     `pushState()` or the `popstate` event. False if the history was just
 	 *     modified via `replaceState()`.
 	 */
-	handleUrlChange() {
+	handleUrlChange(historyDidUpdate) {
 		// Call the update logic asychronously to help ensure that app logic
 		// responding to the URL change happens prior to this.
 		setTimeout(() => {
@@ -70,7 +87,9 @@ export default class UrlChangeTracker {
 
 			if (oldPath != newPath && this.shouldTrackUrlChange(newPath, oldPath)) {
 				this.path = newPath;
-				this.onUrlChange();
+				if (historyDidUpdate || this.trackReplaceState) {
+					this.onUrlChange();
+				}
 			}
 		}, 0);
 	}
