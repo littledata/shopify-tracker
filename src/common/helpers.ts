@@ -2,6 +2,7 @@
 declare let window: CustomWindow;
 import checkLinker from './checkLinker';
 import { getCookie } from './getCookie';
+import UrlChangeTracker from './UrlChangeTracker';
 
 /**
  *
@@ -25,6 +26,9 @@ export const pageView = (fireTag: () => void): void => {
 	} else {
 		fireTag();
 	}
+
+	// now listen for changes of URL for single page applications
+	new UrlChangeTracker(fireTag);
 };
 
 export const getElementsByHref = (regex: RegExp | string): HTMLAnchorElement[] => {
