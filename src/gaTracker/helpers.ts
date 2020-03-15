@@ -9,6 +9,7 @@ import {
 	trackSocialShares,
 } from '../common/helpers';
 import productListViews from '../common/productListViews';
+import getProductDetail from '../common/getProductDetail';
 
 export const initGtag = () => {
 	window.dataLayer = window.dataLayer || [];
@@ -117,7 +118,7 @@ export const trackEvents = () => {
 		});
 	}
 
-	const product = LittledataLayer.ecommerce.detail;
+	const product = getProductDetail();
 	if (product) {
 		product.list_position = parseInt(window.localStorage.getItem('position')) || 1;
 		gtag('event', 'view_item', {

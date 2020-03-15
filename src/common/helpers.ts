@@ -28,7 +28,8 @@ export const pageView = (fireTag: () => void): void => {
 	}
 
 	// now listen for changes of URL for single page applications
-	new UrlChangeTracker(fireTag);
+	const urlChangeTracker = new UrlChangeTracker();
+	urlChangeTracker.setCallback(fireTag);
 };
 
 export const getElementsByHref = (regex: RegExp | string): HTMLAnchorElement[] => {

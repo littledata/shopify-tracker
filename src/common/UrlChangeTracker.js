@@ -5,12 +5,14 @@ import MethodChain from './MethodChain';
  * @implements {UrlChangeTrackerPublicInterface}
  */
 export default class UrlChangeTracker {
-	constructor(onUrlChange) {
-		// function to call when URL changes
-		this.onUrlChange = onUrlChange;
-
+	constructor() {
 		// Feature detects to prevent errors in unsupporting browsers.
 		if (!history.pushState || !window.addEventListener) return;
+
+		//fallback if not given callback
+		this.onUrlChange = () => {
+			console.warn('UrlChangeTracker not given callback');
+		};
 
 		// Sets the initial page field.
 		// Don't set this on the tracker yet so campaign data can be retreived
@@ -24,6 +26,11 @@ export default class UrlChangeTracker {
 		// Watches for history changes.
 		MethodChain.add(history, 'pushState', this.pushStateOverride);
 		window.addEventListener('popstate', this.handlePopState);
+	}
+
+	// function to call when URL changes
+	setCallback(tag) {
+		this.onUrlChange = tag;
 	}
 
 	/**
@@ -63,7 +70,7 @@ export default class UrlChangeTracker {
 
 			if (oldPath != newPath && this.shouldTrackUrlChange(newPath, oldPath)) {
 				this.path = newPath;
-				onUrlChange();
+				this.onUrlChange();
 			}
 		}, 0);
 	}

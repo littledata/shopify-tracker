@@ -8,6 +8,7 @@ import {
 } from '../common/helpers';
 import { getCookie } from '../common/getCookie';
 import productListViews from '../common/productListViews';
+import getProductDetail from '../common/getProductDetail';
 
 const getContext = () => {
 	return {
@@ -101,9 +102,9 @@ export const trackEvents = () => {
 				});
 			});
 		}
-		const rawProduct = LittledataLayer.ecommerce.detail;
-		if (rawProduct) {
-			const product = segmentProduct(rawProduct);
+		const productDetail = getProductDetail();
+		if (productDetail) {
+			const product = segmentProduct(productDetail);
 			product.currency = LittledataLayer.ecommerce.currencyCode;
 			product.category = 'EnhancedEcommerce';
 			product.position = parseInt(window.localStorage.getItem('position')) || 1;
