@@ -3,8 +3,8 @@ export default () => {
 	if (!detail) return null;
 
 	// Is the variant ID specified in the URL?
-	// variant is a 14 digit number like 31524084842532
-	const matches = document.location.href.match(/[0-9]{14}/);
+	// variant is a 8 to 20 digit number like 31524084842532
+	const matches = document.location.href.match(/[0-9]{8,20}/);
 	const variantId = matches && Number(matches[0]);
 	if (variantId) {
 		//find variant in the list of variants
