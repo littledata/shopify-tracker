@@ -96,13 +96,13 @@ __webpack_require__.r(__webpack_exports__);
 
 
 (function () {
-  window.LittledataScriptVersion = '8.3';
+  window.LittledataScriptVersion = '8.4';
   Object(_common_helpers__WEBPACK_IMPORTED_MODULE_1__["validateLittledataLayer"])();
   Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["initGtag"])();
   Object(_common_helpers__WEBPACK_IMPORTED_MODULE_1__["advertiseLD"])();
+  Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["trackEvents"])();
   Object(_common_helpers__WEBPACK_IMPORTED_MODULE_1__["pageView"])(function () {
     Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["sendPageview"])();
-    Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["trackEvents"])();
   });
 })();
 
@@ -117,7 +117,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "trackEvents", function() { return trackEvents; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getConfig", function() { return getConfig; });
 /* harmony import */ var _common_helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
-/* harmony import */ var _common_productListViews__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(5);
+/* harmony import */ var _common_productListViews__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7);
+/* harmony import */ var _common_getProductDetail__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(8);
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
@@ -127,6 +128,7 @@ function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.
 function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
 
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
 
 
 
@@ -180,6 +182,27 @@ var sendPageview = function sendPageview() {
     // so we need to wait for GA library (part of gtag)
     Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(getGtagClientId, 'google');
   });
+  var product = Object(_common_getProductDetail__WEBPACK_IMPORTED_MODULE_2__["default"])();
+
+  if (product) {
+    product.list_position = parseInt(window.localStorage.getItem('position')) || 1;
+    gtag('event', 'view_item', {
+      items: [product],
+      non_interaction: true,
+      send_to: LittledataLayer.webPropertyID
+    });
+    dataLayer.push({
+      event: 'view_item',
+      ecommerce: {
+        detail: {
+          actionField: {
+            list: product.list_name
+          },
+          products: [product]
+        }
+      }
+    });
+  }
 };
 
 function getGtagClientId() {
@@ -238,27 +261,10 @@ var trackEvents = function trackEvents() {
     });
   }
 
-  var product = LittledataLayer.ecommerce.detail;
+  var product = Object(_common_getProductDetail__WEBPACK_IMPORTED_MODULE_2__["default"])();
 
   if (product) {
-    product.list_position = parseInt(window.localStorage.getItem('position')) || 1;
-    gtag('event', 'view_item', {
-      items: [product],
-      non_interaction: true,
-      send_to: LittledataLayer.webPropertyID
-    });
-    dataLayer.push({
-      event: 'view_item',
-      ecommerce: {
-        detail: {
-          actionField: {
-            list: product.list_name
-          },
-          products: [product]
-        }
-      }
-    }); // if PDP, we can also track clicks on images and social shares
-
+    // if PDP, we can also track clicks on images and social shares
     Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["trackProductImageClicks"])(function (name) {
       dataLayer.push({
         event: 'product_image_click',
@@ -332,11 +338,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "advertiseLD", function() { return advertiseLD; });
 /* harmony import */ var _checkLinker__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3);
 /* harmony import */ var _getCookie__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(4);
+/* harmony import */ var _UrlChangeTracker__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(5);
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 
 
 
@@ -362,7 +370,11 @@ var pageView = function pageView(fireTag) {
     });
   } else {
     fireTag();
-  }
+  } // now listen for changes of URL for single page applications
+
+
+  var urlChangeTracker = new _UrlChangeTracker__WEBPACK_IMPORTED_MODULE_2__["default"](LittledataLayer.trackReplaceState);
+  urlChangeTracker.setCallback(fireTag);
 };
 var getElementsByHref = function getElementsByHref(regex) {
   var htmlCollection = document.getElementsByTagName('a');
@@ -735,6 +747,320 @@ var getCookie = function getCookie(name) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return UrlChangeTracker; });
+/* harmony import */ var _MethodChain__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(6);
+
+
+/**
+ * Class for the `urlChangeTracker` analytics.js plugin.
+ * @implements {UrlChangeTrackerPublicInterface}
+ */
+class UrlChangeTracker {
+	constructor(trackReplaceState) {
+		// Feature detects to prevent errors in unsupporting browsers.
+		if (!history.pushState || !window.addEventListener) return;
+
+		//fallback if not given callback
+		this.onUrlChange = () => {
+			console.warn('UrlChangeTracker not given callback');
+		};
+
+		// Sets the initial page field.
+		// Don't set this on the tracker yet so campaign data can be retreived
+		// from the location field.
+		this.path = getPath();
+
+		//
+		this.trackReplaceState = trackReplaceState;
+
+		// Binds methods.
+		this.pushStateOverride = this.pushStateOverride.bind(this);
+		this.replaceStateOverride = this.replaceStateOverride.bind(this);
+		this.handlePopState = this.handlePopState.bind(this);
+
+		// Watches for history changes.
+		_MethodChain__WEBPACK_IMPORTED_MODULE_0__["default"].add(history, 'pushState', this.pushStateOverride);
+		_MethodChain__WEBPACK_IMPORTED_MODULE_0__["default"].add(history, 'replaceState', this.replaceStateOverride);
+		window.addEventListener('popstate', this.handlePopState);
+	}
+
+	// function to call when URL changes
+	setCallback(tag) {
+		this.onUrlChange = tag;
+	}
+
+	/**
+	 * Handles invocations of the native `history.pushState` and calls
+	 * `handleUrlChange()` indicating that the history updated.
+	 * @param {!Function} originalMethod A reference to the overridden method.
+	 * @return {!Function}
+	 */
+	pushStateOverride(originalMethod) {
+		return (...args) => {
+			originalMethod(...args);
+			this.handleUrlChange(true);
+		};
+	}
+
+	/**
+	 * Handles invocations of the native `history.replaceState` and calls
+	 * `handleUrlChange()` indicating that history was replaced.
+	 * @param {!Function} originalMethod A reference to the overridden method.
+	 * @return {!Function}
+	 */
+	replaceStateOverride(originalMethod) {
+		return (...args) => {
+			originalMethod(...args);
+			this.handleUrlChange(false);
+		};
+	}
+
+	/**
+	 * Handles responding to the popstate event and calls
+	 * `handleUrlChange()` indicating that history was updated.
+	 */
+	handlePopState() {
+		this.handleUrlChange(true);
+	}
+
+	/**
+	 * Updates the page and title fields on the tracker and sends a pageview
+	 * if a new history entry was created.
+	 * @param {boolean} historyDidUpdate True if the history was changed via
+	 *     `pushState()` or the `popstate` event. False if the history was just
+	 *     modified via `replaceState()`.
+	 */
+	handleUrlChange(historyDidUpdate) {
+		// Call the update logic asychronously to help ensure that app logic
+		// responding to the URL change happens prior to this.
+		setTimeout(() => {
+			const oldPath = this.path;
+			const newPath = getPath();
+
+			if (oldPath != newPath && this.shouldTrackUrlChange(newPath, oldPath)) {
+				this.path = newPath;
+				if (historyDidUpdate || this.trackReplaceState) {
+					this.onUrlChange();
+				}
+			}
+		}, 0);
+	}
+
+	/**
+	 * Determines whether or not the tracker should send a hit with the new page
+	 * data.
+	 * @param {string} newPath The path after the URL change.
+	 * @param {string} oldPath The path prior to the URL change.
+	 * @return {boolean} Whether or not the URL change should be tracked.
+	 */
+	shouldTrackUrlChange(newPath, oldPath) {
+		return !!(newPath && oldPath);
+	}
+
+	/**
+	 * Removes all event listeners and restores overridden methods.
+	 */
+	remove() {
+		this.queue.destroy();
+		_MethodChain__WEBPACK_IMPORTED_MODULE_0__["default"].remove(history, 'pushState', this.pushStateOverride);
+		_MethodChain__WEBPACK_IMPORTED_MODULE_0__["default"].remove(history, 'replaceState', this.replaceStateOverride);
+		window.removeEventListener('popstate', this.handlePopState);
+	}
+}
+
+/**
+ * @return {string} The path value of the current URL.
+ */
+function getPath() {
+	return location.pathname + location.search;
+}
+
+
+/***/ }),
+/* 6 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return MethodChain; });
+/**
+ * Copyright 2017 Google Inc. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * @fileoverview
+ * The functions exported by this module make it easier (and safer) to override
+ * foreign object methods (in a modular way) and respond to or modify their
+ * invocation. The primary feature is the ability to override a method without
+ * worrying if it's already been overridden somewhere else in the codebase. It
+ * also allows for safe restoring of an overridden method by only fully
+ * restoring a method once all overrides have been removed.
+ */
+
+const instances = [];
+
+/**
+ * A class that wraps a foreign object method and emit events before and
+ * after the original method is called.
+ */
+class MethodChain {
+	/**
+	 * Adds the passed override method to the list of method chain overrides.
+	 * @param {!Object} context The object containing the method to chain.
+	 * @param {string} methodName The name of the method on the object.
+	 * @param {!Function} methodOverride The override method to add.
+	 */
+	static add(context, methodName, methodOverride) {
+		getOrCreateMethodChain(context, methodName).add(methodOverride);
+	}
+
+	/**
+	 * Removes a method chain added via `add()`. If the override is the
+	 * only override added, the original method is restored. If the method
+	 * chain does not exist, nothing happens.
+	 * @param {!Object} context The object containing the method to unchain.
+	 * @param {string} methodName The name of the method on the object.
+	 * @param {!Function} methodOverride The override method to remove.
+	 */
+	static remove(context, methodName, methodOverride) {
+		let methodChain = getMethodChain(context, methodName);
+		if (methodChain) {
+			methodChain.remove(methodOverride);
+		}
+	}
+
+	/**
+	 * Wraps a foreign object method and overrides it. Also stores a reference
+	 * to the original method so it can be restored later.
+	 * @param {!Object} context The object containing the method.
+	 * @param {string} methodName The name of the method on the object.
+	 */
+	constructor(context, methodName) {
+		this.context = context;
+		this.methodName = methodName;
+		this.isTask = /Task$/.test(methodName);
+
+		this.originalMethodReference = this.isTask ? context.get(methodName) : context[methodName];
+
+		this.methodChain = [];
+		this.boundMethodChain = [];
+
+		// Wraps the original method.
+		this.wrappedMethod = (...args) => {
+			const lastBoundMethod = this.boundMethodChain[this.boundMethodChain.length - 1];
+
+			return lastBoundMethod(...args);
+		};
+
+		// Override original method with the wrapped one.
+		if (this.isTask) {
+			context.set(methodName, this.wrappedMethod);
+		} else {
+			context[methodName] = this.wrappedMethod;
+		}
+	}
+
+	/**
+	 * Adds a method to the method chain.
+	 * @param {!Function} overrideMethod The override method to add.
+	 */
+	add(overrideMethod) {
+		this.methodChain.push(overrideMethod);
+		this.rebindMethodChain();
+	}
+
+	/**
+	 * Removes a method from the method chain and restores the prior order.
+	 * @param {!Function} overrideMethod The override method to remove.
+	 */
+	remove(overrideMethod) {
+		const index = this.methodChain.indexOf(overrideMethod);
+		if (index > -1) {
+			this.methodChain.splice(index, 1);
+			if (this.methodChain.length > 0) {
+				this.rebindMethodChain();
+			} else {
+				this.destroy();
+			}
+		}
+	}
+
+	/**
+	 * Loops through the method chain array and recreates the bound method
+	 * chain array. This is necessary any time a method is added or removed
+	 * to ensure proper original method context and order.
+	 */
+	rebindMethodChain() {
+		this.boundMethodChain = [];
+		for (let method, i = 0; (method = this.methodChain[i]); i++) {
+			const previousMethod = this.boundMethodChain[i - 1] || this.originalMethodReference.bind(this.context);
+			this.boundMethodChain.push(method(previousMethod));
+		}
+	}
+
+	/**
+	 * Calls super and destroys the instance if no registered handlers remain.
+	 */
+	destroy() {
+		const index = instances.indexOf(this);
+		if (index > -1) {
+			instances.splice(index, 1);
+			if (this.isTask) {
+				this.context.set(this.methodName, this.originalMethodReference);
+			} else {
+				this.context[this.methodName] = this.originalMethodReference;
+			}
+		}
+	}
+}
+
+/**
+ * Gets a MethodChain instance for the passed object and method.
+ * @param {!Object} context The object containing the method.
+ * @param {string} methodName The name of the method on the object.
+ * @return {!MethodChain|undefined}
+ */
+function getMethodChain(context, methodName) {
+	return instances.filter(h => h.context == context && h.methodName == methodName)[0];
+}
+
+/**
+ * Gets a MethodChain instance for the passed object and method. If the method
+ * has already been wrapped via an existing MethodChain instance, that
+ * instance is returned.
+ * @param {!Object} context The object containing the method.
+ * @param {string} methodName The name of the method on the object.
+ * @return {!MethodChain}
+ */
+function getOrCreateMethodChain(context, methodName) {
+	let methodChain = getMethodChain(context, methodName);
+
+	if (!methodChain) {
+		methodChain = new MethodChain(context, methodName);
+		instances.push(methodChain);
+	}
+	return methodChain;
+}
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
 
 /* harmony default export */ __webpack_exports__["default"] = (function (impressionTag) {
@@ -808,6 +1134,36 @@ var chunk = function chunk(arr, size) {
     return arr.slice(i * size, i * size + size);
   });
 };
+
+/***/ }),
+/* 8 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (() => {
+	const detail = LittledataLayer.ecommerce.detail;
+	if (!detail) return null;
+
+	// Is the variant ID specified in the URL?
+	// variant is a 8 to 20 digit number like 31524084842532
+	const matches = document.location.href.match(/[0-9]{8,20}/);
+	const variantId = matches && Number(matches[0]);
+	if (variantId) {
+		//find variant in the list of variants
+		const variantList = LittledataLayer.ecommerce.variants;
+		if (variantList) {
+			const variant = variantList.find(obj => obj.id === variantId);
+			if (variant) {
+				detail.id = variant.sku;
+				detail.variant = variant.title;
+			}
+		}
+	}
+
+	return detail;
+});
+
 
 /***/ })
 /******/ ]);
