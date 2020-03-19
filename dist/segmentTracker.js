@@ -139,11 +139,13 @@ var pageView = function pageView(fireTag) {
     });
   } else {
     fireTag();
-  } // now listen for changes of URL for single page applications
+  }
 
-
-  var urlChangeTracker = new _UrlChangeTracker__WEBPACK_IMPORTED_MODULE_2__["default"](LittledataLayer.trackReplaceState);
-  urlChangeTracker.setCallback(fireTag);
+  if (LittledataLayer.singlePageApp === true) {
+    // now listen for changes of URL for single page applications
+    var urlChangeTracker = new _UrlChangeTracker__WEBPACK_IMPORTED_MODULE_2__["default"](LittledataLayer.trackReplaceState || false);
+    urlChangeTracker.setCallback(fireTag);
+  }
 };
 var getElementsByHref = function getElementsByHref(regex) {
   var htmlCollection = document.getElementsByTagName('a');
