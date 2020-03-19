@@ -27,9 +27,11 @@ export const pageView = (fireTag: () => void): void => {
 		fireTag();
 	}
 
-	// now listen for changes of URL for single page applications
-	const urlChangeTracker = new UrlChangeTracker(LittledataLayer.trackReplaceState);
-	urlChangeTracker.setCallback(fireTag);
+	if (LittledataLayer.singlePageApp === true) {
+		// now listen for changes of URL for single page applications
+		const urlChangeTracker = new UrlChangeTracker(LittledataLayer.trackReplaceState || false);
+		urlChangeTracker.setCallback(fireTag);
+	}
 };
 
 export const getElementsByHref = (regex: RegExp | string): HTMLAnchorElement[] => {

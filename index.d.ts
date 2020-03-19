@@ -130,6 +130,7 @@ declare global {
 		extraLinkerDomains?: string[];
 		cookiesToTrack?: string[];
 		trackReplaceState?: boolean;
+		singlePageApp?: boolean;
 	}
 
 	var LittledataLayer: OwnLayer;
