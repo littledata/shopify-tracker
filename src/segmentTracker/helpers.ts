@@ -8,6 +8,7 @@ import {
 } from '../common/helpers';
 import { getCookie } from '../common/getCookie';
 import productListViews from '../common/productListViews';
+import getProductDetail from '../common/getProductDetail';
 
 const getContext = () => {
 	return {
@@ -99,12 +100,9 @@ export const trackEvents = () => {
 				});
 			});
 		}
-		const rawProduct = LittledataLayer.ecommerce.detail;
-		if (rawProduct) {
-			const product = segmentProduct(rawProduct);
-			product.currency = LittledataLayer.ecommerce.currencyCode;
-			product.position = parseInt(window.localStorage.getItem('position')) || 1;
-			trackEvent('Product Viewed', product);
+		const productDetail = getProductDetail();
+		if (productDetail) {
+			const product = segmentProduct(productDetail);
 
 			// if PDP, we can also track clicks on images and social shares
 			trackProductImageClicks(name => {
@@ -214,4 +212,13 @@ export const callSegmentPage = (integrations: Record<string, any>) => {
 			integrations,
 		},
 	);
+
+	const productDetail = getProductDetail();
+	if (productDetail) {
+		const product = segmentProduct(productDetail);
+		product.currency = LittledataLayer.ecommerce.currencyCode;
+		product.category = 'EnhancedEcommerce';
+		product.position = parseInt(window.localStorage.getItem('position')) || 1;
+		trackEvent('Product Viewed', product);
+	}
 };
