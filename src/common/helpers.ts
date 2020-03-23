@@ -2,6 +2,7 @@
 declare let window: CustomWindow;
 import checkLinker from './checkLinker';
 import { getCookie } from './getCookie';
+import UrlChangeTracker from './UrlChangeTracker';
 
 /**
  *
@@ -24,6 +25,12 @@ export const pageView = (fireTag: () => void): void => {
 		});
 	} else {
 		fireTag();
+	}
+
+	if (LittledataLayer.singlePageApp === true) {
+		// now listen for changes of URL for single page applications
+		const urlChangeTracker = new UrlChangeTracker(LittledataLayer.trackReplaceState || false);
+		urlChangeTracker.setCallback(fireTag);
 	}
 };
 
