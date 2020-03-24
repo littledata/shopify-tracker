@@ -990,7 +990,6 @@ var callSegmentPage = function callSegmentPage(integrations) {
   if (productDetail) {
     var product = segmentProduct(productDetail);
     product.currency = LittledataLayer.ecommerce.currencyCode;
-    product.category = 'EnhancedEcommerce';
     product.position = parseInt(window.localStorage.getItem('position')) || 1;
     trackEvent('Product Viewed', product);
   }
