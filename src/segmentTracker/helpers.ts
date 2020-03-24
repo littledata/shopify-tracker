@@ -217,7 +217,6 @@ export const callSegmentPage = (integrations: Record<string, any>) => {
 	if (productDetail) {
 		const product = segmentProduct(productDetail);
 		product.currency = LittledataLayer.ecommerce.currencyCode;
-		product.category = 'EnhancedEcommerce';
 		product.position = parseInt(window.localStorage.getItem('position')) || 1;
 		trackEvent('Product Viewed', product);
 	}
