@@ -136,9 +136,7 @@ function postCartToLittledata(cart: Cart.RootObject) {
 
 export function setClientID(getClientId: () => string, platform: 'google' | 'segment') {
 	const { cart } = LittledataLayer;
-	const clientIDProperty: 'google-clientID' | 'segment-clientID' = `${platform}-clientID` as
-		| 'google-clientID'
-		| 'segment-clientID';
+	const clientIDProperty = `${platform}-clientID` as 'google-clientID' | 'segment-clientID';
 
 	if (!cart || !cart.attributes || !cart.attributes[clientIDProperty]) {
 		return postClientID(getClientId, platform);
@@ -195,30 +193,6 @@ export const guid: string = (function() {
 // 	}
 // 	document.cookie = `${name}=${value}${expires}; path=/;`
 // }
-
-export function getPersistentClientId() {
-	// needed because Safari wipes 1st party cookies
-	// so we need to persist over localStorage, if available
-
-	// ignore this and return undefined if we have linker params
-	if (checkLinker()) return;
-
-	if (window.localStorage && LittledataLayer.persistentUserId) {
-		const localClientId = window.localStorage.getItem('_ga');
-		// prefer local storage version, as it was set by this function
-		if (localClientId) return localClientId;
-
-		const cookieClientId = getCookie('_ga');
-		if (cookieClientId) {
-			// set it to local storage for next time
-			window.localStorage.setItem('_ga', cookieClientId);
-			return cookieClientId;
-		}
-	}
-
-	// returning an empty client id will cause gtag to create a new one
-	return '';
-}
 
 export const trackProductImageClicks = (clickTag: (name: string) => void) => {
 	if (LittledataLayer.productPageClicks === false) return false;
