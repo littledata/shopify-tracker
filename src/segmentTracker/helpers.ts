@@ -8,21 +8,20 @@ import {
 } from '../common/helpers';
 import { getCookie } from '../common/getCookie';
 import productListViews from '../common/productListViews';
+import getProductDetail from '../common/getProductDetail';
 
-const trackEvent = (eventName: string, params: object) => {
-	const name = 'shopify_littledata';
-	const version =
-		typeof LittledataLayer.version === 'string'
-			? LittledataLayer.version.substr(1, LittledataLayer.version.length - 1) //first character is v
-			: '8.0.3';
-	const context = {
+const getContext = () => {
+	return {
 		integration: {
-			name,
-			version,
+			name: 'shopify_littledata',
+			version: window.LittledataScriptVersion,
 		},
 	};
+};
+
+const trackEvent = (eventName: string, params: object) => {
 	// @ts-ignore
-	window.analytics.track(eventName, params, context);
+	window.analytics.track(eventName, params, { context: getContext() });
 };
 
 interface SegmentProduct {
@@ -103,14 +102,10 @@ export const trackEvents = () => {
 				});
 			});
 		}
-		const rawProduct = LittledataLayer.ecommerce.detail;
-		if (rawProduct) {
-			const product = segmentProduct(rawProduct);
-			product.list_id = document.location.href;
-			product.currency = LittledataLayer.ecommerce.currencyCode;
-			product.category = 'EnhancedEcommerce';
-			product.position = parseInt(window.localStorage.getItem('position')) || 1;
-			trackEvent('Product Viewed', product);
+
+		const productDetail = getProductDetail();
+		if (productDetail) {
+			const product = segmentProduct(productDetail);
 
 			// if PDP, we can also track clicks on images and social shares
 			trackProductImageClicks(name => {
@@ -216,7 +211,17 @@ export const callSegmentPage = (integrations: Record<string, any>) => {
 		pageName,
 		{},
 		{
+			context: getContext(),
 			integrations,
 		},
 	);
+
+	const productDetail = getProductDetail();
+	if (productDetail) {
+		const product = segmentProduct(productDetail);
+		product.currency = LittledataLayer.ecommerce.currencyCode;
+		product.category = 'EnhancedEcommerce';
+		product.position = parseInt(window.localStorage.getItem('position')) || 1;
+		trackEvent('Product Viewed', product);
+	}
 };
