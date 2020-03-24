@@ -58,6 +58,7 @@ export const sendPageview = () => {
 	if (product) {
 		product.list_position = parseInt(window.localStorage.getItem('position')) || 1;
 		gtag('event', 'view_item', {
+			event_category,
 			items: [product],
 			non_interaction: true,
 			send_to: LittledataLayer.webPropertyID,
