@@ -87,7 +87,6 @@ export const trackEvents = () => {
 					...p,
 					currency: LittledataLayer.ecommerce.currencyCode,
 					list_id: product.list,
-					category: 'EnhancedEcommerce',
 				});
 			});
 
@@ -97,7 +96,6 @@ export const trackEvents = () => {
 
 				trackEvent('Product List Viewed', {
 					list_id: listId,
-					category: 'EnhancedEcommerce',
 					products: segmentProducts,
 				});
 			});
