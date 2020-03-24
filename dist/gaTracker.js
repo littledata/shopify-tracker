@@ -117,8 +117,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "trackEvents", function() { return trackEvents; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getConfig", function() { return getConfig; });
 /* harmony import */ var _common_helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
-/* harmony import */ var _common_productListViews__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7);
-/* harmony import */ var _common_getProductDetail__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(8);
+/* harmony import */ var _common_productListViews__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(5);
+/* harmony import */ var _common_getProductDetail__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(6);
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
@@ -132,6 +132,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
 
 
+var event_category = 'Shopify (Littledata)';
 var initGtag = function initGtag() {
   window.dataLayer = window.dataLayer || [];
 
@@ -151,14 +152,7 @@ var sendPageview = function sendPageview() {
   gtag('config', LittledataLayer.webPropertyID, {
     page_title: page_title,
     page_location: page_location
-  }); // gtag('event', 'pageview', {
-  // 	event_category: 'Pageview (Littledata)',
-  // 	event_label: '',
-  // 	non_interaction: true,
-  // 	send_to: LittledataLayer.webPropertyID,
-  // 	event_callback: done,
-  // });
-
+  });
   dataLayer.push({
     event: 'pageview',
     page_title: page_title,
@@ -178,8 +172,7 @@ var sendPageview = function sendPageview() {
 
   window.ga.l = +new Date();
   window.ga(function () {
-    // getPersistentCLientId might return empty string for gtag to create a new one
-    // so we need to wait for GA library (part of gtag)
+    // we need to wait for GA library (part of gtag)
     Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(getGtagClientId, 'google');
   });
   var product = Object(_common_getProductDetail__WEBPACK_IMPORTED_MODULE_2__["default"])();
@@ -237,6 +230,7 @@ var trackEvents = function trackEvents() {
         }
       });
       gtag('event', 'select_content', {
+        event_category: event_category,
         content_type: 'product',
         items: [product],
         send_to: LittledataLayer.webPropertyID,
@@ -248,6 +242,7 @@ var trackEvents = function trackEvents() {
     });
     Object(_common_productListViews__WEBPACK_IMPORTED_MODULE_1__["default"])(function (products) {
       gtag('event', 'view_item_list', {
+        event_category: event_category,
         items: products,
         send_to: LittledataLayer.webPropertyID,
         non_interaction: true
@@ -271,7 +266,7 @@ var trackEvents = function trackEvents() {
         name: name
       });
       gtag('event', 'Product image click', {
-        event_category: 'Product details page (Littledata)',
+        event_category: event_category,
         event_label: name,
         send_to: LittledataLayer.webPropertyID
       });
@@ -282,7 +277,7 @@ var trackEvents = function trackEvents() {
         network: network
       });
       gtag('event', 'Social share', {
-        event_category: 'Product details page (Littledata)',
+        event_category: event_category,
         event_label: network,
         send_to: LittledataLayer.webPropertyID
       });
@@ -308,7 +303,6 @@ var getConfig = function getConfig() {
     allow_ad_personalization_signals: !!googleSignals,
     currency: ecommerce.currencyCode,
     link_attribution: true,
-    clientId: Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["getPersistentClientId"])(),
     optimize_id: optimizeId,
     page_referrer: excludeReferal ? document.referrer : null,
     send_page_view: false,
@@ -331,21 +325,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setClientID", function() { return setClientID; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "removePii", function() { return removePii; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "guid", function() { return guid; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getPersistentClientId", function() { return getPersistentClientId; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "trackProductImageClicks", function() { return trackProductImageClicks; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "trackSocialShares", function() { return trackSocialShares; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "validateLittledataLayer", function() { return validateLittledataLayer; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "advertiseLD", function() { return advertiseLD; });
-/* harmony import */ var _checkLinker__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3);
-/* harmony import */ var _getCookie__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(4);
-/* harmony import */ var _UrlChangeTracker__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(5);
+/* harmony import */ var _UrlChangeTracker__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3);
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
 
 
 /**
@@ -374,7 +363,7 @@ var pageView = function pageView(fireTag) {
 
   if (LittledataLayer.singlePageApp === true) {
     // now listen for changes of URL for single page applications
-    var urlChangeTracker = new _UrlChangeTracker__WEBPACK_IMPORTED_MODULE_2__["default"](LittledataLayer.trackReplaceState || false);
+    var urlChangeTracker = new _UrlChangeTracker__WEBPACK_IMPORTED_MODULE_0__["default"](LittledataLayer.trackReplaceState || false);
     urlChangeTracker.setCallback(fireTag);
   }
 };
@@ -525,28 +514,6 @@ var guid = function () {
 // 	document.cookie = `${name}=${value}${expires}; path=/;`
 // }
 
-function getPersistentClientId() {
-  // needed because Safari wipes 1st party cookies
-  // so we need to persist over localStorage, if available
-  // ignore this and return undefined if we have linker params
-  if (Object(_checkLinker__WEBPACK_IMPORTED_MODULE_0__["default"])()) return;
-
-  if (window.localStorage && LittledataLayer.persistentUserId) {
-    var localClientId = window.localStorage.getItem('_ga'); // prefer local storage version, as it was set by this function
-
-    if (localClientId) return localClientId;
-    var cookieClientId = Object(_getCookie__WEBPACK_IMPORTED_MODULE_1__["getCookie"])('_ga');
-
-    if (cookieClientId) {
-      // set it to local storage for next time
-      window.localStorage.setItem('_ga', cookieClientId);
-      return cookieClientId;
-    }
-  } // returning an empty client id will cause gtag to create a new one
-
-
-  return '';
-}
 var trackProductImageClicks = function trackProductImageClicks(clickTag) {
   if (LittledataLayer.productPageClicks === false) return false;
   getElementsByHref('^https://cdn.shopify.com/s/files/.*/products/').forEach(function (element) {
@@ -585,172 +552,8 @@ var advertiseLD = function advertiseLD() {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* eslint-disable */
-
-//from https://gist.github.com/sahava/f3718f981bb01768c0eba714ee94e2d2
-/* harmony default export */ __webpack_exports__["default"] = (function(str) {
-	// First browser fingerprint method.
-	// Uses the clientId / gid string, user agent, time, and browser plugin descriptions.
-	var joiner = function(cidGid, offset) {
-		var a = new Date(),
-			b = window.navigator,
-			c = b.plugins || [];
-		var d = [
-			cidGid,
-			b.userAgent,
-			a.getTimezoneOffset(),
-			a.getYear(),
-			a.getDate(),
-			a.getHours(),
-			a.getMinutes() + offset,
-		];
-		for (var e = 0; e < c.length; ++e) {
-			d.push(c[e].description);
-		}
-		return jumble(d.join('.'));
-	};
-
-	// Second browser fingerprint method.
-	// Uses the clientId / gid string, time, user agent, browser language.
-	var joiner2 = function(cidGid, offset) {
-		var a = new Date(),
-			b = window.navigator,
-			c = a.getHours() + Math.floor((a.getMinutes() + offset) / 60);
-		return jumble(
-			[
-				cidGid,
-				b.userAgent,
-				b.language || '',
-				a.getTimezoneOffset(),
-				a.getYear(),
-				a.getDate() + Math.floor(c / 24),
-				(24 + c) % 24,
-				(60 + a.getMinutes() + offset) % 60,
-			].join('.'),
-		);
-	};
-
-	// One-way hash of the fingerprint, included in the linker parameter.
-	var jumble = function(arr) {
-		var b = 1,
-			c;
-		if (arr) {
-			for (b = 0, c = arr.length - 1; 0 <= c; c--) {
-				var d = arr.charCodeAt(c);
-				b = ((b << 6) & 268435455) + d + (d << 14);
-				d = b & 266338304;
-				b = 0 != d ? b ^ (d >> 21) : b;
-			}
-		}
-		return b.toString();
-	};
-
-	var linkerType, linker;
-
-	// Check Linker validity and isolate the Linker parameter string.
-	if (typeof str === 'string' && str.length) {
-		if (!/_ga=/.test(str)) {
-			return false;
-		}
-		linker = str
-			.split('&')
-			.filter(function(p) {
-				return p.split('=')[0] === '_ga';
-			})
-			.shift();
-	} else {
-		linkerType = /[?&]_ga=/.test(window.location.search)
-			? 'search'
-			: /[#&]_ga=/.test(window.location.hash)
-			? 'hash'
-			: undefined;
-		linker =
-			linkerType &&
-			window.location[linkerType]
-				.substring(1)
-				.split('&')
-				.filter(function(p) {
-					return p.split('=')[0] === '_ga';
-				})
-				.shift();
-	}
-
-	if (typeof linker === 'undefined' || !linker.length) {
-		return false;
-	}
-
-	// Get the finger print and Client ID / Google ID strings from the parameter.
-	var a = linker.indexOf('.'),
-		b,
-		c,
-		d,
-		fingerprint,
-		cidGid;
-	if (a > -1) {
-		b = linker.substring(0, a);
-		c = linker.substring(a + 1);
-		d = c.indexOf('.');
-		fingerprint = c.substring(0, d);
-		cidGid = c.substring(d + 1);
-	}
-
-	// Jumble the Client ID / Google ID string and compare it against the fingerprint.
-	// Check current minute, one minute back, and two minutes back.
-	if (typeof cidGid !== 'undefined') {
-		cidGid = cidGid.split('-').join('');
-		return (
-			fingerprint === joiner(cidGid, 0) ||
-			fingerprint === joiner(cidGid, -1) ||
-			fingerprint === joiner(cidGid, -2) ||
-			fingerprint === joiner2(cidGid, 0) ||
-			fingerprint === joiner2(cidGid, -1) ||
-			fingerprint === joiner2(cidGid, -2)
-		);
-	}
-});
-
-
-/***/ }),
-/* 4 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getCookie", function() { return getCookie; });
-var getCookie = function getCookie(name) {
-  if (document.cookie.length > 0) {
-    var cookieStart = document.cookie.indexOf("".concat(name, "="));
-
-    if (cookieStart !== -1) {
-      var valueStart = cookieStart + name.length + 1;
-      var cookieEnd = document.cookie.indexOf(';', valueStart);
-
-      if (cookieEnd === -1) {
-        cookieEnd = document.cookie.length;
-      }
-
-      var cookie = unescape(document.cookie.substring(valueStart, cookieEnd));
-
-      if (name === '_ga') {
-        var match = cookie.match(/(\d{2,11})\.(\d{2,11})/g);
-        return match ? match[0] : '';
-      }
-
-      return cookie;
-    }
-  }
-
-  return '';
-};
-
-/***/ }),
-/* 5 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return UrlChangeTracker; });
-/* harmony import */ var _MethodChain__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(6);
+/* harmony import */ var _MethodChain__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
 
 
 /**
@@ -879,7 +682,7 @@ function getPath() {
 
 
 /***/ }),
-/* 6 */
+/* 4 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1058,7 +861,7 @@ function getOrCreateMethodChain(context, methodName) {
 
 
 /***/ }),
-/* 7 */
+/* 5 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1138,7 +941,7 @@ var chunk = function chunk(arr, size) {
 };
 
 /***/ }),
-/* 8 */
+/* 6 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
