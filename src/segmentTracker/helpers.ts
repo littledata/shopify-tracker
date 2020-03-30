@@ -100,6 +100,7 @@ export const trackEvents = () => {
 				});
 			});
 		}
+
 		const productDetail = getProductDetail();
 		if (productDetail) {
 			const product = segmentProduct(productDetail);
