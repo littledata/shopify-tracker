@@ -1,1 +1,975 @@
-!function(t){var e={};function n(r){if(e[r])return e[r].exports;var i=e[r]={i:r,l:!1,exports:{}};return t[r].call(i.exports,i,i.exports,n),i.l=!0,i.exports}n.m=t,n.c=e,n.d=function(t,e,r){n.o(t,e)||Object.defineProperty(t,e,{enumerable:!0,get:r})},n.r=function(t){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(t,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(t,"__esModule",{value:!0})},n.t=function(t,e){if(1&e&&(t=n(t)),8&e)return t;if(4&e&&"object"==typeof t&&t&&t.__esModule)return t;var r=Object.create(null);if(n.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:t}),2&e&&"string"!=typeof t)for(var i in t)n.d(r,i,function(e){return t[e]}.bind(null,i));return r},n.n=function(t){var e=t&&t.__esModule?function(){return t.default}:function(){return t};return n.d(e,"a",e),e},n.o=function(t,e){return Object.prototype.hasOwnProperty.call(t,e)},n.p="",n(n.s=4)}([function(t,e,n){"use strict";var r=n(1);const i=[];class a{static add(t,e,n){(function(t,e){let n=o(t,e);n||(n=new a(t,e),i.push(n));return n})(t,e).add(n)}static remove(t,e,n){let r=o(t,e);r&&r.remove(n)}constructor(t,e){this.context=t,this.methodName=e,this.isTask=/Task$/.test(e),this.originalMethodReference=this.isTask?t.get(e):t[e],this.methodChain=[],this.boundMethodChain=[],this.wrappedMethod=(...t)=>(0,this.boundMethodChain[this.boundMethodChain.length-1])(...t),this.isTask?t.set(e,this.wrappedMethod):t[e]=this.wrappedMethod}add(t){this.methodChain.push(t),this.rebindMethodChain()}remove(t){const e=this.methodChain.indexOf(t);e>-1&&(this.methodChain.splice(e,1),this.methodChain.length>0?this.rebindMethodChain():this.destroy())}rebindMethodChain(){this.boundMethodChain=[];for(let t,e=0;t=this.methodChain[e];e++){const n=this.boundMethodChain[e-1]||this.originalMethodReference.bind(this.context);this.boundMethodChain.push(t(n))}}destroy(){const t=i.indexOf(this);t>-1&&(i.splice(t,1),this.isTask?this.context.set(this.methodName,this.originalMethodReference):this.context[this.methodName]=this.originalMethodReference)}}function o(t,e){return i.filter(n=>n.context==t&&n.methodName==e)[0]}class c{constructor(t){history.pushState&&window.addEventListener&&(this.onUrlChange=()=>{console.warn("UrlChangeTracker not given callback")},this.path=s(),this.trackReplaceState=t,this.pushStateOverride=this.pushStateOverride.bind(this),this.replaceStateOverride=this.replaceStateOverride.bind(this),this.handlePopState=this.handlePopState.bind(this),a.add(history,"pushState",this.pushStateOverride),a.add(history,"replaceState",this.replaceStateOverride),window.addEventListener("popstate",this.handlePopState))}setCallback(t){this.onUrlChange=t}pushStateOverride(t){return(...e)=>{t(...e),this.handleUrlChange(!0)}}replaceStateOverride(t){return(...e)=>{t(...e),this.handleUrlChange(!1)}}handlePopState(){this.handleUrlChange(!0)}handleUrlChange(t){setTimeout(()=>{const e=this.path,n=s();e!=n&&this.shouldTrackUrlChange(n,e)&&(this.path=n,(t||this.trackReplaceState)&&this.onUrlChange())},0)}shouldTrackUrlChange(t,e){return!(!t||!e)}remove(){this.queue.destroy(),a.remove(history,"pushState",this.pushStateOverride),a.remove(history,"replaceState",this.replaceStateOverride),window.removeEventListener("popstate",this.handlePopState)}}function s(){return location.pathname+location.search}function u(t,e){var n=Object.keys(t);if(Object.getOwnPropertySymbols){var r=Object.getOwnPropertySymbols(t);e&&(r=r.filter((function(e){return Object.getOwnPropertyDescriptor(t,e).enumerable}))),n.push.apply(n,r)}return n}function d(t){for(var e=1;e<arguments.length;e++){var n=null!=arguments[e]?arguments[e]:{};e%2?u(n,!0).forEach((function(e){l(t,e,n[e])})):Object.getOwnPropertyDescriptors?Object.defineProperties(t,Object.getOwnPropertyDescriptors(n)):u(n).forEach((function(e){Object.defineProperty(t,e,Object.getOwnPropertyDescriptor(n,e))}))}return t}function l(t,e,n){return e in t?Object.defineProperty(t,e,{value:n,enumerable:!0,configurable:!0,writable:!0}):t[e]=n,t}n.d(e,"e",(function(){return f})),n.d(e,"c",(function(){return p})),n.d(e,"b",(function(){return g})),n.d(e,"f",(function(){return m})),n.d(e,"h",(function(){return v})),n.d(e,"i",(function(){return L})),n.d(e,"g",(function(){return O})),n.d(e,"d",(function(){return _})),n.d(e,"j",(function(){return S})),n.d(e,"k",(function(){return j})),n.d(e,"l",(function(){return k})),n.d(e,"a",(function(){return C}));var h,f=function(t){if(!0===document.hidden){var e=!1;document.addEventListener("visibilitychange",(function(){document.hidden||e||(t(),e=!0)}))}else"loading"===document.readyState?document.addEventListener("DOMContentLoaded",(function(){t()})):t();!0===LittledataLayer.singlePageApp&&new c(LittledataLayer.trackReplaceState||!1).setCallback(t)},p=function(t){var e=document.getElementsByTagName("a"),n=new RegExp(t);return Array.prototype.slice.call(e).filter((function(t){return t.href&&n.test(t.href)}))},g=function(t){return LittledataLayer.ecommerce.impressions.find((function(e){var n=t.split("/products/");return(n&&n[1])===e.handle}))},m=function(t){LittledataLayer.productClicks&&p("/products/").forEach((function(e){e.addEventListener("click",(function(n){var r=g(this.href);r?(n.preventDefault(),e.timeout=window.setTimeout((function(){document.location.href=e.href}),1e3),t(r,e)):document.location.href=e.href}))}))},y={},v=function(t){Object.keys(t).forEach((function(e){var n="littledata_".concat(e);y[n]=t[e]}))},w={};function b(t,e){var n="".concat(e,"-clientID"),r=t();"string"==typeof r&&0!==r.length&&(w[n]=r,clearTimeout(h),h=setTimeout((function(){w.littledata_updatedAt=(new Date).getTime();var t=new XMLHttpRequest;t.onload=function(){var e=JSON.parse(t.response);LittledataLayer.cart=e;var n=new XMLHttpRequest;n.open("POST","".concat(LittledataLayer.transactionWatcherURL,"/v2/clientID/store")),n.setRequestHeader("Content-Type","application/json"),n.send(JSON.stringify(d({},w,{cartID:"".concat(e.token)})))},t.open("POST","/cart/update.json"),t.setRequestHeader("Content-Type","application/json");var e=d({},w,{},y);t.send(JSON.stringify({attributes:e}))}),1e3))}function L(t,e){var n=LittledataLayer.cart,r="".concat(e,"-clientID");if(!n||!n.attributes||!n.attributes[r])return b(t,e);var i=n.attributes.littledata_updatedAt||n.attributes.updatedAt;if(!i)return b(t,e);var a=new Date(Number(i));Date.now()-Number(a)>36e5&&(!function(t){var e=new XMLHttpRequest;e.open("POST","".concat(LittledataLayer.transactionWatcherURL,"/cart/store")),e.setRequestHeader("Content-Type","application/json"),e.send(JSON.stringify(t))}(n),setTimeout((function(){b(t,e)}),1e4))}function O(t){return[{key:"email",regex:/[\s&amp;\/,=]([a-zA-Z0-9_.+-]+(\@|%40)[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)($|[\s&amp;\/,])/},{key:"postcode",regex:/[\s&amp;\/,=]([A-Z]{1,2}[0-9][0-9A-Z]?(\s|%20)[0-9][A-Z]{2})($|[\s&amp;\/,])/}].reduce((function(t,e){return t.replace(e.regex,"REMOVED")}),t)}!function(){function t(){return Math.floor(1e10*Math.random())}"GA1.2.".concat(t(),".").concat(t())}();function _(){if(!function(t){var e,n,r=function(t,e){for(var n=new Date,r=window.navigator,i=r.plugins||[],o=[t,r.userAgent,n.getTimezoneOffset(),n.getYear(),n.getDate(),n.getHours(),n.getMinutes()+e],c=0;c<i.length;++c)o.push(i[c].description);return a(o.join("."))},i=function(t,e){var n=new Date,r=window.navigator,i=n.getHours()+Math.floor((n.getMinutes()+e)/60);return a([t,r.userAgent,r.language||"",n.getTimezoneOffset(),n.getYear(),n.getDate()+Math.floor(i/24),(24+i)%24,(60+n.getMinutes()+e)%60].join("."))},a=function(t){var e,n=1;if(t)for(n=0,e=t.length-1;0<=e;e--){var r=t.charCodeAt(e);n=0!=(r=266338304&(n=(n<<6&268435455)+r+(r<<14)))?n^r>>21:n}return n.toString()};if("string"==typeof t&&t.length){if(!/_ga=/.test(t))return!1;n=t.split("&").filter((function(t){return"_ga"===t.split("=")[0]})).shift()}else n=(e=/[?&]_ga=/.test(window.location.search)?"search":/[#&]_ga=/.test(window.location.hash)?"hash":void 0)&&window.location[e].substring(1).split("&").filter((function(t){return"_ga"===t.split("=")[0]})).shift();if(void 0===n||!n.length)return!1;var o,c,s,u,d=n.indexOf(".");return d>-1&&(n.substring(0,d),c=(o=n.substring(d+1)).indexOf("."),s=o.substring(0,c),u=o.substring(c+1)),void 0!==u?s===r(u=u.split("-").join(""),0)||s===r(u,-1)||s===r(u,-2)||s===i(u,0)||s===i(u,-1)||s===i(u,-2):void 0}()){if(window.localStorage&&LittledataLayer.persistentUserId){var t=window.localStorage.getItem("_ga");if(t)return t;var e=Object(r.a)("_ga");if(e)return window.localStorage.setItem("_ga",e),e}return""}}var S=function(t){if(!1===LittledataLayer.productPageClicks)return!1;p("^https://cdn.shopify.com/s/files/.*/products/").forEach((function(e){e.addEventListener("click",(function(){var e=this.getElementsByTagName("img")[0],n=e&&e.alt;t(n)}))}))},j=function(t){if(!1===LittledataLayer.productPageClicks)return!1;var e="(facebook|pinterest|twitter|linkedin|plus.google|instagram)";p("".concat(e,".com/(share|pin|intent)")).forEach((function(n){n.addEventListener("click",(function(){var n=this.href.match(new RegExp(e));t(n&&n[0])}))}))},k=function(){if(!window.LittledataLayer)throw new Error("Aborting Littledata tracking as LittledataLayer was not found")},C=function(){LittledataLayer.hideBranding||console.log("%c\nThis store uses Littledata 🚀 to automate its analytics and make better, data-driven decisions. Learn more at http://apps.shopify.com/littledata \n","color: #088f87;")}},function(t,e,n){"use strict";n.d(e,"a",(function(){return r}));var r=function(t){if(document.cookie.length>0){var e=document.cookie.indexOf("".concat(t,"="));if(-1!==e){var n=e+t.length+1,r=document.cookie.indexOf(";",n);-1===r&&(r=document.cookie.length);var i=unescape(document.cookie.substring(n,r));if("_ga"===t){var a=i.match(/(\d{2,11})\.(\d{2,11})/g);return a?a[0]:""}return i}}return""}},function(t,e,n){"use strict";e.a=()=>{const t=LittledataLayer.ecommerce.detail;if(!t)return null;const e=document.location.href.match(/[0-9]{8,20}/),n=e&&Number(e[0]);if(n){const e=LittledataLayer.ecommerce.variants;if(e){const r=e.find(t=>t.id===n);r&&(t.id=r.sku,t.variant=r.title)}}return t}},function(t,e,n){"use strict";var r=n(0);e.a=function(t){var e=0,n=Object(r.c)("/products/");function a(){var e=document.documentElement.scrollTop,a=window.innerHeight,o=e+a,c=[];n.forEach((function(t,i){if(t){var a=window.pageYOffset+t.getBoundingClientRect().top,s=t.offsetHeight,u=a+s;if(u>=e&&a<o){var d=s;if(a-e<0?d+=a-e:o-u<0&&(d+=o-u),d/s>.8){n[i]=null;var l=Object(r.b)(t.href);l&&c.push(l)}}}})),c.length>0&&i(c,20).forEach((function(e){return t(e)}))}0!==n.length&&(window.setTimeout((function(){clearTimeout(e),a()}),500),document.addEventListener("scroll",(function(){clearTimeout(e),e=window.setTimeout((function(){a()}),300)})))};var i=function(t,e){return Array.from({length:Math.ceil(t.length/e)},(function(n,r){return t.slice(r*e,r*e+e)}))}},function(t,e,n){"use strict";n.r(e);var r=n(0),i=n(3),a=n(2);function o(t){return function(t){if(Array.isArray(t)){for(var e=0,n=new Array(t.length);e<t.length;e++)n[e]=t[e];return n}}(t)||function(t){if(Symbol.iterator in Object(t)||"[object Arguments]"===Object.prototype.toString.call(t))return Array.from(t)}(t)||function(){throw new TypeError("Invalid attempt to spread non-iterable instance")}()}function c(t){return(c="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t})(t)}function s(){if(LittledataLayer.customer&&LittledataLayer.customer.generatedClientID)return LittledataLayer.customer.generatedClientID;var t=ga.getAll();return t&&t.length?t[0].get("clientId"):""}var u=function(){var t=LittledataLayer,e=t.anonymizeIp,n=t.googleSignals,i=t.ecommerce,a=t.optimizeId,c=t.referralExclusion,s=LittledataLayer.customer&&LittledataLayer.customer.id,u=LittledataLayer.extraLinkerDomains||[],d=c.test(document.referrer);return{linker:{domains:[].concat(["^(?!cdn.)(.*)shopify.com","rechargeapps.com","recurringcheckout.com","carthook.com","checkout.com"],o(u))},anonymize_ip:!!e,allow_ad_personalization_signals:!!n,currency:i.currencyCode,link_attribution:!0,clientId:Object(r.d)(),optimize_id:a,page_referrer:d?document.referrer:null,send_page_view:!1,user_id:s}};window.LittledataScriptVersion="8.4",Object(r.l)(),window.dataLayer=window.dataLayer||[],window.gtag=window.gtag||function(){dataLayer.push(arguments)},gtag("js",new Date),gtag("config",LittledataLayer.webPropertyID,u()),Object(r.a)(),LittledataLayer.ecommerce.impressions.length&&(Object(r.f)((function(t,e){var n=LittledataLayer.ecommerce.impressions.find((function(e){return e.name===t.name&&e.handle===t.handle})),r=n&&n.list_position;window.localStorage.setItem("position",String(r)),dataLayer.push({event:"select_content",ecommerce:{click:{actionField:{list:t.list_name},products:[t]}}}),gtag("event","select_content",{content_type:"product",items:[t],send_to:LittledataLayer.webPropertyID,event_callback:function(){window.clearTimeout(e.timeout),document.location.href=e.href}})})),Object(i.a)((function(t){gtag("event","view_item_list",{items:t,send_to:LittledataLayer.webPropertyID,non_interaction:!0}),dataLayer.push({event:"view_item_list",ecommerce:{impressions:t}})}))),Object(a.a)()&&(Object(r.j)((function(t){dataLayer.push({event:"product_image_click",name:t}),gtag("event","Product image click",{event_category:"Product details page (Littledata)",event_label:t,send_to:LittledataLayer.webPropertyID})})),Object(r.k)((function(t){dataLayer.push({event:"share_product",network:t}),gtag("event","Social share",{event_category:"Product details page (Littledata)",event_label:t,send_to:LittledataLayer.webPropertyID})}))),Object(r.e)((function(){!function(){var t=Object(r.g)(document.title),e=Object(r.g)(document.location.href);gtag("config",LittledataLayer.webPropertyID,{page_title:t,page_location:e}),dataLayer.push({event:"pageview",page_title:t,page_location:e});var n=LittledataLayer.googleAdsConversionIds;"object"===c(n)&&n.length>0&&n.forEach((function(t){return gtag("config",t)})),window.ga=window.ga||function(){(window.ga.q=window.ga.q||[]).push(arguments)},window.ga.l=+new Date,window.ga((function(){Object(r.i)(s,"google")}));var i=Object(a.a)();i&&(i.list_position=parseInt(window.localStorage.getItem("position"))||1,gtag("event","view_item",{items:[i],non_interaction:!0,send_to:LittledataLayer.webPropertyID}),dataLayer.push({event:"view_item",ecommerce:{detail:{actionField:{list:i.list_name},products:[i]}}}))}()}))}]);
+/******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+/******/
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId]) {
+/******/ 			return installedModules[moduleId].exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			i: moduleId,
+/******/ 			l: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/
+/******/ 		// Flag the module as loaded
+/******/ 		module.l = true;
+/******/
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/
+/******/
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+/******/
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+/******/
+/******/ 	// define getter function for harmony exports
+/******/ 	__webpack_require__.d = function(exports, name, getter) {
+/******/ 		if(!__webpack_require__.o(exports, name)) {
+/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
+/******/ 		}
+/******/ 	};
+/******/
+/******/ 	// define __esModule on exports
+/******/ 	__webpack_require__.r = function(exports) {
+/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 		}
+/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 	};
+/******/
+/******/ 	// create a fake namespace object
+/******/ 	// mode & 1: value is a module id, require it
+/******/ 	// mode & 2: merge all properties of value into the ns
+/******/ 	// mode & 4: return value when already ns object
+/******/ 	// mode & 8|1: behave like require
+/******/ 	__webpack_require__.t = function(value, mode) {
+/******/ 		if(mode & 1) value = __webpack_require__(value);
+/******/ 		if(mode & 8) return value;
+/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
+/******/ 		var ns = Object.create(null);
+/******/ 		__webpack_require__.r(ns);
+/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
+/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
+/******/ 		return ns;
+/******/ 	};
+/******/
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = function(module) {
+/******/ 		var getter = module && module.__esModule ?
+/******/ 			function getDefault() { return module['default']; } :
+/******/ 			function getModuleExports() { return module; };
+/******/ 		__webpack_require__.d(getter, 'a', getter);
+/******/ 		return getter;
+/******/ 	};
+/******/
+/******/ 	// Object.prototype.hasOwnProperty.call
+/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
+/******/
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+/******/
+/******/
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(__webpack_require__.s = 0);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
+/* harmony import */ var _common_helpers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
+
+
+
+(function () {
+  window.LittledataScriptVersion = '8.4';
+  Object(_common_helpers__WEBPACK_IMPORTED_MODULE_1__["validateLittledataLayer"])();
+  Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["initGtag"])();
+  Object(_common_helpers__WEBPACK_IMPORTED_MODULE_1__["advertiseLD"])();
+  Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["trackEvents"])();
+  Object(_common_helpers__WEBPACK_IMPORTED_MODULE_1__["pageView"])(function () {
+    Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["sendPageview"])();
+  });
+})();
+
+/***/ }),
+/* 1 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "initGtag", function() { return initGtag; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sendPageview", function() { return sendPageview; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "trackEvents", function() { return trackEvents; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getConfig", function() { return getConfig; });
+/* harmony import */ var _common_helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
+/* harmony import */ var _common_productListViews__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(5);
+/* harmony import */ var _common_getProductDetail__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(6);
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+
+
+
+var event_category = 'Shopify (Littledata)';
+var initGtag = function initGtag() {
+  window.dataLayer = window.dataLayer || [];
+
+  var stubFunction = function stubFunction() {
+    dataLayer.push(arguments);
+  }; //eslint-disable-line
+
+
+  window.gtag = window.gtag || stubFunction; // @ts-ignore
+
+  gtag('js', new Date());
+  gtag('config', LittledataLayer.webPropertyID, getConfig());
+};
+var sendPageview = function sendPageview() {
+  var page_title = Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["removePii"])(document.title);
+  var page_location = Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["removePii"])(document.location.href);
+  gtag('config', LittledataLayer.webPropertyID, {
+    page_title: page_title,
+    page_location: page_location
+  });
+  dataLayer.push({
+    event: 'pageview',
+    page_title: page_title,
+    page_location: page_location
+  });
+  var googleAds = LittledataLayer.googleAdsConversionIds;
+
+  if (_typeof(googleAds) === 'object' && googleAds.length > 0) {
+    googleAds.forEach(function (adId) {
+      return gtag('config', adId);
+    });
+  }
+
+  window.ga = window.ga || function () {
+    (window.ga.q = window.ga.q || []).push(arguments);
+  };
+
+  window.ga.l = +new Date();
+  window.ga(function () {
+    // we need to wait for GA library (part of gtag)
+    Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(getGtagClientId, 'google');
+  });
+  var product = Object(_common_getProductDetail__WEBPACK_IMPORTED_MODULE_2__["default"])();
+
+  if (product) {
+    product.list_position = parseInt(window.localStorage.getItem('position')) || 1;
+    gtag('event', 'view_item', {
+      event_category: event_category,
+      items: [product],
+      non_interaction: true,
+      send_to: LittledataLayer.webPropertyID
+    });
+    dataLayer.push({
+      event: 'view_item',
+      ecommerce: {
+        detail: {
+          actionField: {
+            list: product.list_name
+          },
+          products: [product]
+        }
+      }
+    });
+  }
+};
+
+function getGtagClientId() {
+  if (LittledataLayer.customer && LittledataLayer.customer.generatedClientID) {
+    return LittledataLayer.customer.generatedClientID;
+  } // @ts-ignore
+
+
+  var trackers = ga.getAll();
+  if (!trackers || !trackers.length) return '';
+  return trackers[0].get('clientId');
+}
+
+var trackEvents = function trackEvents() {
+  /* run list, product, and clientID scripts everywhere */
+  if (LittledataLayer.ecommerce.impressions.length) {
+    Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["productListClicks"])(function (product, self) {
+      var productFromImpressions = LittledataLayer.ecommerce.impressions.find(function (prod) {
+        return prod.name === product.name && prod.handle === product.handle;
+      });
+      var pos = productFromImpressions && productFromImpressions.list_position;
+      window.localStorage.setItem('position', String(pos));
+      dataLayer.push({
+        event: 'select_content',
+        ecommerce: {
+          click: {
+            actionField: {
+              list: product.list_name
+            },
+            products: [product]
+          }
+        }
+      });
+      gtag('event', 'select_content', {
+        event_category: event_category,
+        content_type: 'product',
+        items: [product],
+        send_to: LittledataLayer.webPropertyID,
+        event_callback: function event_callback() {
+          window.clearTimeout(self.timeout);
+          document.location.href = self.href;
+        }
+      });
+    });
+    Object(_common_productListViews__WEBPACK_IMPORTED_MODULE_1__["default"])(function (products) {
+      gtag('event', 'view_item_list', {
+        event_category: event_category,
+        items: products,
+        send_to: LittledataLayer.webPropertyID,
+        non_interaction: true
+      });
+      dataLayer.push({
+        event: 'view_item_list',
+        ecommerce: {
+          impressions: products
+        }
+      });
+    });
+  }
+
+  var product = Object(_common_getProductDetail__WEBPACK_IMPORTED_MODULE_2__["default"])();
+
+  if (product) {
+    // if PDP, we can also track clicks on images and social shares
+    Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["trackProductImageClicks"])(function (name) {
+      dataLayer.push({
+        event: 'product_image_click',
+        name: name
+      });
+      gtag('event', 'Product image click', {
+        event_category: event_category,
+        event_label: name,
+        send_to: LittledataLayer.webPropertyID
+      });
+    });
+    Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["trackSocialShares"])(function (network) {
+      dataLayer.push({
+        event: 'share_product',
+        network: network
+      });
+      gtag('event', 'Social share', {
+        event_category: event_category,
+        event_label: network,
+        send_to: LittledataLayer.webPropertyID
+      });
+    });
+  }
+};
+var getConfig = function getConfig() {
+  var _LittledataLayer = LittledataLayer,
+      anonymizeIp = _LittledataLayer.anonymizeIp,
+      googleSignals = _LittledataLayer.googleSignals,
+      ecommerce = _LittledataLayer.ecommerce,
+      optimizeId = _LittledataLayer.optimizeId,
+      referralExclusion = _LittledataLayer.referralExclusion;
+  var userId = LittledataLayer.customer && LittledataLayer.customer.id;
+  var DEFAULT_LINKER_DOMAINS = ['^(?!cdn.)(.*)shopify.com', 'rechargeapps.com', 'recurringcheckout.com', 'carthook.com', 'checkout.com'];
+  var extraLinkerDomains = LittledataLayer.extraLinkerDomains || [];
+  var excludeReferal = referralExclusion.test(document.referrer);
+  var config = {
+    linker: {
+      domains: [].concat(DEFAULT_LINKER_DOMAINS, _toConsumableArray(extraLinkerDomains))
+    },
+    anonymize_ip: !!anonymizeIp,
+    allow_ad_personalization_signals: !!googleSignals,
+    currency: ecommerce.currencyCode,
+    link_attribution: true,
+    optimize_id: optimizeId,
+    page_referrer: excludeReferal ? document.referrer : null,
+    send_page_view: false,
+    user_id: userId
+  };
+  return config;
+};
+
+/***/ }),
+/* 2 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "pageView", function() { return pageView; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getElementsByHref", function() { return getElementsByHref; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "findDataLayerProduct", function() { return findDataLayerProduct; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "productListClicks", function() { return productListClicks; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setCartOnlyAttributes", function() { return setCartOnlyAttributes; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setClientID", function() { return setClientID; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "removePii", function() { return removePii; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "guid", function() { return guid; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "trackProductImageClicks", function() { return trackProductImageClicks; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "trackSocialShares", function() { return trackSocialShares; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "validateLittledataLayer", function() { return validateLittledataLayer; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "advertiseLD", function() { return advertiseLD; });
+/* harmony import */ var _UrlChangeTracker__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3);
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+/**
+ *
+ * @param fireTag - callback to call when willing to fire pageviews
+ */
+
+var pageView = function pageView(fireTag) {
+  if (document.hidden === true) {
+    // delay page firing until the page is visible
+    var triggeredPageView = false;
+    document.addEventListener('visibilitychange', function () {
+      if (!document.hidden && !triggeredPageView) {
+        fireTag();
+        triggeredPageView = true;
+      }
+    });
+  } else if (document.readyState === 'loading') {
+    //delay until DOM is ready
+    document.addEventListener('DOMContentLoaded', function () {
+      fireTag();
+    });
+  } else {
+    fireTag();
+  }
+
+  if (LittledataLayer.singlePageApp === true) {
+    // now listen for changes of URL for single page applications
+    var urlChangeTracker = new _UrlChangeTracker__WEBPACK_IMPORTED_MODULE_0__["default"](LittledataLayer.trackReplaceState || false);
+    urlChangeTracker.setCallback(fireTag);
+  }
+};
+var getElementsByHref = function getElementsByHref(regex) {
+  var htmlCollection = document.getElementsByTagName('a');
+  var r = new RegExp(regex);
+  return Array.prototype.slice.call(htmlCollection).filter(function (element) {
+    return element.href && r.test(element.href);
+  });
+};
+var findDataLayerProduct = function findDataLayerProduct(link) {
+  return LittledataLayer.ecommerce.impressions.find(function (p) {
+    var linkSplit = link.split('/products/');
+    var productLink = linkSplit && linkSplit[1];
+    return productLink === p.handle;
+  });
+};
+var productListClicks = function productListClicks(clickTag) {
+  /* product list clicks */
+  if (!LittledataLayer.productClicks) return;
+  getElementsByHref('/products/').forEach(function (element) {
+    element.addEventListener('click', function (ev) {
+      // only add event to products
+      var product = findDataLayerProduct(this.href);
+
+      if (product) {
+        ev.preventDefault();
+        /* only wait 1 second before redirecting */
+
+        element.timeout = window.setTimeout(function () {
+          document.location.href = element.href;
+        }, 1000);
+        clickTag(product, element);
+      } else {
+        document.location.href = element.href;
+      }
+    });
+  });
+};
+var postCartTimeout;
+var cartOnlyAttributes = {};
+var setCartOnlyAttributes = function setCartOnlyAttributes(setAttributes) {
+  var toSet = Object.keys(setAttributes);
+  toSet.forEach(function (name) {
+    var fieldName = "littledata_".concat(name);
+    cartOnlyAttributes[fieldName] = setAttributes[name];
+  });
+};
+var attributes = {}; //persist any previous attributes sent from this page
+
+function postClientID(getClientId, platform) {
+  var attribute = "".concat(platform, "-clientID");
+  var clientID = getClientId();
+  if (typeof clientID !== 'string' || clientID.length === 0) return;
+  attributes[attribute] = clientID;
+  clearTimeout(postCartTimeout); //don't send multiple requests within a second
+
+  postCartTimeout = setTimeout(function () {
+    attributes.littledata_updatedAt = new Date().getTime();
+    var cartUpdateReq = new XMLHttpRequest(); // new HttpRequest instance
+
+    cartUpdateReq.onload = function () {
+      var updatedCart = JSON.parse(cartUpdateReq.response);
+      LittledataLayer.cart = updatedCart;
+      var clientIDReq = new XMLHttpRequest();
+      clientIDReq.open('POST', "".concat(LittledataLayer.transactionWatcherURL, "/v2/clientID/store"));
+      clientIDReq.setRequestHeader('Content-Type', 'application/json');
+      clientIDReq.send(JSON.stringify(_objectSpread({}, attributes, {
+        cartID: "".concat(updatedCart.token)
+      })));
+    };
+
+    cartUpdateReq.open('POST', '/cart/update.json');
+    cartUpdateReq.setRequestHeader('Content-Type', 'application/json');
+
+    var cartAttributes = _objectSpread({}, attributes, {}, cartOnlyAttributes);
+
+    cartUpdateReq.send(JSON.stringify({
+      attributes: cartAttributes
+    }));
+  }, 1000);
+}
+
+function postCartToLittledata(cart) {
+  var httpRequest = new XMLHttpRequest(); // new HttpRequest instance
+
+  httpRequest.open('POST', "".concat(LittledataLayer.transactionWatcherURL, "/cart/store"));
+  httpRequest.setRequestHeader('Content-Type', 'application/json');
+  httpRequest.send(JSON.stringify(cart));
+}
+
+function setClientID(getClientId, platform) {
+  var _LittledataLayer = LittledataLayer,
+      cart = _LittledataLayer.cart;
+  var clientIDProperty = "".concat(platform, "-clientID");
+
+  if (!cart || !cart.attributes || !cart.attributes[clientIDProperty]) {
+    return postClientID(getClientId, platform);
+  }
+
+  var updatedAt = cart.attributes.littledata_updatedAt || cart.attributes.updatedAt; //old format pre v8.3
+
+  if (!updatedAt) {
+    return postClientID(getClientId, platform);
+  }
+
+  var clientIdCreated = new Date(Number(updatedAt));
+  var timeout = 60 * 60 * 1000; // 60 minutes
+
+  var timePassed = Date.now() - Number(clientIdCreated); // only need to resent client ID if it's expired from our Redis cache
+
+  if (timePassed > timeout) {
+    postCartToLittledata(cart);
+    setTimeout(function () {
+      postClientID(getClientId, platform);
+    }, 10000); // allow 10 seconds for our server to register cart until updating it, otherwise there's a race condition between storing and a webhook triggered by this
+  }
+}
+function removePii(str) {
+  var piiRegexs = [{
+    key: 'email',
+    regex: /[\s&amp;\/,=]([a-zA-Z0-9_.+-]+(\@|%40)[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)($|[\s&amp;\/,])/
+  }, {
+    key: 'postcode',
+    regex: /[\s&amp;\/,=]([A-Z]{1,2}[0-9][0-9A-Z]?(\s|%20)[0-9][A-Z]{2})($|[\s&amp;\/,])/
+  }];
+  return piiRegexs.reduce(function (memo, curr) {
+    return memo.replace(curr.regex, 'REMOVED');
+  }, str);
+}
+/**
+ * guid
+ */
+
+var guid = function () {
+  function s10() {
+    return Math.floor(Math.random() * 10e9);
+  }
+
+  return "GA1.2.".concat(s10(), ".").concat(s10());
+}(); // const createCookie = (name, value, days) => {
+// 	let expires = ''
+// 	if (days) {
+// 		const date = new Date();
+// 		date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+// 		expires = `; expires=${date.toGMTString()}`
+// 	}
+// 	document.cookie = `${name}=${value}${expires}; path=/;`
+// }
+
+var trackProductImageClicks = function trackProductImageClicks(clickTag) {
+  if (LittledataLayer.productPageClicks === false) return false;
+  getElementsByHref('^https://cdn.shopify.com/s/files/.*/products/').forEach(function (element) {
+    element.addEventListener('click', function () {
+      // only add event to product images
+      var image = this.getElementsByTagName('img')[0];
+      var name = image && image.alt;
+      clickTag(name);
+    });
+  });
+};
+var trackSocialShares = function trackSocialShares(clickTag) {
+  if (LittledataLayer.productPageClicks === false) return false;
+  var networks = '(facebook|pinterest|twitter|linkedin|plus.google|instagram)';
+  getElementsByHref("".concat(networks, ".com/(share|pin|intent)")).forEach(function (element) {
+    element.addEventListener('click', function () {
+      var match = this.href.match(new RegExp(networks));
+      clickTag(match && match[0]);
+    });
+  });
+};
+var validateLittledataLayer = function validateLittledataLayer() {
+  if (!window.LittledataLayer) {
+    throw new Error('Aborting Littledata tracking as LittledataLayer was not found');
+  }
+};
+var advertiseLD = function advertiseLD() {
+  if (!LittledataLayer.hideBranding) {
+    console.log('%c\nThis store uses Littledata 🚀 to automate its analytics and make better, data-driven decisions. Learn more at http://apps.shopify.com/littledata \n', 'color: #088f87;'); //eslint-disable-line
+  }
+};
+
+/***/ }),
+/* 3 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return UrlChangeTracker; });
+/* harmony import */ var _MethodChain__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
+
+
+/**
+ * Class for the `urlChangeTracker` analytics.js plugin.
+ * @implements {UrlChangeTrackerPublicInterface}
+ */
+class UrlChangeTracker {
+	constructor(trackReplaceState) {
+		// Feature detects to prevent errors in unsupporting browsers.
+		if (!history.pushState || !window.addEventListener) return;
+
+		//fallback if not given callback
+		this.onUrlChange = () => {
+			console.warn('UrlChangeTracker not given callback');
+		};
+
+		// Sets the initial page field.
+		// Don't set this on the tracker yet so campaign data can be retreived
+		// from the location field.
+		this.path = getPath();
+
+		//
+		this.trackReplaceState = trackReplaceState;
+
+		// Binds methods.
+		this.pushStateOverride = this.pushStateOverride.bind(this);
+		this.replaceStateOverride = this.replaceStateOverride.bind(this);
+		this.handlePopState = this.handlePopState.bind(this);
+
+		// Watches for history changes.
+		_MethodChain__WEBPACK_IMPORTED_MODULE_0__["default"].add(history, 'pushState', this.pushStateOverride);
+		_MethodChain__WEBPACK_IMPORTED_MODULE_0__["default"].add(history, 'replaceState', this.replaceStateOverride);
+		window.addEventListener('popstate', this.handlePopState);
+	}
+
+	// function to call when URL changes
+	setCallback(tag) {
+		this.onUrlChange = tag;
+	}
+
+	/**
+	 * Handles invocations of the native `history.pushState` and calls
+	 * `handleUrlChange()` indicating that the history updated.
+	 * @param {!Function} originalMethod A reference to the overridden method.
+	 * @return {!Function}
+	 */
+	pushStateOverride(originalMethod) {
+		return (...args) => {
+			originalMethod(...args);
+			this.handleUrlChange(true);
+		};
+	}
+
+	/**
+	 * Handles invocations of the native `history.replaceState` and calls
+	 * `handleUrlChange()` indicating that history was replaced.
+	 * @param {!Function} originalMethod A reference to the overridden method.
+	 * @return {!Function}
+	 */
+	replaceStateOverride(originalMethod) {
+		return (...args) => {
+			originalMethod(...args);
+			this.handleUrlChange(false);
+		};
+	}
+
+	/**
+	 * Handles responding to the popstate event and calls
+	 * `handleUrlChange()` indicating that history was updated.
+	 */
+	handlePopState() {
+		this.handleUrlChange(true);
+	}
+
+	/**
+	 * Updates the page and title fields on the tracker and sends a pageview
+	 * if a new history entry was created.
+	 * @param {boolean} historyDidUpdate True if the history was changed via
+	 *     `pushState()` or the `popstate` event. False if the history was just
+	 *     modified via `replaceState()`.
+	 */
+	handleUrlChange(historyDidUpdate) {
+		// Call the update logic asychronously to help ensure that app logic
+		// responding to the URL change happens prior to this.
+		setTimeout(() => {
+			const oldPath = this.path;
+			const newPath = getPath();
+
+			if (oldPath != newPath && this.shouldTrackUrlChange(newPath, oldPath)) {
+				this.path = newPath;
+				if (historyDidUpdate || this.trackReplaceState) {
+					this.onUrlChange();
+				}
+			}
+		}, 0);
+	}
+
+	/**
+	 * Determines whether or not the tracker should send a hit with the new page
+	 * data.
+	 * @param {string} newPath The path after the URL change.
+	 * @param {string} oldPath The path prior to the URL change.
+	 * @return {boolean} Whether or not the URL change should be tracked.
+	 */
+	shouldTrackUrlChange(newPath, oldPath) {
+		return !!(newPath && oldPath);
+	}
+
+	/**
+	 * Removes all event listeners and restores overridden methods.
+	 */
+	remove() {
+		this.queue.destroy();
+		_MethodChain__WEBPACK_IMPORTED_MODULE_0__["default"].remove(history, 'pushState', this.pushStateOverride);
+		_MethodChain__WEBPACK_IMPORTED_MODULE_0__["default"].remove(history, 'replaceState', this.replaceStateOverride);
+		window.removeEventListener('popstate', this.handlePopState);
+	}
+}
+
+/**
+ * @return {string} The path value of the current URL.
+ */
+function getPath() {
+	return location.pathname + location.search;
+}
+
+
+/***/ }),
+/* 4 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return MethodChain; });
+/**
+ * Copyright 2017 Google Inc. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * @fileoverview
+ * The functions exported by this module make it easier (and safer) to override
+ * foreign object methods (in a modular way) and respond to or modify their
+ * invocation. The primary feature is the ability to override a method without
+ * worrying if it's already been overridden somewhere else in the codebase. It
+ * also allows for safe restoring of an overridden method by only fully
+ * restoring a method once all overrides have been removed.
+ */
+
+const instances = [];
+
+/**
+ * A class that wraps a foreign object method and emit events before and
+ * after the original method is called.
+ */
+class MethodChain {
+	/**
+	 * Adds the passed override method to the list of method chain overrides.
+	 * @param {!Object} context The object containing the method to chain.
+	 * @param {string} methodName The name of the method on the object.
+	 * @param {!Function} methodOverride The override method to add.
+	 */
+	static add(context, methodName, methodOverride) {
+		getOrCreateMethodChain(context, methodName).add(methodOverride);
+	}
+
+	/**
+	 * Removes a method chain added via `add()`. If the override is the
+	 * only override added, the original method is restored. If the method
+	 * chain does not exist, nothing happens.
+	 * @param {!Object} context The object containing the method to unchain.
+	 * @param {string} methodName The name of the method on the object.
+	 * @param {!Function} methodOverride The override method to remove.
+	 */
+	static remove(context, methodName, methodOverride) {
+		let methodChain = getMethodChain(context, methodName);
+		if (methodChain) {
+			methodChain.remove(methodOverride);
+		}
+	}
+
+	/**
+	 * Wraps a foreign object method and overrides it. Also stores a reference
+	 * to the original method so it can be restored later.
+	 * @param {!Object} context The object containing the method.
+	 * @param {string} methodName The name of the method on the object.
+	 */
+	constructor(context, methodName) {
+		this.context = context;
+		this.methodName = methodName;
+		this.isTask = /Task$/.test(methodName);
+
+		this.originalMethodReference = this.isTask ? context.get(methodName) : context[methodName];
+
+		this.methodChain = [];
+		this.boundMethodChain = [];
+
+		// Wraps the original method.
+		this.wrappedMethod = (...args) => {
+			const lastBoundMethod = this.boundMethodChain[this.boundMethodChain.length - 1];
+
+			return lastBoundMethod(...args);
+		};
+
+		// Override original method with the wrapped one.
+		if (this.isTask) {
+			context.set(methodName, this.wrappedMethod);
+		} else {
+			context[methodName] = this.wrappedMethod;
+		}
+	}
+
+	/**
+	 * Adds a method to the method chain.
+	 * @param {!Function} overrideMethod The override method to add.
+	 */
+	add(overrideMethod) {
+		this.methodChain.push(overrideMethod);
+		this.rebindMethodChain();
+	}
+
+	/**
+	 * Removes a method from the method chain and restores the prior order.
+	 * @param {!Function} overrideMethod The override method to remove.
+	 */
+	remove(overrideMethod) {
+		const index = this.methodChain.indexOf(overrideMethod);
+		if (index > -1) {
+			this.methodChain.splice(index, 1);
+			if (this.methodChain.length > 0) {
+				this.rebindMethodChain();
+			} else {
+				this.destroy();
+			}
+		}
+	}
+
+	/**
+	 * Loops through the method chain array and recreates the bound method
+	 * chain array. This is necessary any time a method is added or removed
+	 * to ensure proper original method context and order.
+	 */
+	rebindMethodChain() {
+		this.boundMethodChain = [];
+		for (let method, i = 0; (method = this.methodChain[i]); i++) {
+			const previousMethod = this.boundMethodChain[i - 1] || this.originalMethodReference.bind(this.context);
+			this.boundMethodChain.push(method(previousMethod));
+		}
+	}
+
+	/**
+	 * Calls super and destroys the instance if no registered handlers remain.
+	 */
+	destroy() {
+		const index = instances.indexOf(this);
+		if (index > -1) {
+			instances.splice(index, 1);
+			if (this.isTask) {
+				this.context.set(this.methodName, this.originalMethodReference);
+			} else {
+				this.context[this.methodName] = this.originalMethodReference;
+			}
+		}
+	}
+}
+
+/**
+ * Gets a MethodChain instance for the passed object and method.
+ * @param {!Object} context The object containing the method.
+ * @param {string} methodName The name of the method on the object.
+ * @return {!MethodChain|undefined}
+ */
+function getMethodChain(context, methodName) {
+	return instances.filter(h => h.context == context && h.methodName == methodName)[0];
+}
+
+/**
+ * Gets a MethodChain instance for the passed object and method. If the method
+ * has already been wrapped via an existing MethodChain instance, that
+ * instance is returned.
+ * @param {!Object} context The object containing the method.
+ * @param {string} methodName The name of the method on the object.
+ * @return {!MethodChain}
+ */
+function getOrCreateMethodChain(context, methodName) {
+	let methodChain = getMethodChain(context, methodName);
+
+	if (!methodChain) {
+		methodChain = new MethodChain(context, methodName);
+		instances.push(methodChain);
+	}
+	return methodChain;
+}
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
+
+/* harmony default export */ __webpack_exports__["default"] = (function (impressionTag) {
+  var waitForScroll = 0;
+  var products = Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["getElementsByHref"])('/products/');
+
+  if (products.length === 0) {
+    return;
+  }
+
+  function trackImpressions() {
+    var viewportTop = document.documentElement.scrollTop;
+    var viewportHeight = window.innerHeight;
+    var viewportBottom = viewportTop + viewportHeight;
+    var impressions = [];
+    products.forEach(function (element, index) {
+      if (!element) return;
+      var elementTop = window.pageYOffset + element.getBoundingClientRect().top;
+      var elementHeight = element.offsetHeight;
+      var elementBottom = elementTop + elementHeight;
+
+      if (elementBottom >= viewportTop && elementTop < viewportBottom) {
+        var pixelsVisible = elementHeight;
+
+        if (elementTop - viewportTop < 0) {
+          pixelsVisible += elementTop - viewportTop;
+        } else if (viewportBottom - elementBottom < 0) {
+          pixelsVisible += viewportBottom - elementBottom;
+        }
+
+        var percentVisible = pixelsVisible / elementHeight;
+
+        if (percentVisible > 0.8) {
+          //remove product from collection
+          products[index] = null; //find this product in the datalayer
+
+          var product = Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["findDataLayerProduct"])(element.href);
+          if (product) impressions.push(product);
+        }
+      }
+    });
+
+    if (impressions.length > 0) {
+      //now send impressions to GA and dataLayer
+      //maximum batch size is 20
+      chunk(impressions, 20).forEach(function (batch) {
+        return impressionTag(batch);
+      });
+    }
+  }
+
+  window.setTimeout(function () {
+    clearTimeout(waitForScroll);
+    trackImpressions();
+  }, 500);
+  /* wait for pageview to fire first */
+
+  document.addEventListener('scroll', function () {
+    //assumes that people need 300ms after scrolling to register an impression
+    clearTimeout(waitForScroll);
+    waitForScroll = window.setTimeout(function () {
+      trackImpressions();
+    }, 300);
+  });
+});
+
+var chunk = function chunk(arr, size) {
+  return Array.from({
+    length: Math.ceil(arr.length / size)
+  }, function (v, i) {
+    return arr.slice(i * size, i * size + size);
+  });
+};
+
+/***/ }),
+/* 6 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (() => {
+	const detail = LittledataLayer.ecommerce.detail;
+	if (!detail) return null;
+
+	// Is the variant ID specified in the URL?
+	// variant is a 8 to 20 digit number like 31524084842532
+	const matches = document.location.href.match(/[0-9]{8,20}/);
+	const variantId = matches && Number(matches[0]);
+	if (variantId) {
+		//find variant in the list of variants
+		const variantList = LittledataLayer.ecommerce.variants;
+		if (variantList) {
+			const variant = variantList.find(obj => obj.id === variantId);
+			if (variant) {
+				detail.id = variant.sku;
+				detail.variant = variant.title;
+			}
+		}
+	}
+
+	return detail;
+});
+
+
+/***/ })
+/******/ ]);
