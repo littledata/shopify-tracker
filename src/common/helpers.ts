@@ -27,9 +27,10 @@ export const pageView = (fireTag: () => void): void => {
 		fireTag();
 	}
 
-	if (LittledataLayer.singlePageApp === true) {
-		// now listen for changes of URL for single page applications
-		const urlChangeTracker = new UrlChangeTracker(LittledataLayer.trackReplaceState || false);
+	// now listen for changes of URL on product and other pages
+	// Shopify uses history.replaceState() when variant changes
+	if (LittledataLayer.doNotTrackReplaceState !== true) {
+		const urlChangeTracker = new UrlChangeTracker(true);
 		urlChangeTracker.setCallback(fireTag);
 	}
 };
