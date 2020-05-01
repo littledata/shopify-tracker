@@ -138,22 +138,19 @@ function postCartToLittledata(cart: Cart.RootObject) {
 
 export function setClientID(getClientId: () => string, platform: 'google' | 'segment') {
 	const { cart } = LittledataLayer;
+	const cartAttributes = (cart && cart.attributes) || {};
 	const clientIDProperty = `${platform}-clientID` as 'google-clientID' | 'segment-clientID';
 
-	const attributes = (cart && cart.attributes) || {};
-
 	if (
-		LittledataLayer[clientIDProperty] || // don't resend for the same page
-		attributes[clientIDProperty] // don't resend for the same cart
+		!LittledataLayer[clientIDProperty] && // don't resend for the same page
+		!cartAttributes[clientIDProperty] // don't resend for the same cart
 	) {
-		return;
-	} else {
 		// set it on data layer, so subsequent setClientID call is ignored
 		LittledataLayer[clientIDProperty] = getClientId();
 		postClientID(getClientId, platform);
 	}
 
-	const updatedAt = cart.attributes.littledata_updatedAt;
+	const updatedAt = cartAttributes.littledata_updatedAt;
 	if (updatedAt) {
 		const clientIdCreated = new Date(Number(updatedAt));
 
