@@ -1,7 +1,5 @@
 /* global LittledataLayer */
 declare let window: CustomWindow;
-import checkLinker from './checkLinker';
-import { getCookie } from './getCookie';
 import UrlChangeTracker from './UrlChangeTracker';
 
 /**
