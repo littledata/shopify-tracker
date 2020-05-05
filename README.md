@@ -74,17 +74,11 @@ Our app generates a branded message in the site console log. You can disable thi
 
 Default: `false` (boolean)
 
-**singlePageApp**
+**doNotTrackReplaceState**
 
-For Single Page Applications, where the URL changes without a full page load our script will track a new page view. Change this setting to `true` to trigger a new page view when the URL changes via the [browser History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API).
+For some themes, where the URL changes (e.g. a new variant) without a new page load our script will track a new page view. Change this setting to `true` to disable a new page view on `history.replaceState()` via [browser History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API)
 
-Default: `false` (boolean)
-
-**trackReplaceState** _(requires singlePageApp)_
-
-For Single Page Applications, where the URL changes without a new page load our script will track a new page view. Change this setting to `true` to trigger a new page view also on `history.replaceState` (which would not normally signify a change of page).
-
-Default: `false` (boolean)
+Default: `undefined` (boolean)
 
 **cookiesToTrack** _(Segment only)_
 

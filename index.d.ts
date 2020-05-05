@@ -129,10 +129,9 @@ declare global {
 		productPageClicks?: boolean;
 		extraLinkerDomains?: string[];
 		cookiesToTrack?: string[];
+		doNotTrackReplaceState?: boolean;
 		'google-clientID'?: string;
 		'segment-clientID'?: string;
-		trackReplaceState?: boolean;
-		singlePageApp?: boolean;
 	}
 
 	var LittledataLayer: OwnLayer;
