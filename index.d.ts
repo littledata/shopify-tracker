@@ -130,6 +130,8 @@ declare global {
 		extraLinkerDomains?: string[];
 		cookiesToTrack?: string[];
 		doNotTrackReplaceState?: boolean;
+		'google-clientID'?: string;
+		'segment-clientID'?: string;
 	}
 
 	var LittledataLayer: OwnLayer;
