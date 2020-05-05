@@ -420,7 +420,8 @@ function postClientID(getClientId, platform) {
   var clientID = getClientId();
   if (typeof clientID !== 'string' || clientID.length === 0) return;
   attributes[attribute] = clientID;
-  clearTimeout(postCartTimeout); //don't send multiple requests within a second
+  clearTimeout(postCartTimeout); // timeout is to allow 2 client IDs posted within 1 second
+  // to be included in the same cart update
 
   postCartTimeout = setTimeout(function () {
     attributes.littledata_updatedAt = new Date().getTime();
@@ -459,28 +460,31 @@ function postCartToLittledata(cart) {
 function setClientID(getClientId, platform) {
   var _LittledataLayer = LittledataLayer,
       cart = _LittledataLayer.cart;
+  var cartAttributes = cart && cart.attributes || {};
   var clientIDProperty = "".concat(platform, "-clientID");
 
-  if (!cart || !cart.attributes || !cart.attributes[clientIDProperty]) {
-    return postClientID(getClientId, platform);
-  }
-
-  var updatedAt = cart.attributes.littledata_updatedAt || cart.attributes.updatedAt; //old format pre v8.3
-
-  if (!updatedAt) {
-    return postClientID(getClientId, platform);
-  }
-
-  var clientIdCreated = new Date(Number(updatedAt));
-  var timeout = 60 * 60 * 1000; // 60 minutes
-
-  var timePassed = Date.now() - Number(clientIdCreated); // only need to resent client ID if it's expired from our Redis cache
-
-  if (timePassed > timeout) {
-    postCartToLittledata(cart);
-    setTimeout(function () {
+  if (!LittledataLayer[clientIDProperty] && // don't resend for the same page
+  !cartAttributes[clientIDProperty] // don't resend for the same cart
+  ) {
+      // set it on data layer, so subsequent setClientID call is ignored
+      LittledataLayer[clientIDProperty] = getClientId();
       postClientID(getClientId, platform);
-    }, 10000); // allow 10 seconds for our server to register cart until updating it, otherwise there's a race condition between storing and a webhook triggered by this
+    }
+
+  var updatedAt = cartAttributes.littledata_updatedAt;
+
+  if (updatedAt) {
+    var clientIdCreated = new Date(Number(updatedAt));
+    var timeout = 60 * 60 * 1000; // 60 minutes is the time cart is cached in Redis
+
+    var timePassed = Date.now() - Number(clientIdCreated); // only need to resend cart if it's expired from our Redis cache
+
+    if (timePassed > timeout) {
+      postCartToLittledata(cart);
+      setTimeout(function () {
+        postClientID(getClientId, platform);
+      }, 10000); // allow 10 seconds for our server to register cart until updating it, otherwise there's a race condition between storing and a webhook triggered by this
+    }
   }
 }
 function removePii(str) {
