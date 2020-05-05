@@ -129,6 +129,8 @@ declare global {
 		productPageClicks?: boolean;
 		extraLinkerDomains?: string[];
 		cookiesToTrack?: string[];
+		'google-clientID'?: string;
+		'segment-clientID'?: string;
 		trackReplaceState?: boolean;
 		singlePageApp?: boolean;
 	}
