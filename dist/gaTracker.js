@@ -360,11 +360,12 @@ var pageView = function pageView(fireTag) {
     });
   } else {
     fireTag();
-  }
+  } // now listen for changes of URL on product and other pages
+  // Shopify uses history.replaceState() when variant changes
 
-  if (LittledataLayer.singlePageApp === true) {
-    // now listen for changes of URL for single page applications
-    var urlChangeTracker = new _UrlChangeTracker__WEBPACK_IMPORTED_MODULE_0__["default"](LittledataLayer.trackReplaceState || false);
+
+  if (LittledataLayer.doNotTrackReplaceState !== true) {
+    var urlChangeTracker = new _UrlChangeTracker__WEBPACK_IMPORTED_MODULE_0__["default"](true);
     urlChangeTracker.setCallback(fireTag);
   }
 };
