@@ -1,5 +1,7 @@
 /* global LittledataLayer */
 declare let window: CustomWindow;
+import checkLinker from './checkLinker';
+import { getCookie } from './getCookie';
 import UrlChangeTracker from './UrlChangeTracker';
 
 /**
@@ -25,10 +27,9 @@ export const pageView = (fireTag: () => void): void => {
 		fireTag();
 	}
 
-	// now listen for changes of URL on product and other pages
-	// Shopify uses history.replaceState() when variant changes
-	if (LittledataLayer.doNotTrackReplaceState !== true) {
-		const urlChangeTracker = new UrlChangeTracker(true);
+	if (LittledataLayer.singlePageApp === true) {
+		// now listen for changes of URL for single page applications
+		const urlChangeTracker = new UrlChangeTracker(LittledataLayer.trackReplaceState || false);
 		urlChangeTracker.setCallback(fireTag);
 	}
 };
@@ -95,9 +96,7 @@ function postClientID(getClientId: () => string, platform: string) {
 	if (typeof clientID !== 'string' || clientID.length === 0) return;
 	(attributes as any)[attribute] = clientID;
 
-	clearTimeout(postCartTimeout);
-	// timeout is to allow 2 client IDs posted within 1 second
-	// to be included in the same cart update
+	clearTimeout(postCartTimeout); //don't send multiple requests within a second
 	postCartTimeout = setTimeout(function() {
 		attributes.littledata_updatedAt = new Date().getTime();
 		const cartUpdateReq = new XMLHttpRequest(); // new HttpRequest instance
@@ -137,31 +136,26 @@ function postCartToLittledata(cart: Cart.RootObject) {
 
 export function setClientID(getClientId: () => string, platform: 'google' | 'segment') {
 	const { cart } = LittledataLayer;
-	const cartAttributes = (cart && cart.attributes) || {};
 	const clientIDProperty = `${platform}-clientID` as 'google-clientID' | 'segment-clientID';
 
-	if (
-		!LittledataLayer[clientIDProperty] && // don't resend for the same page
-		!cartAttributes[clientIDProperty] // don't resend for the same cart
-	) {
-		// set it on data layer, so subsequent setClientID call is ignored
-		LittledataLayer[clientIDProperty] = getClientId();
-		postClientID(getClientId, platform);
+	if (!cart || !cart.attributes || !cart.attributes[clientIDProperty]) {
+		return postClientID(getClientId, platform);
 	}
 
-	const updatedAt = cartAttributes.littledata_updatedAt;
-	if (updatedAt) {
-		const clientIdCreated = new Date(Number(updatedAt));
+	const updatedAt = cart.attributes.littledata_updatedAt || cart.attributes.updatedAt; //old format pre v8.3
+	if (!updatedAt) {
+		return postClientID(getClientId, platform);
+	}
+	const clientIdCreated = new Date(Number(updatedAt));
 
-		const timeout = 60 * 60 * 1000; // 60 minutes is the time cart is cached in Redis
-		const timePassed = Date.now() - Number(clientIdCreated);
-		// only need to resend cart if it's expired from our Redis cache
-		if (timePassed > timeout) {
-			postCartToLittledata(cart);
-			setTimeout(() => {
-				postClientID(getClientId, platform);
-			}, 10000); // allow 10 seconds for our server to register cart until updating it, otherwise there's a race condition between storing and a webhook triggered by this
-		}
+	const timeout = 60 * 60 * 1000; // 60 minutes
+	const timePassed = Date.now() - Number(clientIdCreated);
+	// only need to resent client ID if it's expired from our Redis cache
+	if (timePassed > timeout) {
+		postCartToLittledata(cart);
+		setTimeout(() => {
+			postClientID(getClientId, platform);
+		}, 10000); // allow 10 seconds for our server to register cart until updating it, otherwise there's a race condition between storing and a webhook triggered by this
 	}
 }
 
