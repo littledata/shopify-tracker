@@ -153,8 +153,10 @@ var getElementsByHref = function getElementsByHref(regex) {
 var findDataLayerProduct = function findDataLayerProduct(link) {
   return LittledataLayer.ecommerce.impressions.find(function (p) {
     var linkSplit = link.split('/products/');
-    var productLink = linkSplit && linkSplit[1];
-    return productLink === p.handle;
+    var productLinkWithParams = linkSplit && linkSplit[1];
+    var productLinkWithParamsArray = productLinkWithParams.split('?');
+    var productLink = productLinkWithParamsArray && productLinkWithParamsArray[0];
+    return productLink ? productLink === p.handle : productLinkWithParams === p.handle;
   });
 };
 var productListClicks = function productListClicks(clickTag) {
