@@ -10,7 +10,7 @@ export const pageView = (fireTag: () => void): void => {
 	if (document.hidden === true) {
 		// delay page firing until the page is visible
 		let triggeredPageView = false;
-		document.addEventListener('visibilitychange', function() {
+		document.addEventListener('visibilitychange', function () {
 			if (!document.hidden && !triggeredPageView) {
 				fireTag();
 				triggeredPageView = true;
@@ -18,7 +18,7 @@ export const pageView = (fireTag: () => void): void => {
 		});
 	} else if (document.readyState === 'loading') {
 		//delay until DOM is ready
-		document.addEventListener('DOMContentLoaded', function() {
+		document.addEventListener('DOMContentLoaded', function () {
 			fireTag();
 		});
 	} else {
@@ -42,24 +42,26 @@ export const getElementsByHref = (regex: RegExp | string): HTMLAnchorElement[] =
 };
 
 export const findDataLayerProduct = (link: string): Impression =>
-	LittledataLayer.ecommerce.impressions.find(p => {
+	LittledataLayer.ecommerce.impressions.find((p) => {
 		const linkSplit = link.split('/products/');
-		const productLink = linkSplit && linkSplit[1];
-		return productLink === p.handle;
+		const productLinkWithParams = linkSplit && linkSplit[1];
+		const productLinkWithParamsArray = productLinkWithParams.split('?');
+		const productLink = productLinkWithParamsArray && productLinkWithParamsArray[0];
+		return productLink ? productLink === p.handle : productLinkWithParams === p.handle;
 	});
 
 export const productListClicks = (clickTag: ListClickCallback): void => {
 	/* product list clicks */
 	if (!LittledataLayer.productClicks) return;
 	getElementsByHref('/products/').forEach((element: TimeBombHTMLAnchor) => {
-		element.addEventListener('click', function(ev) {
+		element.addEventListener('click', function (ev) {
 			// only add event to products
 			const product = findDataLayerProduct(this.href);
 
 			if (product) {
 				ev.preventDefault();
 				/* only wait 1 second before redirecting */
-				element.timeout = window.setTimeout(function() {
+				element.timeout = window.setTimeout(function () {
 					document.location.href = element.href;
 				}, 1000);
 
@@ -98,10 +100,10 @@ function postClientID(getClientId: () => string, platform: string) {
 	clearTimeout(postCartTimeout);
 	// timeout is to allow 2 client IDs posted within 1 second
 	// to be included in the same cart update
-	postCartTimeout = setTimeout(function() {
+	postCartTimeout = setTimeout(function () {
 		attributes.littledata_updatedAt = new Date().getTime();
 		const cartUpdateReq = new XMLHttpRequest(); // new HttpRequest instance
-		cartUpdateReq.onload = function() {
+		cartUpdateReq.onload = function () {
 			const updatedCart = JSON.parse(cartUpdateReq.response);
 			LittledataLayer.cart = updatedCart;
 			const clientIDReq = new XMLHttpRequest();
@@ -183,7 +185,7 @@ export function removePii(str: string): string {
 /**
  * guid
  */
-export const guid: string = (function() {
+export const guid: string = (function () {
 	function s10() {
 		return Math.floor(Math.random() * 10e9);
 	}
@@ -202,8 +204,8 @@ export const guid: string = (function() {
 
 export const trackProductImageClicks = (clickTag: (name: string) => void) => {
 	if (LittledataLayer.productPageClicks === false) return false;
-	getElementsByHref('^https://cdn.shopify.com/s/files/.*/products/').forEach(element => {
-		element.addEventListener('click', function() {
+	getElementsByHref('^https://cdn.shopify.com/s/files/.*/products/').forEach((element) => {
+		element.addEventListener('click', function () {
 			// only add event to product images
 			const image = this.getElementsByTagName('img')[0];
 			const name = image && image.alt;
@@ -216,8 +218,8 @@ export const trackProductImageClicks = (clickTag: (name: string) => void) => {
 export const trackSocialShares = (clickTag: (name?: string) => void) => {
 	if (LittledataLayer.productPageClicks === false) return false;
 	const networks = '(facebook|pinterest|twitter|linkedin|plus.google|instagram)';
-	getElementsByHref(`${networks}\.com/(share|pin|intent)`).forEach(element => {
-		element.addEventListener('click', function() {
+	getElementsByHref(`${networks}\.com/(share|pin|intent)`).forEach((element) => {
+		element.addEventListener('click', function () {
 			const match = this.href.match(new RegExp(networks));
 			clickTag(match && match[0]);
 		});
