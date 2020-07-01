@@ -54,7 +54,7 @@ export const sendPageview = () => {
 		setClientID(getGtagClientId, 'google');
 	});
 
-	const product = getProductDetail();
+	const product = getProductDetail(true);
 	if (product) {
 		product.list_position = parseInt(window.localStorage.getItem('position')) || 1;
 		gtag('event', 'view_item', {
@@ -135,7 +135,7 @@ export const trackEvents = () => {
 		});
 	}
 
-	const product = getProductDetail();
+	const product = getProductDetail(true);
 	if (product) {
 		// if PDP, we can also track clicks on images and social shares
 		trackProductImageClicks(name => {
