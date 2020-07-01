@@ -37,6 +37,8 @@ interface SegmentProduct {
 	list_id?: string;
 	image_url?: string;
 	currency?: string;
+	variant_id?: string;
+	compare_at_price?: string;
 }
 
 const segmentProduct = (dataLayerProduct: Detail): SegmentProduct => ({
@@ -49,6 +51,8 @@ const segmentProduct = (dataLayerProduct: Detail): SegmentProduct => ({
 	name: dataLayerProduct.name,
 	price: parseFloat(dataLayerProduct.price),
 	variant: dataLayerProduct.variant,
+	variant_id: dataLayerProduct.variantId,
+	compare_at_price: dataLayerProduct.compareAtPrice,
 });
 
 export const identifyCustomer = (customer: Customer) => {
