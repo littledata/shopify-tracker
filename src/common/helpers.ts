@@ -44,8 +44,10 @@ export const getElementsByHref = (regex: RegExp | string): HTMLAnchorElement[] =
 export const findDataLayerProduct = (link: string): Impression =>
 	LittledataLayer.ecommerce.impressions.find(p => {
 		const linkSplit = link.split('/products/');
-		const productLink = linkSplit && linkSplit[1];
-		return productLink === p.handle;
+		const productLinkWithParams = linkSplit && linkSplit[1];
+		const productLinkWithParamsArray = productLinkWithParams.split('?');
+		const productLink = productLinkWithParamsArray && productLinkWithParamsArray[0];
+		return productLink ? productLink === p.handle : productLinkWithParams === p.handle;
 	});
 
 export const productListClicks = (clickTag: ListClickCallback): void => {
