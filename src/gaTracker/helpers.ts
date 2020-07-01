@@ -168,6 +168,8 @@ export const trackEvents = () => {
 };
 
 export const filterGAProductFields = (product: LooseObject) => {
+	//pick only the allowed fields from GA EE specification
+	//https://developers.google.com/tag-manager/enhanced-ecommerce#product-impressions
 	const gaProductFields = [
 		'name',
 		'id',
@@ -182,7 +184,7 @@ export const filterGAProductFields = (product: LooseObject) => {
 	];
 	const gaProduct = {} as LooseObject;
 	gaProductFields.forEach(field => {
-		if (gaProduct[field]) product[field] = gaProduct[field];
+		if (product[field]) gaProduct[field] = product[field];
 	});
 	return gaProduct;
 };
