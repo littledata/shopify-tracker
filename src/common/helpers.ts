@@ -47,6 +47,7 @@ export const findDataLayerProduct = (link: string): Impression =>
 		const productLinkWithParams = linkSplit && linkSplit[1];
 		const productLinkWithParamsArray = productLinkWithParams.split('?');
 		const productLink = productLinkWithParamsArray && productLinkWithParamsArray[0];
+		
 		return productLink ? productLink === p.handle : productLinkWithParams === p.handle;
 	});
 
