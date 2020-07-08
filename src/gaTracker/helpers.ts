@@ -28,7 +28,7 @@ let nextTimeout = 500; // half a second
 const maximumTimeout = 524288000; // about 6 hours in seconds
 
 function waitForGaToLoad() {
-	const trackers = window.ga.getAll();
+	const trackers = window.ga && window.ga.getAll();
 	if (trackers && trackers.length) {
 		return setClientID(getGtagClientId, 'google');
 	}
