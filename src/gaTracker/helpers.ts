@@ -59,7 +59,7 @@ export const sendPageview = () => {
 		product.list_position = parseInt(window.localStorage.getItem('position')) || 1;
 		gtag('event', 'view_item', {
 			event_category,
-			items: [product],
+			items: [filterGAProductFields(product)],
 			non_interaction: true,
 			send_to: LittledataLayer.webPropertyID,
 		});
@@ -110,7 +110,7 @@ export const trackEvents = () => {
 			gtag('event', 'select_content', {
 				event_category,
 				content_type: 'product',
-				items: [product],
+				items: [filterGAProductFields(product)],
 				send_to: LittledataLayer.webPropertyID,
 				event_callback() {
 					window.clearTimeout(self.timeout);
@@ -120,9 +120,10 @@ export const trackEvents = () => {
 		});
 
 		productListViews((products: Impression[]) => {
+			const gaProducts = products.map(product => filterGAProductFields(product));
 			gtag('event', 'view_item_list', {
 				event_category,
-				items: products,
+				items: gaProducts,
 				send_to: LittledataLayer.webPropertyID,
 				non_interaction: true,
 			});
@@ -164,6 +165,28 @@ export const trackEvents = () => {
 			});
 		});
 	}
+};
+
+export const filterGAProductFields = (product: LooseObject) => {
+	//pick only the allowed fields from GA EE specification
+	//https://developers.google.com/tag-manager/enhanced-ecommerce#product-impressions
+	const gaProductFields = [
+		'name',
+		'id',
+		'price',
+		'brand',
+		'category',
+		'variant',
+		'list',
+		'list_name',
+		'position',
+		'list_position',
+	];
+	const gaProduct = {} as LooseObject;
+	gaProductFields.forEach(field => {
+		if (product[field]) gaProduct[field] = product[field];
+	});
+	return gaProduct;
 };
 
 export const getConfig = (): Gtag.CustomParams => {
