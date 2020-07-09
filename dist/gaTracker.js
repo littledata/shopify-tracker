@@ -96,7 +96,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 (function () {
-  window.LittledataScriptVersion = '8.5';
+  window.LittledataScriptVersion = '8.6';
   Object(_common_helpers__WEBPACK_IMPORTED_MODULE_1__["validateLittledataLayer"])();
   Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["initGtag"])();
   Object(_common_helpers__WEBPACK_IMPORTED_MODULE_1__["advertiseLD"])();
@@ -115,6 +115,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "initGtag", function() { return initGtag; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sendPageview", function() { return sendPageview; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "trackEvents", function() { return trackEvents; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "filterGAProductFields", function() { return filterGAProductFields; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getConfig", function() { return getConfig; });
 /* harmony import */ var _common_helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
 /* harmony import */ var _common_productListViews__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(5);
@@ -181,7 +182,7 @@ var sendPageview = function sendPageview() {
     product.list_position = parseInt(window.localStorage.getItem('position')) || 1;
     gtag('event', 'view_item', {
       event_category: event_category,
-      items: [product],
+      items: [filterGAProductFields(product)],
       non_interaction: true,
       send_to: LittledataLayer.webPropertyID
     });
@@ -233,7 +234,7 @@ var trackEvents = function trackEvents() {
       gtag('event', 'select_content', {
         event_category: event_category,
         content_type: 'product',
-        items: [product],
+        items: [filterGAProductFields(product)],
         send_to: LittledataLayer.webPropertyID,
         event_callback: function event_callback() {
           window.clearTimeout(self.timeout);
@@ -242,9 +243,12 @@ var trackEvents = function trackEvents() {
       });
     });
     Object(_common_productListViews__WEBPACK_IMPORTED_MODULE_1__["default"])(function (products) {
+      var gaProducts = products.map(function (product) {
+        return filterGAProductFields(product);
+      });
       gtag('event', 'view_item_list', {
         event_category: event_category,
-        items: products,
+        items: gaProducts,
         send_to: LittledataLayer.webPropertyID,
         non_interaction: true
       });
@@ -284,6 +288,16 @@ var trackEvents = function trackEvents() {
       });
     });
   }
+};
+var filterGAProductFields = function filterGAProductFields(product) {
+  //pick only the allowed fields from GA EE specification
+  //https://developers.google.com/tag-manager/enhanced-ecommerce#product-impressions
+  var gaProductFields = ['name', 'id', 'price', 'brand', 'category', 'variant', 'list', 'list_name', 'position', 'list_position'];
+  var gaProduct = {};
+  gaProductFields.forEach(function (field) {
+    if (product[field]) gaProduct[field] = product[field];
+  });
+  return gaProduct;
 };
 var getConfig = function getConfig() {
   var _LittledataLayer = LittledataLayer,
@@ -963,6 +977,7 @@ __webpack_require__.r(__webpack_exports__);
 	const matches = document.location.href.match(/[0-9]{8,20}/);
 	const variantId = matches && Number(matches[0]);
 	if (variantId) {
+		detail.shopify_variant_id = variantId;
 		//find variant in the list of variants
 		const variantList = LittledataLayer.ecommerce.variants;
 		if (variantList) {

@@ -737,6 +737,7 @@ __webpack_require__.r(__webpack_exports__);
 	const matches = document.location.href.match(/[0-9]{8,20}/);
 	const variantId = matches && Number(matches[0]);
 	if (variantId) {
+		detail.shopify_variant_id = variantId;
 		//find variant in the list of variants
 		const variantList = LittledataLayer.ecommerce.variants;
 		if (variantList) {
@@ -764,7 +765,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 (function () {
-  window.LittledataScriptVersion = '8.5';
+  window.LittledataScriptVersion = '8.6';
   Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["validateLittledataLayer"])();
   Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["initSegment"])();
   Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["advertiseLD"])();
@@ -847,7 +848,10 @@ var segmentProduct = function segmentProduct(dataLayerProduct) {
     position: dataLayerProduct.list_position,
     name: dataLayerProduct.name,
     price: parseFloat(dataLayerProduct.price),
-    variant: dataLayerProduct.variant
+    variant: dataLayerProduct.variant,
+    shopify_product_id: dataLayerProduct.shopify_product_id,
+    shopify_variant_id: dataLayerProduct.shopify_variant_id,
+    compare_at_price: dataLayerProduct.compare_at_price
   };
 };
 
