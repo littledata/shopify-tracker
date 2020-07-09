@@ -182,7 +182,7 @@ export const filterGAProductFields = (product: LooseObject) => {
 		'position',
 		'list_position',
 	];
-	const gaProduct = {} as LooseObject;
+	const gaProduct: LooseObject = {};
 	gaProductFields.forEach(field => {
 		if (product[field]) gaProduct[field] = product[field];
 	});
