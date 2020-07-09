@@ -89,6 +89,9 @@ declare global {
 		list: string; // duplicate property for GTM
 		handle: string;
 		list_position?: number;
+		shopify_product_id?: string;
+		shopify_variant_id?: string;
+		compare_at_price?: string;
 	}
 
 	interface Impression extends Detail {
