@@ -32,7 +32,7 @@ To enable [cross-domain tracking](https://support.google.com/analytics/answer/10
 
 You will also need to [enable the Google Analytics linker](https://developers.google.com/analytics/devguides/collection/gtagjs/cross-domain) on those source or destination domains.
 
-Example: `['myextradomain.com']` (array)
+Example: `['mylandingpage.com']` (array)
 
 **googleAdsConversionIds**
 
