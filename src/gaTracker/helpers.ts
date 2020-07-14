@@ -9,6 +9,7 @@ import {
 } from '../common/helpers';
 import productListViews from '../common/productListViews';
 import getProductDetail from '../common/getProductDetail';
+import { getCookie, isGAclientIdValid } from '../common/getCookie';
 
 const event_category = 'Shopify (Littledata)';
 
@@ -77,14 +78,12 @@ export const sendPageview = () => {
 };
 
 function getGtagClientId(): string {
-	if (LittledataLayer.customer && LittledataLayer.customer.generatedClientID) {
-		return LittledataLayer.customer.generatedClientID;
-	}
 	// @ts-ignore
 	const trackers = ga.getAll();
 	if (!trackers || !trackers.length) return '';
 
-	return trackers[0].get('clientId');
+	const clientId = trackers[0].get('clientId');
+	return isGAclientIdValid(clientId) ? clientId : '';
 }
 
 export const trackEvents = () => {
@@ -216,6 +215,13 @@ export const getConfig = (): Gtag.CustomParams => {
 		send_page_view: false,
 		user_id: userId,
 	};
+
+	const cookie = getCookie('_ga');
+	if (cookie && !isGAclientIdValid(cookie)) {
+		//expiring the cookie after this session ensures invalid clientID
+		//is not propagated to future sessions
+		config.cookie_expires = 0;
+	}
 
 	return config;
 };

@@ -1,5 +1,5 @@
 /* eslint-env browser */
-import { getCookie } from '../common/getCookie';
+import { getCookie, isGAclientIdValid } from '../common/getCookie';
 
 declare let window: CustomWindow;
 
@@ -94,7 +94,7 @@ export const sendCartId = () => {
 	const apiUrl = `${baseUrl}/clientID`;
 	const clientID = getCookie('_ga');
 
-	if (!clientID) return;
+	if (!clientID || !isGAclientIdValid(clientID)) return;
 
 	const data = {
 		clientID,
