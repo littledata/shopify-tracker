@@ -9,7 +9,7 @@ import {
 } from '../common/helpers';
 import productListViews from '../common/productListViews';
 import getProductDetail from '../common/getProductDetail';
-import { getCookie, isGAclientIdValid } from '../common/getCookie';
+import { getCookie, getValidGAClientId } from '../common/getCookie';
 
 const event_category = 'Shopify (Littledata)';
 
@@ -83,7 +83,7 @@ function getGtagClientId(): string {
 	if (!trackers || !trackers.length) return '';
 
 	const clientId = trackers[0].get('clientId');
-	return isGAclientIdValid(clientId) ? clientId : '';
+	return getValidGAClientId(clientId) ? clientId : '';
 }
 
 export const trackEvents = () => {

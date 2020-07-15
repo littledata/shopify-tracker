@@ -14,7 +14,7 @@ export const getCookie = (name: string): string => {
 	return '';
 };
 
-export const isGAclientIdValid = (cookie: string): string => {
+export const getValidGAClientId = (cookie: string = ''): string => {
 	const match = cookie.match(/(\d{2,11})\.(\d{2,11})/g);
-	return !!(match && match[0]);
+	return match && match[0];
 };
