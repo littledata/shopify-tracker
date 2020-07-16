@@ -217,7 +217,7 @@ export const getConfig = (): Gtag.CustomParams => {
 	};
 
 	const cookie = getCookie('_ga');
-	if (cookie && !isGAclientIdValid(cookie)) {
+	if (cookie && !getValidGAClientId(cookie)) {
 		//expiring the cookie after this session ensures invalid clientID
 		//is not propagated to future sessions
 		config.cookie_expires = 0;
