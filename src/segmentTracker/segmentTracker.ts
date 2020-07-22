@@ -5,7 +5,7 @@ import { pageView, validateLittledataLayer, advertiseLD, setClientID } from '../
 import { identifyCustomer, trackEvents, initSegment, callSegmentPage } from './helpers';
 
 (function() {
-	window.LittledataScriptVersion = '8.4';
+	window.LittledataScriptVersion = '8.6';
 	validateLittledataLayer();
 	initSegment();
 	advertiseLD();
@@ -19,10 +19,7 @@ import { identifyCustomer, trackEvents, initSegment, callSegmentPage } from './h
 				window.ga(() => {
 					const tracker = window.ga.getAll()[0];
 					if (tracker) {
-						const clientId = tracker.get('clientId');
-						const generatedClientID =
-							LittledataLayer.customer && LittledataLayer.customer.generatedClientID;
-						const getClientID = () => (generatedClientID ? generatedClientID : clientId);
+						const getClientID = () => tracker.get('clientId');
 						setClientID(getClientID, 'google');
 					}
 				});

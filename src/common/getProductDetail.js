@@ -7,6 +7,7 @@ export default () => {
 	const matches = document.location.href.match(/[0-9]{8,20}/);
 	const variantId = matches && Number(matches[0]);
 	if (variantId) {
+		detail.shopify_variant_id = variantId;
 		//find variant in the list of variants
 		const variantList = LittledataLayer.ecommerce.variants;
 		if (variantList) {

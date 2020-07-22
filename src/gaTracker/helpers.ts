@@ -9,6 +9,7 @@ import {
 } from '../common/helpers';
 import productListViews from '../common/productListViews';
 import getProductDetail from '../common/getProductDetail';
+import { getCookie, getValidGAClientId } from '../common/getCookie';
 
 const event_category = 'Shopify (Littledata)';
 
@@ -59,7 +60,7 @@ export const sendPageview = () => {
 		product.list_position = parseInt(window.localStorage.getItem('position')) || 1;
 		gtag('event', 'view_item', {
 			event_category,
-			items: [product],
+			items: [filterGAProductFields(product)],
 			non_interaction: true,
 			send_to: LittledataLayer.webPropertyID,
 		});
@@ -77,14 +78,12 @@ export const sendPageview = () => {
 };
 
 function getGtagClientId(): string {
-	if (LittledataLayer.customer && LittledataLayer.customer.generatedClientID) {
-		return LittledataLayer.customer.generatedClientID;
-	}
 	// @ts-ignore
 	const trackers = ga.getAll();
 	if (!trackers || !trackers.length) return '';
 
-	return trackers[0].get('clientId');
+	const clientId = trackers[0].get('clientId');
+	return getValidGAClientId(clientId) ? clientId : '';
 }
 
 export const trackEvents = () => {
@@ -110,7 +109,7 @@ export const trackEvents = () => {
 			gtag('event', 'select_content', {
 				event_category,
 				content_type: 'product',
-				items: [product],
+				items: [filterGAProductFields(product)],
 				send_to: LittledataLayer.webPropertyID,
 				event_callback() {
 					window.clearTimeout(self.timeout);
@@ -120,9 +119,10 @@ export const trackEvents = () => {
 		});
 
 		productListViews((products: Impression[]) => {
+			const gaProducts = products.map(product => filterGAProductFields(product));
 			gtag('event', 'view_item_list', {
 				event_category,
-				items: products,
+				items: gaProducts,
 				send_to: LittledataLayer.webPropertyID,
 				non_interaction: true,
 			});
@@ -166,6 +166,28 @@ export const trackEvents = () => {
 	}
 };
 
+export const filterGAProductFields = (product: LooseObject) => {
+	//pick only the allowed fields from GA EE specification
+	//https://developers.google.com/tag-manager/enhanced-ecommerce#product-impressions
+	const gaProductFields = [
+		'name',
+		'id',
+		'price',
+		'brand',
+		'category',
+		'variant',
+		'list',
+		'list_name',
+		'position',
+		'list_position',
+	];
+	const gaProduct: LooseObject = {};
+	gaProductFields.forEach(field => {
+		if (product[field]) gaProduct[field] = product[field];
+	});
+	return gaProduct;
+};
+
 export const getConfig = (): Gtag.CustomParams => {
 	const { anonymizeIp, googleSignals, ecommerce, optimizeId, referralExclusion } = LittledataLayer;
 	const userId = LittledataLayer.customer && LittledataLayer.customer.id;
@@ -193,6 +215,13 @@ export const getConfig = (): Gtag.CustomParams => {
 		send_page_view: false,
 		user_id: userId,
 	};
+
+	const cookie = getCookie('_ga');
+	if (cookie && !getValidGAClientId(cookie)) {
+		//expiring the cookie after this session ensures invalid clientID
+		//is not propagated to future sessions
+		config.cookie_expires = 0;
+	}
 
 	return config;
 };
