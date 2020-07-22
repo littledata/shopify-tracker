@@ -81,7 +81,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 7);
+/******/ 	return __webpack_require__(__webpack_require__.s = 8);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -759,8 +759,41 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getCookie", function() { return getCookie; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getValidGAClientId", function() { return getValidGAClientId; });
+var getCookie = function getCookie(name) {
+  if (document.cookie.length > 0) {
+    var cookieStart = document.cookie.indexOf("".concat(name, "="));
+
+    if (cookieStart !== -1) {
+      var valueStart = cookieStart + name.length + 1;
+      var cookieEnd = document.cookie.indexOf(';', valueStart);
+
+      if (cookieEnd === -1) {
+        cookieEnd = document.cookie.length;
+      }
+
+      var cookie = unescape(document.cookie.substring(valueStart, cookieEnd));
+      return cookie;
+    }
+  }
+
+  return '';
+};
+var getValidGAClientId = function getValidGAClientId() {
+  var cookie = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+  var match = cookie.match(/(\d{2,11})\.(\d{2,11})/g);
+  return match && match[0];
+};
+
+/***/ }),
+/* 8 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _common_helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
-/* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(8);
+/* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(9);
 
 
 
@@ -780,11 +813,8 @@ __webpack_require__.r(__webpack_exports__);
           var tracker = window.ga.getAll()[0];
 
           if (tracker) {
-            var clientId = tracker.get('clientId');
-            var generatedClientID = LittledataLayer.customer && LittledataLayer.customer.generatedClientID;
-
             var getClientID = function getClientID() {
-              return generatedClientID ? generatedClientID : clientId;
+              return tracker.get('clientId');
             };
 
             Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(getClientID, 'google');
@@ -798,7 +828,7 @@ __webpack_require__.r(__webpack_exports__);
 })();
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -808,7 +838,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "initSegment", function() { return initSegment; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "callSegmentPage", function() { return callSegmentPage; });
 /* harmony import */ var _common_helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
-/* harmony import */ var _common_getCookie__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(9);
+/* harmony import */ var _common_getCookie__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7);
 /* harmony import */ var _common_productListViews__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(5);
 /* harmony import */ var _common_getProductDetail__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(6);
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
@@ -1004,39 +1034,6 @@ var callSegmentPage = function callSegmentPage(integrations) {
     product.position = parseInt(window.localStorage.getItem('position')) || 1;
     trackEvent('Product Viewed', product);
   }
-};
-
-/***/ }),
-/* 9 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getCookie", function() { return getCookie; });
-var getCookie = function getCookie(name) {
-  if (document.cookie.length > 0) {
-    var cookieStart = document.cookie.indexOf("".concat(name, "="));
-
-    if (cookieStart !== -1) {
-      var valueStart = cookieStart + name.length + 1;
-      var cookieEnd = document.cookie.indexOf(';', valueStart);
-
-      if (cookieEnd === -1) {
-        cookieEnd = document.cookie.length;
-      }
-
-      var cookie = unescape(document.cookie.substring(valueStart, cookieEnd));
-
-      if (name === '_ga') {
-        var match = cookie.match(/(\d{2,11})\.(\d{2,11})/g);
-        return match ? match[0] : '';
-      }
-
-      return cookie;
-    }
-  }
-
-  return '';
 };
 
 /***/ })

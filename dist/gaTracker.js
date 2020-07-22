@@ -120,6 +120,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _common_helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
 /* harmony import */ var _common_productListViews__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(5);
 /* harmony import */ var _common_getProductDetail__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(6);
+/* harmony import */ var _common_getCookie__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(7);
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
@@ -129,6 +130,7 @@ function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.
 function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
 
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
 
 
 
@@ -147,6 +149,27 @@ var initGtag = function initGtag() {
   gtag('js', new Date());
   gtag('config', LittledataLayer.webPropertyID, getConfig());
 };
+var postClientIdTimeout;
+var nextTimeout = 500; // half a second
+
+var maximumTimeout = 524288000; // about 6 hours in seconds
+
+function waitForGaToLoad() {
+  var trackers = window.ga && window.ga.getAll();
+
+  if (trackers && trackers.length) {
+    return Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(getGtagClientId, 'google');
+  }
+
+  if (nextTimeout > maximumTimeout) return; // stop if not found already
+
+  nextTimeout *= 2;
+  clearTimeout(postClientIdTimeout);
+  postClientIdTimeout = window.setTimeout(function () {
+    waitForGaToLoad();
+  }, nextTimeout);
+}
+
 var sendPageview = function sendPageview() {
   var page_title = Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["removePii"])(document.title);
   var page_location = Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["removePii"])(document.location.href);
@@ -174,7 +197,7 @@ var sendPageview = function sendPageview() {
   window.ga.l = +new Date();
   window.ga(function () {
     // we need to wait for GA library (part of gtag)
-    Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(getGtagClientId, 'google');
+    waitForGaToLoad();
   });
   var product = Object(_common_getProductDetail__WEBPACK_IMPORTED_MODULE_2__["default"])();
 
@@ -201,14 +224,11 @@ var sendPageview = function sendPageview() {
 };
 
 function getGtagClientId() {
-  if (LittledataLayer.customer && LittledataLayer.customer.generatedClientID) {
-    return LittledataLayer.customer.generatedClientID;
-  } // @ts-ignore
-
-
+  // @ts-ignore
   var trackers = ga.getAll();
   if (!trackers || !trackers.length) return '';
-  return trackers[0].get('clientId');
+  var clientId = trackers[0].get('clientId');
+  return Object(_common_getCookie__WEBPACK_IMPORTED_MODULE_3__["getValidGAClientId"])(clientId) ? clientId : '';
 }
 
 var trackEvents = function trackEvents() {
@@ -323,6 +343,14 @@ var getConfig = function getConfig() {
     send_page_view: false,
     user_id: userId
   };
+  var cookie = Object(_common_getCookie__WEBPACK_IMPORTED_MODULE_3__["getCookie"])('_ga');
+
+  if (cookie && !Object(_common_getCookie__WEBPACK_IMPORTED_MODULE_3__["getValidGAClientId"])(cookie)) {
+    //expiring the cookie after this session ensures invalid clientID
+    //is not propagated to future sessions
+    config.cookie_expires = 0;
+  }
+
   return config;
 };
 
@@ -992,6 +1020,39 @@ __webpack_require__.r(__webpack_exports__);
 	return detail;
 });
 
+
+/***/ }),
+/* 7 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getCookie", function() { return getCookie; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getValidGAClientId", function() { return getValidGAClientId; });
+var getCookie = function getCookie(name) {
+  if (document.cookie.length > 0) {
+    var cookieStart = document.cookie.indexOf("".concat(name, "="));
+
+    if (cookieStart !== -1) {
+      var valueStart = cookieStart + name.length + 1;
+      var cookieEnd = document.cookie.indexOf(';', valueStart);
+
+      if (cookieEnd === -1) {
+        cookieEnd = document.cookie.length;
+      }
+
+      var cookie = unescape(document.cookie.substring(valueStart, cookieEnd));
+      return cookie;
+    }
+  }
+
+  return '';
+};
+var getValidGAClientId = function getValidGAClientId() {
+  var cookie = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+  var match = cookie.match(/(\d{2,11})\.(\d{2,11})/g);
+  return match && match[0];
+};
 
 /***/ })
 /******/ ]);
