@@ -4,7 +4,7 @@ import { initGtag, trackEvents, sendPageview } from './helpers';
 import { pageView, validateLittledataLayer, advertiseLD } from '../common/helpers';
 
 (function() {
-	window.LittledataScriptVersion = '8.6';
+	window.LittledataScriptVersion = '8.7';
 	validateLittledataLayer();
 	initGtag();
 	advertiseLD();
