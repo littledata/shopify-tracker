@@ -12,6 +12,9 @@ import getProductDetail from '../common/getProductDetail';
 import { getCookie, getValidGAClientId } from '../common/getCookie';
 
 const event_category = 'Shopify (Littledata)';
+let postClientIdTimeout: any;
+let nextTimeout = 500; // half a second
+const maximumTimeout = 524288000; // about 6 hours in seconds
 
 export const initGtag = () => {
 	window.dataLayer = window.dataLayer || [];
@@ -52,7 +55,7 @@ export const sendPageview = () => {
 	window.ga.l = +new Date();
 	window.ga(() => {
 		// we need to wait for GA library (part of gtag)
-		setClientID(getGtagClientId, 'google');
+		waitForGaToLoad();
 	});
 
 	const product = getProductDetail();
@@ -225,3 +228,19 @@ export const getConfig = (): Gtag.CustomParams => {
 
 	return config;
 };
+
+function waitForGaToLoad() {
+	const trackers = window.ga && window.ga.getAll();
+	if (trackers && trackers.length) {
+		return setClientID(getGtagClientId, 'google');
+	}
+
+	if (nextTimeout > maximumTimeout) return; // stop if not found already
+	nextTimeout *= 2;
+
+	clearTimeout(postClientIdTimeout);
+
+	postClientIdTimeout = window.setTimeout(function() {
+		waitForGaToLoad();
+	}, nextTimeout);
+}
