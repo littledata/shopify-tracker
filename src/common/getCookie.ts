@@ -8,12 +8,13 @@ export const getCookie = (name: string): string => {
 				cookieEnd = document.cookie.length;
 			}
 			const cookie = unescape(document.cookie.substring(valueStart, cookieEnd));
-			if (name === '_ga') {
-				const match = cookie.match(/(\d{2,11})\.(\d{2,11})/g);
-				return match ? match[0] : '';
-			}
 			return cookie;
 		}
 	}
 	return '';
+};
+
+export const getValidGAClientId = (cookie: string = ''): string => {
+	const match = cookie.match(/(\d{2,11})\.(\d{2,11})/g);
+	return match && match[0];
 };
