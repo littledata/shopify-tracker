@@ -81,7 +81,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 7);
+/******/ 	return __webpack_require__(__webpack_require__.s = 8);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -134,11 +134,12 @@ var pageView = function pageView(fireTag) {
     });
   } else {
     fireTag();
-  }
+  } // now listen for changes of URL on product and other pages
+  // Shopify uses history.replaceState() when variant changes
 
-  if (LittledataLayer.singlePageApp === true) {
-    // now listen for changes of URL for single page applications
-    var urlChangeTracker = new _UrlChangeTracker__WEBPACK_IMPORTED_MODULE_0__["default"](LittledataLayer.trackReplaceState || false);
+
+  if (LittledataLayer.doNotTrackReplaceState !== true) {
+    var urlChangeTracker = new _UrlChangeTracker__WEBPACK_IMPORTED_MODULE_0__["default"](true);
     urlChangeTracker.setCallback(fireTag);
   }
 };
@@ -152,8 +153,10 @@ var getElementsByHref = function getElementsByHref(regex) {
 var findDataLayerProduct = function findDataLayerProduct(link) {
   return LittledataLayer.ecommerce.impressions.find(function (p) {
     var linkSplit = link.split('/products/');
-    var productLink = linkSplit && linkSplit[1];
-    return productLink === p.handle;
+    var productLinkWithParams = linkSplit && linkSplit[1];
+    var productLinkWithParamsArray = productLinkWithParams.split('?');
+    var productLink = productLinkWithParamsArray && productLinkWithParamsArray[0];
+    return productLink ? productLink === p.handle : productLinkWithParams === p.handle;
   });
 };
 var productListClicks = function productListClicks(clickTag) {
@@ -194,7 +197,8 @@ function postClientID(getClientId, platform) {
   var clientID = getClientId();
   if (typeof clientID !== 'string' || clientID.length === 0) return;
   attributes[attribute] = clientID;
-  clearTimeout(postCartTimeout); //don't send multiple requests within a second
+  clearTimeout(postCartTimeout); // timeout is to allow 2 client IDs posted within 1 second
+  // to be included in the same cart update
 
   postCartTimeout = setTimeout(function () {
     attributes.littledata_updatedAt = new Date().getTime();
@@ -233,28 +237,31 @@ function postCartToLittledata(cart) {
 function setClientID(getClientId, platform) {
   var _LittledataLayer = LittledataLayer,
       cart = _LittledataLayer.cart;
+  var cartAttributes = cart && cart.attributes || {};
   var clientIDProperty = "".concat(platform, "-clientID");
 
-  if (!cart || !cart.attributes || !cart.attributes[clientIDProperty]) {
-    return postClientID(getClientId, platform);
-  }
-
-  var updatedAt = cart.attributes.littledata_updatedAt || cart.attributes.updatedAt; //old format pre v8.3
-
-  if (!updatedAt) {
-    return postClientID(getClientId, platform);
-  }
-
-  var clientIdCreated = new Date(Number(updatedAt));
-  var timeout = 60 * 60 * 1000; // 60 minutes
-
-  var timePassed = Date.now() - Number(clientIdCreated); // only need to resent client ID if it's expired from our Redis cache
-
-  if (timePassed > timeout) {
-    postCartToLittledata(cart);
-    setTimeout(function () {
+  if (!LittledataLayer[clientIDProperty] && // don't resend for the same page
+  !cartAttributes[clientIDProperty] // don't resend for the same cart
+  ) {
+      // set it on data layer, so subsequent setClientID call is ignored
+      LittledataLayer[clientIDProperty] = getClientId();
       postClientID(getClientId, platform);
-    }, 10000); // allow 10 seconds for our server to register cart until updating it, otherwise there's a race condition between storing and a webhook triggered by this
+    }
+
+  var updatedAt = cartAttributes.littledata_updatedAt;
+
+  if (updatedAt) {
+    var clientIdCreated = new Date(Number(updatedAt));
+    var timeout = 60 * 60 * 1000; // 60 minutes is the time cart is cached in Redis
+
+    var timePassed = Date.now() - Number(clientIdCreated); // only need to resend cart if it's expired from our Redis cache
+
+    if (timePassed > timeout) {
+      postCartToLittledata(cart);
+      setTimeout(function () {
+        postClientID(getClientId, platform);
+      }, 10000); // allow 10 seconds for our server to register cart until updating it, otherwise there's a race condition between storing and a webhook triggered by this
+    }
   }
 }
 function removePii(str) {
@@ -311,6 +318,8 @@ var trackSocialShares = function trackSocialShares(clickTag) {
   });
 };
 var validateLittledataLayer = function validateLittledataLayer() {
+  window.LittledataScriptVersion = '8.7';
+
   if (!window.LittledataLayer) {
     throw new Error('Aborting Littledata tracking as LittledataLayer was not found');
   }
@@ -730,6 +739,7 @@ __webpack_require__.r(__webpack_exports__);
 	const matches = document.location.href.match(/[0-9]{8,20}/);
 	const variantId = matches && Number(matches[0]);
 	if (variantId) {
+		detail.shopify_variant_id = variantId;
 		//find variant in the list of variants
 		const variantList = LittledataLayer.ecommerce.variants;
 		if (variantList) {
@@ -751,13 +761,45 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getCookie", function() { return getCookie; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getValidGAClientId", function() { return getValidGAClientId; });
+var getCookie = function getCookie(name) {
+  if (document.cookie.length > 0) {
+    var cookieStart = document.cookie.indexOf("".concat(name, "="));
+
+    if (cookieStart !== -1) {
+      var valueStart = cookieStart + name.length + 1;
+      var cookieEnd = document.cookie.indexOf(';', valueStart);
+
+      if (cookieEnd === -1) {
+        cookieEnd = document.cookie.length;
+      }
+
+      var cookie = unescape(document.cookie.substring(valueStart, cookieEnd));
+      return cookie;
+    }
+  }
+
+  return '';
+};
+var getValidGAClientId = function getValidGAClientId() {
+  var cookie = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+  var match = cookie.match(/(\d{2,11})\.(\d{2,11})/g);
+  return match && match[0];
+};
+
+/***/ }),
+/* 8 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _common_helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
-/* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(8);
+/* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(9);
 
 
 
 (function () {
-  window.LittledataScriptVersion = '8.4';
   Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["validateLittledataLayer"])();
   Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["initSegment"])();
   Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["advertiseLD"])();
@@ -772,11 +814,8 @@ __webpack_require__.r(__webpack_exports__);
           var tracker = window.ga.getAll()[0];
 
           if (tracker) {
-            var clientId = tracker.get('clientId');
-            var generatedClientID = LittledataLayer.customer && LittledataLayer.customer.generatedClientID;
-
             var getClientID = function getClientID() {
-              return generatedClientID ? generatedClientID : clientId;
+              return tracker.get('clientId');
             };
 
             Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(getClientID, 'google');
@@ -790,7 +829,7 @@ __webpack_require__.r(__webpack_exports__);
 })();
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -800,7 +839,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "initSegment", function() { return initSegment; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "callSegmentPage", function() { return callSegmentPage; });
 /* harmony import */ var _common_helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
-/* harmony import */ var _common_getCookie__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(9);
+/* harmony import */ var _common_getCookie__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7);
 /* harmony import */ var _common_productListViews__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(5);
 /* harmony import */ var _common_getProductDetail__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(6);
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
@@ -840,7 +879,10 @@ var segmentProduct = function segmentProduct(dataLayerProduct) {
     position: dataLayerProduct.list_position,
     name: dataLayerProduct.name,
     price: parseFloat(dataLayerProduct.price),
-    variant: dataLayerProduct.variant
+    variant: dataLayerProduct.variant,
+    shopify_product_id: dataLayerProduct.shopify_product_id,
+    shopify_variant_id: dataLayerProduct.shopify_variant_id,
+    compare_at_price: dataLayerProduct.compare_at_price
   };
 };
 
@@ -993,39 +1035,6 @@ var callSegmentPage = function callSegmentPage(integrations) {
     product.position = parseInt(window.localStorage.getItem('position')) || 1;
     trackEvent('Product Viewed', product);
   }
-};
-
-/***/ }),
-/* 9 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getCookie", function() { return getCookie; });
-var getCookie = function getCookie(name) {
-  if (document.cookie.length > 0) {
-    var cookieStart = document.cookie.indexOf("".concat(name, "="));
-
-    if (cookieStart !== -1) {
-      var valueStart = cookieStart + name.length + 1;
-      var cookieEnd = document.cookie.indexOf(';', valueStart);
-
-      if (cookieEnd === -1) {
-        cookieEnd = document.cookie.length;
-      }
-
-      var cookie = unescape(document.cookie.substring(valueStart, cookieEnd));
-
-      if (name === '_ga') {
-        var match = cookie.match(/(\d{2,11})\.(\d{2,11})/g);
-        return match ? match[0] : '';
-      }
-
-      return cookie;
-    }
-  }
-
-  return '';
 };
 
 /***/ })
