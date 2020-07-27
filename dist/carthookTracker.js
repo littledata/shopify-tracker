@@ -115,7 +115,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "loadGtagScript", function() { return loadGtagScript; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "initGtag", function() { return initGtag; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sendCartId", function() { return sendCartId; });
-/* harmony import */ var _common_getCookie__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(9);
+/* harmony import */ var _common_getCookie__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7);
 /* eslint-env browser */
 
 var getWebPropertyIdPromise = function getWebPropertyIdPromise() {
@@ -208,7 +208,8 @@ var getConfig = function getConfig() {
 var sendCartId = function sendCartId() {
   var baseUrl = getMonitorBaseUrl();
   var apiUrl = "".concat(baseUrl, "/clientID");
-  var clientID = Object(_common_getCookie__WEBPACK_IMPORTED_MODULE_0__["getCookie"])('_ga');
+  var gaCookie = Object(_common_getCookie__WEBPACK_IMPORTED_MODULE_0__["getCookie"])('_ga');
+  var clientID = Object(_common_getCookie__WEBPACK_IMPORTED_MODULE_0__["getValidGAClientId"])(gaCookie);
   if (!clientID) return;
   var data = {
     clientID: clientID,
@@ -232,12 +233,13 @@ function buildPostRequestParams(data) {
 
 /***/ }),
 
-/***/ 9:
+/***/ 7:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getCookie", function() { return getCookie; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getValidGAClientId", function() { return getValidGAClientId; });
 var getCookie = function getCookie(name) {
   if (document.cookie.length > 0) {
     var cookieStart = document.cookie.indexOf("".concat(name, "="));
@@ -251,17 +253,16 @@ var getCookie = function getCookie(name) {
       }
 
       var cookie = unescape(document.cookie.substring(valueStart, cookieEnd));
-
-      if (name === '_ga') {
-        var match = cookie.match(/(\d{2,11})\.(\d{2,11})/g);
-        return match ? match[0] : '';
-      }
-
       return cookie;
     }
   }
 
   return '';
+};
+var getValidGAClientId = function getValidGAClientId() {
+  var cookie = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+  var match = cookie.match(/(\d{2,11})\.(\d{2,11})/g);
+  return match && match[0];
 };
 
 /***/ })
