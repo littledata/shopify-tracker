@@ -91,7 +91,7 @@ interface PostAttributes {
 }
 const attributes: PostAttributes = {}; //persist any previous attributes sent from this page
 
-function postClientID(getClientId: () => string, platform: string) {
+function postClientID(getClientId: () => string, platform: string, sendCartToLittledata: boolean) {
 	const attribute = `${platform}-clientID`;
 	const clientID = getClientId();
 	if (typeof clientID !== 'string' || clientID.length === 0) return;
@@ -106,6 +106,9 @@ function postClientID(getClientId: () => string, platform: string) {
 		cartUpdateReq.onload = function() {
 			const updatedCart = JSON.parse(cartUpdateReq.response);
 			LittledataLayer.cart = updatedCart;
+			if (sendCartToLittledata) {
+				postCartToLittledata(updatedCart);
+			}
 			const clientIDReq = new XMLHttpRequest();
 			clientIDReq.open('POST', `${LittledataLayer.transactionWatcherURL}/v2/clientID/store`);
 			clientIDReq.setRequestHeader('Content-Type', 'application/json');
@@ -148,7 +151,7 @@ export function setClientID(getClientId: () => string, platform: 'google' | 'seg
 	) {
 		// set it on data layer, so subsequent setClientID call is ignored
 		LittledataLayer[clientIDProperty] = getClientId();
-		postClientID(getClientId, platform);
+		postClientID(getClientId, platform, false);
 	}
 
 	const updatedAt = cartAttributes.littledata_updatedAt;
@@ -159,10 +162,8 @@ export function setClientID(getClientId: () => string, platform: 'google' | 'seg
 		const timePassed = Date.now() - Number(clientIdCreated);
 		// only need to resend cart if it's expired from our Redis cache
 		if (timePassed > timeout) {
-			postCartToLittledata(cart);
-			setTimeout(() => {
-				postClientID(getClientId, platform);
-			}, 10000); // allow 10 seconds for our server to register cart until updating it, otherwise there's a race condition between storing and a webhook triggered by this
+			//cart from liquid has no client ID, so we need to fetch from API before storing
+			postClientID(getClientId, platform, true);
 		}
 	}
 }
