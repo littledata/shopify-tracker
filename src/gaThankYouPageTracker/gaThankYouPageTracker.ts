@@ -1,13 +1,13 @@
-import { getWebProperty } from './helpers';
+import { getProperties } from '../segmentThankYouPageTracker/helpers';
 
 (function () {
 	if (window.Shopify.Checkout && window.Shopify.Checkout.page === 'thank_you') {
 		const scriptSrc = document.currentScript.src;
-		const webPropertId = getWebProperty(scriptSrc);
+		const { webPropertyId } = getProperties(scriptSrc);
 
 		const script = document.createElement('script');
 		script.async = true;
-		const src = 'https://www.googletagmanager.com/gtag/js?id=' + webPropertId;
+		const src = 'https://www.googletagmanager.com/gtag/js?id=' + webPropertyId;
 		script.src = src;
 
 		document.getElementsByTagName('head')[0].appendChild(script);
@@ -21,13 +21,13 @@ import { getWebProperty } from './helpers';
 		// @ts-ignore
 		gtag('js', new Date());
 		// @ts-ignore
-		gtag('config', webPropertId);
+		gtag('config', webPropertyId);
 		// @ts-ignore
-		const transaction_total = window.Shopify.checkout.total_price;
+		const transaction_total = parseInt(window.Shopify.checkout.total_price);
 		// @ts-ignore
 		gtag('event', 'Checkout', {
 			event_category: 'Shopify (Littledata)',
-			event_label: 'Thank you',
+			event_label: 'Thank you page',
 			value: transaction_total,
 		});
 	}
