@@ -1,10 +1,10 @@
 import { getProperties } from './helpers';
 import { initSegment } from '../segmentTracker/helpers';
 
-(function () {
+(function() {
 	if (window.Shopify.Checkout && window.Shopify.Checkout.page === 'thank_you') {
 		const scriptSrc = document.currentScript.src;
-		const { webPropertyId, segmentProperty } = getProperties(scriptSrc);
+		const { webPropertyId } = getProperties(scriptSrc);
 
 		const script = document.createElement('script');
 		script.async = true;
@@ -16,7 +16,7 @@ import { initSegment } from '../segmentTracker/helpers';
 		initSegment();
 		// @ts-ignore
 		const checkout = window.Shopify.checkout;
-		const products = checkout.line_items.map((product) => {
+		const products = checkout.line_items.map(product => {
 			return {
 				brand: product.brand,
 				category: product.category,

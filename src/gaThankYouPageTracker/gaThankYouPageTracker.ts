@@ -1,6 +1,6 @@
 import { getProperties } from '../segmentThankYouPageTracker/helpers';
 
-(function () {
+(function() {
 	if (window.Shopify.Checkout && window.Shopify.Checkout.page === 'thank_you') {
 		const scriptSrc = document.currentScript.src;
 		const { webPropertyId } = getProperties(scriptSrc);
@@ -13,7 +13,7 @@ import { getProperties } from '../segmentThankYouPageTracker/helpers';
 		document.getElementsByTagName('head')[0].appendChild(script);
 
 		window.dataLayer = window.dataLayer || [];
-		const stubFunction = function () {
+		const stubFunction = function() {
 			dataLayer.push(arguments);
 		}; //eslint-disable-line
 		// @ts-ignore
