@@ -459,7 +459,7 @@ var setCartOnlyAttributes = function setCartOnlyAttributes(setAttributes) {
 };
 var attributes = {}; //persist any previous attributes sent from this page
 
-function postClientID(getClientId, platform) {
+function postClientID(getClientId, platform, sendCartToLittledata) {
   var attribute = "".concat(platform, "-clientID");
   var clientID = getClientId();
   if (typeof clientID !== 'string' || clientID.length === 0) return;
@@ -474,6 +474,11 @@ function postClientID(getClientId, platform) {
     cartUpdateReq.onload = function () {
       var updatedCart = JSON.parse(cartUpdateReq.response);
       LittledataLayer.cart = updatedCart;
+
+      if (sendCartToLittledata) {
+        postCartToLittledata(updatedCart);
+      }
+
       var clientIDReq = new XMLHttpRequest();
       clientIDReq.open('POST', "".concat(LittledataLayer.transactionWatcherURL, "/v2/clientID/store"));
       clientIDReq.setRequestHeader('Content-Type', 'application/json');
@@ -512,7 +517,7 @@ function setClientID(getClientId, platform) {
   ) {
       // set it on data layer, so subsequent setClientID call is ignored
       LittledataLayer[clientIDProperty] = getClientId();
-      postClientID(getClientId, platform);
+      postClientID(getClientId, platform, false);
     }
 
   var updatedAt = cartAttributes.littledata_updatedAt;
@@ -524,10 +529,8 @@ function setClientID(getClientId, platform) {
     var timePassed = Date.now() - Number(clientIdCreated); // only need to resend cart if it's expired from our Redis cache
 
     if (timePassed > timeout) {
-      postCartToLittledata(cart);
-      setTimeout(function () {
-        postClientID(getClientId, platform);
-      }, 10000); // allow 10 seconds for our server to register cart until updating it, otherwise there's a race condition between storing and a webhook triggered by this
+      //cart from LittledataLayer may have no token, so we need to fetch from API before storing
+      postClientID(getClientId, platform, true);
     }
   }
 }
