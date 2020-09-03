@@ -14,6 +14,7 @@ import { getProperties } from '../segmentThankYouPageTracker/helpers';
 
 		document.getElementsByTagName('head')[0].appendChild(script);
 
+		// @ts-ignore
 		window.dataLayer = window.dataLayer || [];
 		const stubFunction = function() {
 			dataLayer.push(arguments);
