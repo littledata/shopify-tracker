@@ -1,7 +1,9 @@
 import { getProperties } from '../segmentThankYouPageTracker/helpers';
 
 (function() {
+	// @ts-ignore
 	if (window.Shopify.Checkout && window.Shopify.Checkout.page === 'thank_you') {
+		// @ts-ignore
 		const scriptSrc = document.currentScript.src;
 		const { webPropertyId } = getProperties(scriptSrc);
 
