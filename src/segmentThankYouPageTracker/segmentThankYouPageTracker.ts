@@ -2,7 +2,9 @@ import { getProperties } from './helpers';
 import { initSegment } from '../segmentTracker/helpers';
 
 (function() {
+	// @ts-ignore
 	if (window.Shopify.Checkout && window.Shopify.Checkout.page === 'thank_you') {
+		// @ts-ignore
 		const scriptSrc = document.currentScript.src;
 		const { webPropertyId } = getProperties(scriptSrc);
 
@@ -16,6 +18,7 @@ import { initSegment } from '../segmentTracker/helpers';
 		initSegment();
 		// @ts-ignore
 		const checkout = window.Shopify.checkout;
+		// @ts-ignore
 		const products = checkout.line_items.map(product => {
 			return {
 				brand: product.brand,
