@@ -6,6 +6,8 @@ module.exports = {
 		gaTracker: './src/gaTracker/gaTracker.ts',
 		segmentTracker: './src/segmentTracker/segmentTracker.ts',
 		carthookTracker: './src/cartHookTracker/carthookTracker.ts',
+		segmentThankYouPageTracker: './src/segmentThankYouPageTracker.ts',
+		gaThankYouPageTracker: './src/gaThankYouPageTracker/gaThankYouPageTracker.ts',
 	},
 	module: {
 		rules: [
