@@ -112,22 +112,22 @@ declare global {
 		version?: string;
 		persistentUserId?: string;
 		customer?: Customer;
-		hideBranding: boolean;
+		hideBranding?: boolean;
 		writeKey?: string;
 		webPropertyID?: string;
-		referralExclusion: RegExp;
-		enhancePrivacy: boolean;
-		productClicks: boolean;
+		referralExclusion?: RegExp;
+		enhancePrivacy?: boolean;
+		productClicks?: boolean;
 		googleAdsConversionIds?: string[];
 		ecommerce: {
-			currencyCode: string;
+			currencyCode?: string;
 			impressions?: Impression[];
 			detail?: Detail;
 		};
-		transactionWatcherURL: string;
-		cart: Cart.RootObject;
-		anonymizeIp: boolean;
-		googleSignals: boolean;
+		transactionWatcherURL?: string;
+		cart?: Cart.RootObject;
+		anonymizeIp?: boolean;
+		googleSignals?: boolean;
 		optimizeId?: string;
 		productPageClicks?: boolean;
 		extraLinkerDomains?: string[];
@@ -135,6 +135,7 @@ declare global {
 		doNotTrackReplaceState?: boolean;
 		'google-clientID'?: string;
 		'segment-clientID'?: string;
+		MPEndpoint?: string;
 	}
 
 	var LittledataLayer: OwnLayer;
@@ -147,6 +148,7 @@ declare global {
 		gtag: Gtag.Gtag;
 		dataLayer: any[];
 		LittledataScriptVersion: string;
+		Shopify: LooseObject;
 	}
 
 	interface TimeBombHTMLAnchor extends HTMLAnchorElement {
