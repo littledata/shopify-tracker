@@ -6,7 +6,7 @@ import { initSegment } from '../segmentTracker/helpers';
 	if (window.Shopify.Checkout && window.Shopify.Checkout.page === 'thank_you') {
 		// @ts-ignore
 		const scriptSrc = document.currentScript.src;
-		const { webPropertyId } = getProperties(scriptSrc);
+		const { webPropertyId, segmentProperty } = getProperties(scriptSrc);
 
 		const script = document.createElement('script');
 		script.async = true;
@@ -15,7 +15,7 @@ import { initSegment } from '../segmentTracker/helpers';
 
 		document.getElementsByTagName('head')[0].appendChild(script);
 
-		initSegment();
+		initSegment(segmentProperty);
 		// @ts-ignore
 		const checkout = window.Shopify.checkout;
 		// @ts-ignore
