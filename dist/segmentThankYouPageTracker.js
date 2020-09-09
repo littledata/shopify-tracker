@@ -913,8 +913,9 @@ var trackEvents = function trackEvents() {
       });
     }
   }
-};
-var initSegment = function initSegment() {
+}; // @ts-ignore
+
+var initSegment = function initSegment(writeKey) {
   // @ts-ignore
   window.analytics = window.analytics || []; // @ts-ignore
 
@@ -961,7 +962,7 @@ var initSegment = function initSegment() {
 
       analytics.SNIPPET_VERSION = '4.1.0'; //eslint-disable-line
 
-      window.analytics.load(LittledataLayer.writeKey);
+      window.analytics.load(writeKey || LittledataLayer.writeKey);
     }
   }
 
@@ -1021,14 +1022,9 @@ __webpack_require__.r(__webpack_exports__);
     var scriptSrc = document.currentScript.src;
 
     var _getProperties = Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["getProperties"])(scriptSrc),
-        webPropertyId = _getProperties.webPropertyId;
+        segmentProperty = _getProperties.segmentProperty;
 
-    var script = document.createElement('script');
-    script.async = true;
-    var src = 'https://www.googletagmanager.com/gtag/js?id=' + webPropertyId;
-    script.src = src;
-    document.getElementsByTagName('head')[0].appendChild(script);
-    Object(_segmentTracker_helpers__WEBPACK_IMPORTED_MODULE_1__["initSegment"])(); // @ts-ignore
+    Object(_segmentTracker_helpers__WEBPACK_IMPORTED_MODULE_1__["initSegment"])(segmentProperty); // @ts-ignore
 
     var checkout = window.Shopify.checkout; // @ts-ignore
 
@@ -1074,10 +1070,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getProperties", function() { return getProperties; });
 var getProperties = function getProperties(scriptSrc) {
   var startIndexGa = scriptSrc.indexOf('webPropertyId=');
-  var endIndexGa = scriptSrc.indexOf('&', startIndexGa);
-  var webPropertyId = scriptSrc.substring(startIndexGa + 14, endIndexGa);
-  var startIndexSegment = scriptSrc.indexOf('segmentProperty=', endIndexGa);
-  var segmentProperty = scriptSrc.substring(startIndexSegment);
+  var webPropertyId = startIndexGa && scriptSrc.substring(startIndexGa + 14);
+  var startIndexSegment = scriptSrc.indexOf('segmentProperty=');
+  var segmentProperty = startIndexSegment && scriptSrc.substring(startIndexSegment + 16);
   return {
     webPropertyId: webPropertyId,
     segmentProperty: segmentProperty

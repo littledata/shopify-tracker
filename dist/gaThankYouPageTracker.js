@@ -94,10 +94,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getProperties", function() { return getProperties; });
 var getProperties = function getProperties(scriptSrc) {
   var startIndexGa = scriptSrc.indexOf('webPropertyId=');
-  var endIndexGa = scriptSrc.indexOf('&', startIndexGa);
-  var webPropertyId = scriptSrc.substring(startIndexGa + 14, endIndexGa);
-  var startIndexSegment = scriptSrc.indexOf('segmentProperty=', endIndexGa);
-  var segmentProperty = scriptSrc.substring(startIndexSegment);
+  var webPropertyId = startIndexGa && scriptSrc.substring(startIndexGa + 14);
+  var startIndexSegment = scriptSrc.indexOf('segmentProperty=');
+  var segmentProperty = startIndexSegment && scriptSrc.substring(startIndexSegment + 16);
   return {
     webPropertyId: webPropertyId,
     segmentProperty: segmentProperty

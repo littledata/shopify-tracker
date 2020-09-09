@@ -952,8 +952,9 @@ var trackEvents = function trackEvents() {
       });
     }
   }
-};
-var initSegment = function initSegment() {
+}; // @ts-ignore
+
+var initSegment = function initSegment(writeKey) {
   // @ts-ignore
   window.analytics = window.analytics || []; // @ts-ignore
 
@@ -1000,7 +1001,7 @@ var initSegment = function initSegment() {
 
       analytics.SNIPPET_VERSION = '4.1.0'; //eslint-disable-line
 
-      window.analytics.load(LittledataLayer.writeKey);
+      window.analytics.load(writeKey || LittledataLayer.writeKey);
     }
   }
 
