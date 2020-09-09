@@ -122,7 +122,7 @@ export const trackEvents = () => {
 };
 
 // @ts-ignore
-export const initSegment = writeKey => {
+export const initSegment = (writeKey?) => {
 	// @ts-ignore
 	window.analytics = window.analytics || [];
 	// @ts-ignore
