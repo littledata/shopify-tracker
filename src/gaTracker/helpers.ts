@@ -243,10 +243,10 @@ export const getConfig = (): Gtag.CustomParams => {
 		config.cookie_expires = 0;
 	}
 
-	if (LittledataLayer.MPEndpoint) {
-		const length = LittledataLayer.MPEndpoint.length;
+	const MPEndpointLength = LittledataLayer.MPEndpoint && LittledataLayer.MPEndpoint.length;
+	if (MPEndpointLength) {
 		// remove '/collect' from end, since it is added by gtag
-		config.transport_url = LittledataLayer.MPEndpoint.slice(0, length - '/collect'.length);
+		config.transport_url = LittledataLayer.MPEndpoint.slice(0, MPEndpointLength - '/collect'.length);
 	}
 
 	return config;
