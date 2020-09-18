@@ -228,13 +228,14 @@ export const getConfig = (): Gtag.CustomParams => {
 		'recurringcheckout.com',
 		'carthook.com',
 		'checkout.com',
+		'shop.app',
 	];
 	const extraLinkerDomains = LittledataLayer.extraLinkerDomains || [];
 
-	let excludeReferal = referralExclusion.test(document.referrer);
+	let excludeReferral = referralExclusion.test(document.referrer);
 	const extraExcludedReferrers = ['shop.app'];
 	if (extraExcludedReferrers.includes(document.referrer)) {
-		excludeReferal = true;
+		excludeReferral = true;
 	}
 
 	const config: Gtag.CustomParams = {
@@ -246,7 +247,7 @@ export const getConfig = (): Gtag.CustomParams => {
 		currency: ecommerce.currencyCode,
 		link_attribution: true,
 		optimize_id: optimizeId,
-		page_referrer: excludeReferal ? document.referrer : null,
+		page_referrer: excludeReferral ? document.referrer : null,
 		send_page_view: false,
 		user_id: userId,
 	};
