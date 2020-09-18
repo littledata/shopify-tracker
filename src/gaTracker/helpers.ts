@@ -56,7 +56,7 @@ function waitForGaToLoad() {
 export const sendPageview = () => {
 	const page_title = removePii(document.title);
 	const locationWithMedium = addUTMMediumIfMissing(document.location.href);
-	const page_location = removePii(document.location.href);
+	const page_location = removePii(locationWithMedium);
 
 	gtag('config', LittledataLayer.webPropertyID, {
 		page_title,
