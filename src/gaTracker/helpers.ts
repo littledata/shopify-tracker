@@ -55,6 +55,7 @@ function waitForGaToLoad() {
 
 export const sendPageview = () => {
 	const page_title = removePii(document.title);
+	const locationWithMedium = addUTMMediumIfMissing(document.location.href);
 	const page_location = removePii(document.location.href);
 
 	gtag('config', LittledataLayer.webPropertyID, {
@@ -258,4 +259,19 @@ export const getConfig = (): Gtag.CustomParams => {
 	}
 
 	return config;
+};
+
+const addUTMMediumIfMissing = (url: string) => {
+	const utmMedium = /(\?|&)utm_medium=/;
+	const utmSource = /utm_source=[a-z,A-Z,0-9,-,_]+/;
+	const sourceMatches = url.match(utmSource);
+	if (!sourceMatches || !sourceMatches.length || utmMedium.test(url)) {
+		return url;
+	}
+	// Shopify adds a utm_source tag for it's own tracking, without specifying utm_medium
+	// we add 'referral' to ensure it shows up in GA
+	const sourceTag = sourceMatches[0];
+	const utmTags = sourceTag + '&utm_medium=referral';
+
+	return url.replace(sourceTag, utmTags);
 };
