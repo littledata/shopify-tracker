@@ -344,6 +344,12 @@ var getConfig = function getConfig() {
   var DEFAULT_LINKER_DOMAINS = ['^(?!cdn.)(.*)shopify.com', 'rechargeapps.com', 'recurringcheckout.com', 'carthook.com', 'checkout.com'];
   var extraLinkerDomains = LittledataLayer.extraLinkerDomains || [];
   var excludeReferal = referralExclusion.test(document.referrer);
+  var extraExcludedReferrers = ['shop.app'];
+
+  if (extraExcludedReferrers.includes(document.referrer)) {
+    excludeReferal = true;
+  }
+
   var config = {
     linker: {
       domains: [].concat(DEFAULT_LINKER_DOMAINS, _toConsumableArray(extraLinkerDomains))
