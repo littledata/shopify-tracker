@@ -199,7 +199,7 @@ function initGtag(webPropertyId) {
 var getConfig = function getConfig() {
   var config = {
     linker: {
-      domains: ['shopify.com', 'rechargeapps.com', 'recurringcheckout.com', 'carthook.com', 'checkout.com']
+      domains: ['shopify.com', 'rechargeapps.com', 'recurringcheckout.com', 'carthook.com', 'checkout.com', 'shop.app']
     }
   };
   return config;

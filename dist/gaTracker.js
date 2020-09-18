@@ -342,13 +342,13 @@ var getConfig = function getConfig() {
       optimizeId = _LittledataLayer.optimizeId,
       referralExclusion = _LittledataLayer.referralExclusion;
   var userId = LittledataLayer.customer && LittledataLayer.customer.id;
-  var DEFAULT_LINKER_DOMAINS = ['^(?!cdn.)(.*)shopify.com', 'rechargeapps.com', 'recurringcheckout.com', 'carthook.com', 'checkout.com'];
+  var DEFAULT_LINKER_DOMAINS = ['^(?!cdn.)(.*)shopify.com', 'rechargeapps.com', 'recurringcheckout.com', 'carthook.com', 'checkout.com', 'shop.app'];
   var extraLinkerDomains = LittledataLayer.extraLinkerDomains || [];
-  var excludeReferal = referralExclusion.test(document.referrer);
+  var excludeReferral = referralExclusion.test(document.referrer);
   var extraExcludedReferrers = ['shop.app'];
 
   if (extraExcludedReferrers.includes(document.referrer)) {
-    excludeReferal = true;
+    excludeReferral = true;
   }
 
   var config = {
@@ -360,7 +360,7 @@ var getConfig = function getConfig() {
     currency: ecommerce.currencyCode,
     link_attribution: true,
     optimize_id: optimizeId,
-    page_referrer: excludeReferal ? document.referrer : null,
+    page_referrer: excludeReferral ? document.referrer : null,
     send_page_view: false,
     user_id: userId
   };
