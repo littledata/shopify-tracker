@@ -186,6 +186,7 @@ function waitForGaToLoad() {
 
 var sendPageview = function sendPageview() {
   var page_title = Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["removePii"])(document.title);
+  var locationWithMedium = addUTMMediumIfMissing(document.location.href);
   var page_location = Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["removePii"])(document.location.href);
   gtag('config', LittledataLayer.webPropertyID, {
     page_title: page_title,
@@ -372,6 +373,22 @@ var getConfig = function getConfig() {
   }
 
   return config;
+};
+
+var addUTMMediumIfMissing = function addUTMMediumIfMissing(url) {
+  var utmMedium = /(\?|&)utm_medium=/;
+  var utmSource = /utm_source=[a-z,A-Z,0-9,-,_]+/;
+  var sourceMatches = url.match(utmSource);
+
+  if (!sourceMatches || !sourceMatches.length || utmMedium.test(url)) {
+    return url;
+  } // Shopify adds a utm_source tag for it's own tracking, without specifying utm_medium
+  // we add 'referral' to ensure it shows up in GA
+
+
+  var sourceTag = sourceMatches[0];
+  var utmTags = sourceTag + '&utm_medium=referral';
+  return url.replace(sourceTag, utmTags);
 };
 
 /***/ }),
@@ -609,7 +626,7 @@ var trackSocialShares = function trackSocialShares(clickTag) {
   });
 };
 var validateLittledataLayer = function validateLittledataLayer() {
-  window.LittledataScriptVersion = '8.8';
+  window.LittledataScriptVersion = '8.9';
 
   if (!window.LittledataLayer) {
     throw new Error('Aborting Littledata tracking as LittledataLayer was not found');
