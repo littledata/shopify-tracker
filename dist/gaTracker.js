@@ -187,7 +187,7 @@ function waitForGaToLoad() {
 var sendPageview = function sendPageview() {
   var page_title = Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["removePii"])(document.title);
   var locationWithMedium = addUTMMediumIfMissing(document.location.href);
-  var page_location = Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["removePii"])(document.location.href);
+  var page_location = Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["removePii"])(locationWithMedium);
   gtag('config', LittledataLayer.webPropertyID, {
     page_title: page_title,
     page_location: page_location
