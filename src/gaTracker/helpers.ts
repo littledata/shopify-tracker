@@ -55,7 +55,8 @@ function waitForGaToLoad() {
 
 export const sendPageview = () => {
 	const page_title = removePii(document.title);
-	const page_location = removePii(document.location.href);
+	const locationWithMedium = addUTMMediumIfMissing(document.location.href);
+	const page_location = removePii(locationWithMedium);
 
 	gtag('config', LittledataLayer.webPropertyID, {
 		page_title,
@@ -227,10 +228,16 @@ export const getConfig = (): Gtag.CustomParams => {
 		'recurringcheckout.com',
 		'carthook.com',
 		'checkout.com',
+		'shop.app',
 	];
-
 	const extraLinkerDomains = LittledataLayer.extraLinkerDomains || [];
-	const excludeReferal = referralExclusion.test(document.referrer);
+
+	let excludeReferral = referralExclusion.test(document.referrer);
+	const extraExcludedReferrers = ['shop.app'];
+	if (extraExcludedReferrers.includes(document.referrer)) {
+		excludeReferral = true;
+	}
+
 	const config: Gtag.CustomParams = {
 		linker: {
 			domains: [...DEFAULT_LINKER_DOMAINS, ...extraLinkerDomains],
@@ -240,7 +247,7 @@ export const getConfig = (): Gtag.CustomParams => {
 		currency: ecommerce.currencyCode,
 		link_attribution: true,
 		optimize_id: optimizeId,
-		page_referrer: excludeReferal ? document.referrer : null,
+		page_referrer: excludeReferral ? document.referrer : null,
 		send_page_view: false,
 		user_id: userId,
 	};
@@ -253,4 +260,19 @@ export const getConfig = (): Gtag.CustomParams => {
 	}
 
 	return config;
+};
+
+const addUTMMediumIfMissing = (url: string) => {
+	const utmMedium = /(\?|&)utm_medium=/;
+	const utmSource = /utm_source=[a-z,A-Z,0-9,-,_]+/;
+	const sourceMatches = url.match(utmSource);
+	if (!sourceMatches || !sourceMatches.length || utmMedium.test(url)) {
+		return url;
+	}
+	// Shopify adds a utm_source tag for it's own tracking, without specifying utm_medium
+	// we add 'referral' to ensure it shows up in GA
+	const sourceTag = sourceMatches[0];
+	const utmTags = sourceTag + '&utm_medium=referral';
+
+	return url.replace(sourceTag, utmTags);
 };
