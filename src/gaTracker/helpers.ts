@@ -228,9 +228,14 @@ export const getConfig = (): Gtag.CustomParams => {
 		'carthook.com',
 		'checkout.com',
 	];
-
 	const extraLinkerDomains = LittledataLayer.extraLinkerDomains || [];
-	const excludeReferal = referralExclusion.test(document.referrer);
+
+	let excludeReferal = referralExclusion.test(document.referrer);
+	const extraExcludedReferrers = ['shop.app'];
+	if (extraExcludedReferrers.includes(document.referrer)) {
+		excludeReferal = true;
+	}
+
 	const config: Gtag.CustomParams = {
 		linker: {
 			domains: [...DEFAULT_LINKER_DOMAINS, ...extraLinkerDomains],
