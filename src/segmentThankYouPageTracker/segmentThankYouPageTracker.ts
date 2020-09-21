@@ -8,6 +8,10 @@ import { initSegment } from '../segmentTracker/helpers';
 		const scriptSrc = document.currentScript.src;
 		const { segmentProperty } = getProperties(scriptSrc);
 
+		if (!segmentProperty) {
+			throw new Error('Could not add segment thank you page script beacuse of missing segmentProperty');
+		}
+
 		initSegment(segmentProperty);
 		// @ts-ignore
 		const checkout = window.Shopify.checkout;
