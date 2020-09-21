@@ -7,6 +7,10 @@ import { getProperties } from '../segmentThankYouPageTracker/helpers';
 		const scriptSrc = document.currentScript.src;
 		const { webPropertyId } = getProperties(scriptSrc);
 
+		if (!webPropertyId) {
+			throw new Error('Could not add ga thank you page script beacuse of missing webPropertyId');
+		}
+
 		const script = document.createElement('script');
 		script.async = true;
 		const src = 'https://www.googletagmanager.com/gtag/js?id=' + webPropertyId;
