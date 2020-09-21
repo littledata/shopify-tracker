@@ -1024,6 +1024,10 @@ __webpack_require__.r(__webpack_exports__);
     var _getProperties = Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["getProperties"])(scriptSrc),
         segmentProperty = _getProperties.segmentProperty;
 
+    if (!segmentProperty) {
+      throw new Error('Could not add segment thank you page script beacuse of missing segmentProperty');
+    }
+
     Object(_segmentTracker_helpers__WEBPACK_IMPORTED_MODULE_1__["initSegment"])(segmentProperty); // @ts-ignore
 
     var checkout = window.Shopify.checkout; // @ts-ignore

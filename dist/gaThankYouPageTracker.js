@@ -124,6 +124,10 @@ __webpack_require__.r(__webpack_exports__);
     var _getProperties = Object(_segmentThankYouPageTracker_helpers__WEBPACK_IMPORTED_MODULE_0__["getProperties"])(scriptSrc),
         webPropertyId = _getProperties.webPropertyId;
 
+    if (!webPropertyId) {
+      throw new Error('Could not add ga thank you page script beacuse of missing webPropertyId');
+    }
+
     var script = document.createElement('script');
     script.async = true;
     var src = 'https://www.googletagmanager.com/gtag/js?id=' + webPropertyId;
