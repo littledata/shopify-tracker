@@ -31,13 +31,21 @@ import { initSegment } from '../segmentTracker/helpers';
 		});
 
 		// @ts-ignore
-		analytics.track('Thank you', {
+		const orderNumberHTML = document.getElementsByClassName('os-order-number')[0].innerHTML;
+		if (!orderNumberHTML) {
+			throw new Error('Could not add segment thank you page script beacuse of missing order number in HTML');
+		}
+		const indexOfNumber = orderNumberHTML.indexOf('#');
+		const orderNumber = orderNumberHTML.substring(indexOfNumber + 1).trim();
+
+		// @ts-ignore
+		analytics.track('Thank you page', {
 			properties: {
 				coupon: checkout.coupon,
 				currency: checkout.currency,
 				discount: checkout.discount,
 				email: checkout.email,
-				order_id: checkout.order_id,
+				order_id: orderNumber,
 				presentment_currency: checkout.presentment_currency,
 				presentment_total:
 					checkout.total_price_set &&
