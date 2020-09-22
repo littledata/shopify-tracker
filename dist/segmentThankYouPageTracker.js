@@ -963,6 +963,7 @@ var initSegment = function initSegment(writeKey) {
       analytics.SNIPPET_VERSION = '4.1.0'; //eslint-disable-line
 
       window.analytics.load(writeKey || LittledataLayer.writeKey);
+      writeKey && window.analytics.page();
     }
   }
 
@@ -1046,13 +1047,22 @@ __webpack_require__.r(__webpack_exports__);
       };
     }); // @ts-ignore
 
-    analytics.track('Thank you', {
+    var orderNumberHTML = document.getElementsByClassName('os-order-number')[0].innerHTML;
+
+    if (!orderNumberHTML) {
+      throw new Error('Could not add segment thank you page script beacuse of missing order number in HTML');
+    }
+
+    var indexOfNumber = orderNumberHTML.indexOf('#');
+    var orderNumber = orderNumberHTML.substring(indexOfNumber + 1).trim(); // @ts-ignore
+
+    analytics.track('Thank you page', {
       properties: {
         coupon: checkout.coupon,
         currency: checkout.currency,
         discount: checkout.discount,
         email: checkout.email,
-        order_id: checkout.order_id,
+        order_id: orderNumber,
         presentment_currency: checkout.presentment_currency,
         presentment_total: checkout.total_price_set && checkout.total_price_set.presentment_money && checkout.total_price_set.presentment_money.amount,
         products: products,

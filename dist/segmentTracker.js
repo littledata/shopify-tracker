@@ -1002,6 +1002,7 @@ var initSegment = function initSegment(writeKey) {
       analytics.SNIPPET_VERSION = '4.1.0'; //eslint-disable-line
 
       window.analytics.load(writeKey || LittledataLayer.writeKey);
+      writeKey && window.analytics.page();
     }
   }
 
