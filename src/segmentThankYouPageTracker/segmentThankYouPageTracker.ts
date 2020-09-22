@@ -18,15 +18,15 @@ import { initSegment } from '../segmentTracker/helpers';
 		// @ts-ignore
 		const products = checkout.line_items.map(product => {
 			return {
-				brand: product.brand,
+				brand: product.vendor,
 				category: product.category,
 				url: product.handle,
-				product_id: product.id,
-				sku: product.id,
+				product_id: product.sku,
 				position: product.list_position,
-				name: product.name,
+				name: product.title,
 				price: parseFloat(product.price),
-				variant: product.variant,
+				variant: product.variant_title,
+				quantity: product.quantity,
 			};
 		});
 
