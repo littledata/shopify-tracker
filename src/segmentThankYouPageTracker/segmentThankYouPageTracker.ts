@@ -8,32 +8,44 @@ import { initSegment } from '../segmentTracker/helpers';
 		const scriptSrc = document.currentScript.src;
 		const { segmentProperty } = getProperties(scriptSrc);
 
+		if (!segmentProperty) {
+			throw new Error('Could not add segment thank you page script beacuse of missing segmentProperty');
+		}
+
 		initSegment(segmentProperty);
 		// @ts-ignore
 		const checkout = window.Shopify.checkout;
 		// @ts-ignore
 		const products = checkout.line_items.map(product => {
 			return {
-				brand: product.brand,
+				brand: product.vendor,
 				category: product.category,
 				url: product.handle,
-				product_id: product.id,
-				sku: product.id,
+				product_id: product.sku,
 				position: product.list_position,
-				name: product.name,
+				name: product.title,
 				price: parseFloat(product.price),
-				variant: product.variant,
+				variant: product.variant_title,
+				quantity: product.quantity,
 			};
 		});
 
 		// @ts-ignore
-		analytics.track('Thank you', {
+		const orderNumberHTML = document.getElementsByClassName('os-order-number')[0].innerHTML;
+		if (!orderNumberHTML) {
+			throw new Error('Could not add segment thank you page script beacuse of missing order number in HTML');
+		}
+		const indexOfNumber = orderNumberHTML.indexOf('#');
+		const orderNumber = orderNumberHTML.substring(indexOfNumber + 1).trim();
+
+		// @ts-ignore
+		analytics.track('Thank you page', {
 			properties: {
 				coupon: checkout.coupon,
 				currency: checkout.currency,
 				discount: checkout.discount,
 				email: checkout.email,
-				order_id: checkout.order_id,
+				order_id: orderNumber,
 				presentment_currency: checkout.presentment_currency,
 				presentment_total:
 					checkout.total_price_set &&
