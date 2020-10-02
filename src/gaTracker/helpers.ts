@@ -22,15 +22,6 @@ export const initGtag = () => {
 	// @ts-ignore
 	gtag('js', new Date());
 	gtag('config', LittledataLayer.webPropertyID, getConfig());
-	if (LittledataLayer.MPEndpoint) {
-		const length = LittledataLayer.MPEndpoint.length;
-		// remove '/collect' from end, since it is added by gtag
-		const transport_url = LittledataLayer.MPEndpoint.slice(0, length - '/collect'.length);
-		gtag('config', 'CUSTOM-ENDPOINT', {
-			...getConfig(),
-			transport_url,
-		});
-	}
 };
 
 let postClientIdTimeout: any;
@@ -257,6 +248,12 @@ export const getConfig = (): Gtag.CustomParams => {
 		//expiring the cookie after this session ensures invalid clientID
 		//is not propagated to future sessions
 		config.cookie_expires = 0;
+	}
+
+	const MPEndpointLength = LittledataLayer.MPEndpoint && LittledataLayer.MPEndpoint.length;
+	if (MPEndpointLength) {
+		// remove '/collect' from end, since it is added by gtag
+		config.transport_url = LittledataLayer.MPEndpoint.slice(0, MPEndpointLength - '/collect'.length);
 	}
 
 	return config;
