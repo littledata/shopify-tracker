@@ -93,3 +93,9 @@ Default: `undefined` (boolean)
 Grab the values from an array of named cookies and pass them as traits on Segment identify calls.
 
 Example: `['iterableEmailCampaignId]` (array)
+
+**MPEndpoint**
+
+If you wish to direct the Measurement Protocol hits to a custom collection endpoint of your choosing, add it here. **NOTE**: this will block the sending of hits to Google Analytics.
+
+Example: `https://collector.littledata.io/collect` (string)
