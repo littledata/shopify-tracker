@@ -10,6 +10,7 @@ import {
 import productListViews from '../common/productListViews';
 import getProductDetail from '../common/getProductDetail';
 import { getCookie, getValidGAClientId } from '../common/getCookie';
+import { customTask } from './customTask';
 
 const event_category = 'Shopify (Littledata)';
 
@@ -22,15 +23,27 @@ export const initGtag = () => {
 	// @ts-ignore
 	gtag('js', new Date());
 	gtag('config', LittledataLayer.webPropertyID, getConfig());
+
+	window.ga =
+		window.ga ||
+		function() {
+			(window.ga.q = window.ga.q || []).push(arguments);
+		};
+	window.ga.l = +new Date();
+	window.ga(() => {
+		// we need to wait for GA library (part of gtag)
+		waitForGaToLoad();
+	});
 };
 
 let postClientIdTimeout: any;
-let nextTimeout = 500; // half a second
+let nextTimeout = 250;
 const maximumTimeout = 524288000; // about 6 hours in seconds
 
 function waitForGaToLoad() {
 	const trackers = window.ga && window.ga.getAll();
 	if (trackers && trackers.length) {
+		setCustomTask(trackers[0]);
 		return setClientID(getGtagClientId, 'google');
 	}
 
@@ -63,17 +76,6 @@ export const sendPageview = () => {
 	if (typeof googleAds === 'object' && googleAds.length > 0) {
 		googleAds.forEach(adId => gtag('config', adId));
 	}
-
-	window.ga =
-		window.ga ||
-		function() {
-			(window.ga.q = window.ga.q || []).push(arguments);
-		};
-	window.ga.l = +new Date();
-	window.ga(() => {
-		// we need to wait for GA library (part of gtag)
-		waitForGaToLoad();
-	});
 
 	const product = getProductDetail();
 	if (product) {
@@ -243,11 +245,12 @@ export const getConfig = (): Gtag.CustomParams => {
 		config.cookie_expires = 0;
 	}
 
+	return config;
+};
+
+const setCustomTask = (tracker: LooseObject) => {
 	const MPEndpointLength = LittledataLayer.MPEndpoint && LittledataLayer.MPEndpoint.length;
 	if (MPEndpointLength) {
-		// remove '/collect' from end, since it is added by gtag
-		config.transport_url = LittledataLayer.MPEndpoint.slice(0, MPEndpointLength - '/collect'.length);
+		tracker.set('customTask', customTask(LittledataLayer.MPEndpoint));
 	}
-
-	return config;
 };
