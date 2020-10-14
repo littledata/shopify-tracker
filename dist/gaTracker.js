@@ -328,15 +328,14 @@ var filterGAProductFields = function filterGAProductFields(product) {
   return gaProduct;
 };
 var getConfig = function getConfig() {
-  var _LittledataLayer = LittledataLayer,
-      anonymizeIp = _LittledataLayer.anonymizeIp,
-      googleSignals = _LittledataLayer.googleSignals,
-      ecommerce = _LittledataLayer.ecommerce,
-      optimizeId = _LittledataLayer.optimizeId,
-      referralExclusion = _LittledataLayer.referralExclusion;
-  var userId = LittledataLayer.customer && LittledataLayer.customer.id;
+  var settings = LittledataLayer || {};
+  var anonymizeIp = settings.anonymizeIp,
+      googleSignals = settings.googleSignals,
+      ecommerce = settings.ecommerce,
+      optimizeId = settings.optimizeId,
+      referralExclusion = settings.referralExclusion;
   var DEFAULT_LINKER_DOMAINS = ['^(?!cdn.)(.*)shopify.com', 'rechargeapps.com', 'recurringcheckout.com', 'carthook.com', 'checkout.com', 'shop.app'];
-  var extraLinkerDomains = LittledataLayer.extraLinkerDomains || [];
+  var extraLinkerDomains = settings.extraLinkerDomains || [];
   var excludeReferral = referralExclusion.test(document.referrer);
   var extraExcludedReferrers = ['shop.app'];
 
@@ -348,14 +347,19 @@ var getConfig = function getConfig() {
     linker: {
       domains: [].concat(DEFAULT_LINKER_DOMAINS, _toConsumableArray(extraLinkerDomains))
     },
-    anonymize_ip: !!anonymizeIp,
-    allow_ad_personalization_signals: !!googleSignals,
-    currency: ecommerce.currencyCode,
+    anonymize_ip: anonymizeIp === false ? false : true,
+    allow_ad_personalization_signals: googleSignals === true ? true : false,
+    currency: ecommerce && ecommerce.currencyCode || 'USD',
     link_attribution: true,
     optimize_id: optimizeId,
-    page_referrer: excludeReferral ? document.referrer : null,
-    user_id: userId
+    page_referrer: excludeReferral ? document.referrer : null
   };
+  var userId = settings.customer && settings.customer.id;
+
+  if (userId) {
+    config.user_id = userId;
+  }
+
   var cookie = Object(_common_getCookie__WEBPACK_IMPORTED_MODULE_3__["getCookie"])('_ga');
 
   if (cookie && !Object(_common_getCookie__WEBPACK_IMPORTED_MODULE_3__["getValidGAClientId"])(cookie)) {
@@ -364,11 +368,11 @@ var getConfig = function getConfig() {
     config.cookie_expires = 0;
   }
 
-  var MPEndpointLength = LittledataLayer.MPEndpoint && LittledataLayer.MPEndpoint.length;
+  var MPEndpointLength = settings.MPEndpoint && settings.MPEndpoint.length;
 
   if (MPEndpointLength) {
     // remove '/collect' from end, since it is added by gtag
-    config.transport_url = LittledataLayer.MPEndpoint.slice(0, MPEndpointLength - '/collect'.length);
+    config.transport_url = settings.MPEndpoint.slice(0, MPEndpointLength - '/collect'.length);
   }
 
   return config;
