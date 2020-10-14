@@ -21,7 +21,10 @@ export const initGtag = () => {
 	window.gtag = window.gtag || stubFunction;
 	// @ts-ignore
 	gtag('js', new Date());
-	gtag('config', LittledataLayer.webPropertyID, getConfig());
+	gtag('config', LittledataLayer.webPropertyID, {
+		...getConfig(),
+		send_page_view: false,
+	});
 };
 
 let postClientIdTimeout: any;
@@ -50,6 +53,7 @@ export const sendPageview = () => {
 	const page_location = removePii(locationWithMedium);
 
 	gtag('config', LittledataLayer.webPropertyID, {
+		...getConfig(),
 		page_title,
 		page_location,
 	});
@@ -239,7 +243,6 @@ export const getConfig = (): Gtag.CustomParams => {
 		link_attribution: true,
 		optimize_id: optimizeId,
 		page_referrer: excludeReferral ? document.referrer : null,
-		send_page_view: false,
 		user_id: userId,
 	};
 
