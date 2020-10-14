@@ -130,6 +130,12 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 
 
 
@@ -146,7 +152,9 @@ var initGtag = function initGtag() {
   window.gtag = window.gtag || stubFunction; // @ts-ignore
 
   gtag('js', new Date());
-  gtag('config', LittledataLayer.webPropertyID, getConfig());
+  gtag('config', LittledataLayer.webPropertyID, _objectSpread({}, getConfig(), {
+    send_page_view: false
+  }));
 };
 var postClientIdTimeout;
 var nextTimeout = 500; // half a second
@@ -173,10 +181,10 @@ var sendPageview = function sendPageview() {
   var page_title = Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["removePii"])(document.title);
   var locationWithMedium = addUTMMediumIfMissing(document.location.href);
   var page_location = Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["removePii"])(locationWithMedium);
-  gtag('config', LittledataLayer.webPropertyID, {
+  gtag('config', LittledataLayer.webPropertyID, _objectSpread({}, getConfig(), {
     page_title: page_title,
     page_location: page_location
-  });
+  }));
   dataLayer.push({
     event: 'pageview',
     page_title: page_title,
@@ -346,7 +354,6 @@ var getConfig = function getConfig() {
     link_attribution: true,
     optimize_id: optimizeId,
     page_referrer: excludeReferral ? document.referrer : null,
-    send_page_view: false,
     user_id: userId
   };
   var cookie = Object(_common_getCookie__WEBPACK_IMPORTED_MODULE_3__["getCookie"])('_ga');
