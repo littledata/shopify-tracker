@@ -1054,7 +1054,7 @@ __webpack_require__.r(__webpack_exports__);
     }
 
     var indexOfNumber = orderNumberHTML.indexOf('#');
-    var orderNumber = orderNumberHTML.substring(indexOfNumber + 1).trim(); // @ts-ignore
+    var orderNumber = orderNumberHTML.substring(indexOfNumber).trim(); // @ts-ignore
 
     analytics.track('Thank you page', {
       properties: {
