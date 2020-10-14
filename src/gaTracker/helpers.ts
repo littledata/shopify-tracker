@@ -214,8 +214,8 @@ export const filterGAProductFields = (product: LooseObject) => {
 };
 
 export const getConfig = (): Gtag.CustomParams => {
-	const { anonymizeIp, googleSignals, ecommerce, optimizeId, referralExclusion } = LittledataLayer;
-	const userId = LittledataLayer.customer && LittledataLayer.customer.id;
+	const settings = LittledataLayer || {}
+	const { anonymizeIp, googleSignals, ecommerce, optimizeId, referralExclusion } = settings;
 
 	const DEFAULT_LINKER_DOMAINS = [
 		'^(?!cdn.)(.*)shopify.com',
@@ -225,7 +225,7 @@ export const getConfig = (): Gtag.CustomParams => {
 		'checkout.com',
 		'shop.app',
 	];
-	const extraLinkerDomains = LittledataLayer.extraLinkerDomains || [];
+	const extraLinkerDomains = settings.extraLinkerDomains || [];
 
 	let excludeReferral = referralExclusion.test(document.referrer);
 	const extraExcludedReferrers = ['shop.app'];
@@ -237,14 +237,18 @@ export const getConfig = (): Gtag.CustomParams => {
 		linker: {
 			domains: [...DEFAULT_LINKER_DOMAINS, ...extraLinkerDomains],
 		},
-		anonymize_ip: !!anonymizeIp,
-		allow_ad_personalization_signals: !!googleSignals,
-		currency: ecommerce.currencyCode,
+		anonymize_ip: anonymizeIp === false ? false : true,
+		allow_ad_personalization_signals: googleSignals === false ? false : true,
+		currency: ecommerce && ecommerce.currencyCode,
 		link_attribution: true,
 		optimize_id: optimizeId,
 		page_referrer: excludeReferral ? document.referrer : null,
-		user_id: userId,
 	};
+
+	const userId = settings.customer && settings.customer.id;
+	if (userId) {
+		config.user_id = userId
+	}
 
 	const cookie = getCookie('_ga');
 	if (cookie && !getValidGAClientId(cookie)) {
@@ -253,10 +257,10 @@ export const getConfig = (): Gtag.CustomParams => {
 		config.cookie_expires = 0;
 	}
 
-	const MPEndpointLength = LittledataLayer.MPEndpoint && LittledataLayer.MPEndpoint.length;
+	const MPEndpointLength = settings.MPEndpoint && settings.MPEndpoint.length;
 	if (MPEndpointLength) {
 		// remove '/collect' from end, since it is added by gtag
-		config.transport_url = LittledataLayer.MPEndpoint.slice(0, MPEndpointLength - '/collect'.length);
+		config.transport_url = settings.MPEndpoint.slice(0, MPEndpointLength - '/collect'.length);
 	}
 
 	return config;
