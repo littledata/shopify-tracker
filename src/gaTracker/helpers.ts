@@ -214,7 +214,7 @@ export const filterGAProductFields = (product: LooseObject) => {
 };
 
 export const getConfig = (): Gtag.CustomParams => {
-	const settings = LittledataLayer || {}
+	const settings: LooseObject = LittledataLayer || {};
 	const { anonymizeIp, googleSignals, ecommerce, optimizeId, referralExclusion } = settings;
 
 	const DEFAULT_LINKER_DOMAINS = [
@@ -247,7 +247,7 @@ export const getConfig = (): Gtag.CustomParams => {
 
 	const userId = settings.customer && settings.customer.id;
 	if (userId) {
-		config.user_id = userId
+		config.user_id = userId;
 	}
 
 	const cookie = getCookie('_ga');
