@@ -237,9 +237,9 @@ export const getConfig = (): Gtag.CustomParams => {
 		linker: {
 			domains: [...DEFAULT_LINKER_DOMAINS, ...extraLinkerDomains],
 		},
-		anonymize_ip: anonymizeIp === false ? false : true,
-		allow_ad_personalization_signals: googleSignals === false ? false : true,
-		currency: ecommerce && ecommerce.currencyCode,
+		anonymize_ip: anonymizeIp === false ? false : true, //default true
+		allow_ad_personalization_signals: googleSignals === true ? true : false, //default false
+		currency: (ecommerce && ecommerce.currencyCode) || 'USD',
 		link_attribution: true,
 		optimize_id: optimizeId,
 		page_referrer: excludeReferral ? document.referrer : null,
