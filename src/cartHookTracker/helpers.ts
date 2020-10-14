@@ -82,7 +82,14 @@ export function initGtag(webPropertyId: string): void {
 const getConfig = (): Gtag.CustomParams => {
 	const config: Gtag.CustomParams = {
 		linker: {
-			domains: ['shopify.com', 'rechargeapps.com', 'recurringcheckout.com', 'carthook.com', 'checkout.com'],
+			domains: [
+				'shopify.com',
+				'rechargeapps.com',
+				'recurringcheckout.com',
+				'carthook.com',
+				'checkout.com',
+				'shop.app',
+			],
 		},
 	};
 

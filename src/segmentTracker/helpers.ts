@@ -127,7 +127,8 @@ export const trackEvents = () => {
 	}
 };
 
-export const initSegment = () => {
+// @ts-ignore
+export const initSegment = (writeKey?) => {
 	// @ts-ignore
 	window.analytics = window.analytics || [];
 	// @ts-ignore
@@ -187,7 +188,8 @@ export const initSegment = () => {
 			};
 			// @ts-ignore
 			analytics.SNIPPET_VERSION = '4.1.0'; //eslint-disable-line
-			window.analytics.load(LittledataLayer.writeKey);
+			window.analytics.load(writeKey || LittledataLayer.writeKey);
+			writeKey && window.analytics.page();
 		}
 	}
 	window.dataLayer = window.dataLayer || [];

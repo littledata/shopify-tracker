@@ -22,7 +22,10 @@ export const initGtag = () => {
 	window.gtag = window.gtag || stubFunction;
 	// @ts-ignore
 	gtag('js', new Date());
-	gtag('config', LittledataLayer.webPropertyID, getConfig());
+	gtag('config', LittledataLayer.webPropertyID, {
+		...getConfig(),
+		send_page_view: false,
+	});
 
 	window.ga =
 		window.ga ||
@@ -59,9 +62,11 @@ function waitForGaToLoad() {
 
 export const sendPageview = () => {
 	const page_title = removePii(document.title);
-	const page_location = removePii(document.location.href);
+	const locationWithMedium = addUTMMediumIfMissing(document.location.href);
+	const page_location = removePii(locationWithMedium);
 
 	gtag('config', LittledataLayer.webPropertyID, {
+		...getConfig(),
 		page_title,
 		page_location,
 	});
@@ -211,8 +216,8 @@ export const filterGAProductFields = (product: LooseObject) => {
 };
 
 export const getConfig = (): Gtag.CustomParams => {
-	const { anonymizeIp, googleSignals, ecommerce, optimizeId, referralExclusion } = LittledataLayer;
-	const userId = LittledataLayer.customer && LittledataLayer.customer.id;
+	const settings: LooseObject = LittledataLayer || {};
+	const { anonymizeIp, googleSignals, ecommerce, optimizeId, referralExclusion } = settings;
 
 	const DEFAULT_LINKER_DOMAINS = [
 		'^(?!cdn.)(.*)shopify.com',
@@ -220,23 +225,32 @@ export const getConfig = (): Gtag.CustomParams => {
 		'recurringcheckout.com',
 		'carthook.com',
 		'checkout.com',
+		'shop.app',
 	];
+	const extraLinkerDomains = settings.extraLinkerDomains || [];
 
-	const extraLinkerDomains = LittledataLayer.extraLinkerDomains || [];
-	const excludeReferal = referralExclusion.test(document.referrer);
+	let excludeReferral = referralExclusion.test(document.referrer);
+	const extraExcludedReferrers = ['shop.app'];
+	if (extraExcludedReferrers.includes(document.referrer)) {
+		excludeReferral = true;
+	}
+
 	const config: Gtag.CustomParams = {
 		linker: {
 			domains: [...DEFAULT_LINKER_DOMAINS, ...extraLinkerDomains],
 		},
-		anonymize_ip: !!anonymizeIp,
-		allow_ad_personalization_signals: !!googleSignals,
-		currency: ecommerce.currencyCode,
+		anonymize_ip: anonymizeIp === false ? false : true, //default true
+		allow_ad_personalization_signals: googleSignals === true ? true : false, //default false
+		currency: (ecommerce && ecommerce.currencyCode) || 'USD',
 		link_attribution: true,
 		optimize_id: optimizeId,
-		page_referrer: excludeReferal ? document.referrer : null,
-		send_page_view: false,
-		user_id: userId,
+		page_referrer: excludeReferral ? document.referrer : null,
 	};
+
+	const userId = settings.customer && settings.customer.id;
+	if (userId) {
+		config.user_id = userId;
+	}
 
 	const cookie = getCookie('_ga');
 	if (cookie && !getValidGAClientId(cookie)) {
@@ -253,4 +267,19 @@ const setCustomTask = (tracker: LooseObject) => {
 	if (MPEndpointLength) {
 		tracker.set('customTask', customTask(LittledataLayer.MPEndpoint));
 	}
+};
+
+const addUTMMediumIfMissing = (url: string) => {
+	const utmMedium = /(\?|&)utm_medium=/;
+	const utmSource = /utm_source=[a-z,A-Z,0-9,-,_]+/;
+	const sourceMatches = url.match(utmSource);
+	if (!sourceMatches || !sourceMatches.length || utmMedium.test(url)) {
+		return url;
+	}
+	// Shopify adds a utm_source tag for it's own tracking, without specifying utm_medium
+	// we add 'referral' to ensure it shows up in GA
+	const sourceTag = sourceMatches[0];
+	const utmTags = sourceTag + '&utm_medium=referral';
+
+	return url.replace(sourceTag, utmTags);
 };
