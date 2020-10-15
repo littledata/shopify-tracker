@@ -148,7 +148,15 @@ declare global {
 		gtag: Gtag.Gtag;
 		dataLayer: any[];
 		LittledataScriptVersion: string;
-		Shopify: LooseObject;
+		Shopify?: LooseObject;
+		_ga_originalSendHitTask: any;
+	}
+
+	interface CartHookWindow extends Window {
+		gtag: Gtag.Gtag;
+		dataLayer: any[];
+		CH?: LooseObject;
+		chData: LooseObject;
 	}
 
 	interface TimeBombHTMLAnchor extends HTMLAnchorElement {
