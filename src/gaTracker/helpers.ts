@@ -214,7 +214,7 @@ export const filterGAProductFields = (product: LooseObject) => {
 };
 
 export const getConfig = (): Gtag.CustomParams => {
-	const settings: LooseObject = LittledataLayer || {};
+	const settings: LooseObject = window.LittledataLayer || {};
 	const { anonymizeIp, googleSignals, ecommerce, optimizeId, referralExclusion } = settings;
 
 	const DEFAULT_LINKER_DOMAINS = [
