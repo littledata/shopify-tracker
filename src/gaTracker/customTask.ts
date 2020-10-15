@@ -5,7 +5,6 @@ export const customTask = (endpoint: string) => {
 		window._ga_originalSendHitTask = window._ga_originalSendHitTask || customTaskModel.get('sendHitTask');
 
 		customTaskModel.set('sendHitTask', function(sendHitTaskModel: LooseObject) {
-			const originalSendHitTaskModel = sendHitTaskModel;
 			const originalSendHitTask = window._ga_originalSendHitTask;
 
 			try {
@@ -16,7 +15,7 @@ export const customTask = (endpoint: string) => {
 				request.setRequestHeader('Content-type', 'text/plain; charset=UTF-8');
 				request.send(hitPayload);
 			} catch (err) {
-				originalSendHitTask(originalSendHitTaskModel);
+				originalSendHitTask(sendHitTaskModel);
 			}
 		});
 	};
