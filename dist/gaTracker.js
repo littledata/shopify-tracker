@@ -328,7 +328,7 @@ var filterGAProductFields = function filterGAProductFields(product) {
   return gaProduct;
 };
 var getConfig = function getConfig() {
-  var settings = LittledataLayer || {};
+  var settings = window.LittledataLayer || {};
   var anonymizeIp = settings.anonymizeIp,
       googleSignals = settings.googleSignals,
       ecommerce = settings.ecommerce,
