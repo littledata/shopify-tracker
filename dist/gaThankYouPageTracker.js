@@ -81,7 +81,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 14);
+/******/ 	return __webpack_require__(__webpack_require__.s = 15);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -100,6 +100,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _common_productListViews__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(5);
 /* harmony import */ var _common_getProductDetail__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(6);
 /* harmony import */ var _common_getCookie__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(7);
+/* harmony import */ var _customTask__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(8);
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
@@ -120,6 +121,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 
+
 var event_category = 'Shopify (Littledata)';
 var initGtag = function initGtag() {
   window.dataLayer = window.dataLayer || [];
@@ -135,16 +137,26 @@ var initGtag = function initGtag() {
   gtag('config', LittledataLayer.webPropertyID, _objectSpread({}, getConfig(), {
     send_page_view: false
   }));
+
+  window.ga = window.ga || function () {
+    (window.ga.q = window.ga.q || []).push(arguments);
+  };
+
+  window.ga.l = +new Date();
+  window.ga(function () {
+    // we need to wait for GA library (part of gtag)
+    waitForGaToLoad();
+  });
 };
 var postClientIdTimeout;
-var nextTimeout = 500; // half a second
-
+var nextTimeout = 250;
 var maximumTimeout = 524288000; // about 6 hours in seconds
 
 function waitForGaToLoad() {
   var trackers = window.ga && window.ga.getAll();
 
   if (trackers && trackers.length) {
+    setCustomTask(trackers[0]);
     return Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(getGtagClientId, 'google');
   }
 
@@ -178,15 +190,6 @@ var sendPageview = function sendPageview() {
     });
   }
 
-  window.ga = window.ga || function () {
-    (window.ga.q = window.ga.q || []).push(arguments);
-  };
-
-  window.ga.l = +new Date();
-  window.ga(function () {
-    // we need to wait for GA library (part of gtag)
-    waitForGaToLoad();
-  });
   var product = Object(_common_getProductDetail__WEBPACK_IMPORTED_MODULE_2__["default"])();
 
   if (product) {
@@ -348,14 +351,15 @@ var getConfig = function getConfig() {
     config.cookie_expires = 0;
   }
 
-  var MPEndpointLength = settings.MPEndpoint && settings.MPEndpoint.length;
+  return config;
+};
+
+var setCustomTask = function setCustomTask(tracker) {
+  var MPEndpointLength = LittledataLayer.MPEndpoint && LittledataLayer.MPEndpoint.length;
 
   if (MPEndpointLength) {
-    // remove '/collect' from end, since it is added by gtag
-    config.transport_url = settings.MPEndpoint.slice(0, MPEndpointLength - '/collect'.length);
+    tracker.set('customTask', Object(_customTask__WEBPACK_IMPORTED_MODULE_4__["customTask"])(LittledataLayer.MPEndpoint));
   }
-
-  return config;
 };
 
 var addUTMMediumIfMissing = function addUTMMediumIfMissing(url) {
@@ -1080,12 +1084,39 @@ var getValidGAClientId = function getValidGAClientId() {
 };
 
 /***/ }),
-/* 8 */,
+/* 8 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "customTask", function() { return customTask; });
+var customTask = function customTask(endpoint) {
+  return function (customTaskModel) {
+    window._ga_originalSendHitTask = window._ga_originalSendHitTask || customTaskModel.get('sendHitTask');
+    customTaskModel.set('sendHitTask', function (sendHitTaskModel) {
+      var originalSendHitTask = window._ga_originalSendHitTask;
+
+      try {
+        originalSendHitTask(sendHitTaskModel);
+        var hitPayload = sendHitTaskModel.get('hitPayload');
+        var request = new XMLHttpRequest();
+        request.open('POST', endpoint, true);
+        request.setRequestHeader('Content-type', 'text/plain; charset=UTF-8');
+        request.send(hitPayload);
+      } catch (err) {
+        originalSendHitTask(sendHitTaskModel);
+      }
+    });
+  };
+};
+
+/***/ }),
 /* 9 */,
 /* 10 */,
 /* 11 */,
 /* 12 */,
-/* 13 */
+/* 13 */,
+/* 14 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1105,12 +1136,12 @@ var getProperties = function getProperties(scriptSrc) {
 };
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _segmentThankYouPageTracker_helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(13);
+/* harmony import */ var _segmentThankYouPageTracker_helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(14);
 /* harmony import */ var _gaTracker_helpers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1);
 
 
