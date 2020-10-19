@@ -1121,6 +1121,7 @@ var customTask = function customTask(endpoint) {
         var hitPayload = sendHitTaskModel.get('hitPayload');
         var request = new XMLHttpRequest();
         request.open('POST', endpoint, true);
+        request.withCredentials = false;
         request.setRequestHeader('Content-type', 'text/plain; charset=UTF-8');
         request.send(hitPayload);
       } catch (err) {
