@@ -39,7 +39,7 @@ export const initGtag = () => {
 };
 
 let postClientIdTimeout: any;
-let nextTimeout = 5;
+let nextTimeout = 10;
 const maximumTimeout = 500;
 
 function waitForGaToLoad() {
