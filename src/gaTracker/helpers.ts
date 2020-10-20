@@ -214,7 +214,7 @@ export const filterGAProductFields = (product: LooseObject) => {
 };
 
 export const getConfig = (): Gtag.CustomParams => {
-	const settings: LooseObject = LittledataLayer || {};
+	const settings: LooseObject = window.LittledataLayer || {};
 	const { anonymizeIp, googleSignals, ecommerce, optimizeId, referralExclusion } = settings;
 
 	const DEFAULT_LINKER_DOMAINS = [
@@ -227,7 +227,7 @@ export const getConfig = (): Gtag.CustomParams => {
 	];
 	const extraLinkerDomains = settings.extraLinkerDomains || [];
 
-	let excludeReferral = referralExclusion.test(document.referrer);
+	let excludeReferral = referralExclusion && referralExclusion.test(document.referrer);
 	const extraExcludedReferrers = ['shop.app'];
 	if (extraExcludedReferrers.includes(document.referrer)) {
 		excludeReferral = true;
