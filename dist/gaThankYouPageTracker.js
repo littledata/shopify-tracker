@@ -319,7 +319,7 @@ var getConfig = function getConfig() {
       referralExclusion = settings.referralExclusion;
   var DEFAULT_LINKER_DOMAINS = ['^(?!cdn.)(.*)shopify.com', 'rechargeapps.com', 'recurringcheckout.com', 'carthook.com', 'checkout.com', 'shop.app'];
   var extraLinkerDomains = settings.extraLinkerDomains || [];
-  var excludeReferral = referralExclusion.test(document.referrer);
+  var excludeReferral = referralExclusion && referralExclusion.test(document.referrer);
   var extraExcludedReferrers = ['shop.app'];
 
   if (extraExcludedReferrers.includes(document.referrer)) {
