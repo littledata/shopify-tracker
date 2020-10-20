@@ -33,18 +33,16 @@ export const initGtag = () => {
 			(window.ga.q = window.ga.q || []).push(arguments);
 		};
 	window.ga.l = +new Date();
-	window.ga(() => {
-		// we need to wait for GA library (part of gtag)
-		waitForGaToLoad();
-	});
+	// we need to wait for GA library (part of gtag)
+	waitForGaToLoad();
 };
 
 let postClientIdTimeout: any;
 let nextTimeout = 250;
-const maximumTimeout = 524288000; // about 6 hours in seconds
+const maximumTimeout = 360000; // 6 minutes in milliseconds
 
 function waitForGaToLoad() {
-	const trackers = window.ga && window.ga.getAll();
+	const trackers = window.ga && window.ga.getAll && window.ga.getAll();
 	if (trackers && trackers.length) {
 		setCustomTask(trackers[0]);
 		return setClientID(getGtagClientId, 'google');
