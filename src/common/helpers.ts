@@ -1,5 +1,6 @@
 /* global LittledataLayer */
 declare let window: CustomWindow;
+
 import UrlChangeTracker from './UrlChangeTracker';
 
 /**
@@ -228,7 +229,7 @@ export const trackSocialShares = (clickTag: (name?: string) => void) => {
 };
 
 export const validateLittledataLayer = () => {
-	window.LittledataScriptVersion = '8.9';
+	window.LittledataScriptVersion = '9.0';
 	if (!window.LittledataLayer) {
 		throw new Error('Aborting Littledata tracking as LittledataLayer was not found');
 	}
