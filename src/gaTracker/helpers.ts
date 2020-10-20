@@ -20,12 +20,6 @@ export const initGtag = () => {
 		dataLayer.push(arguments);
 	}; //eslint-disable-line
 	window.gtag = window.gtag || stubFunction;
-	// @ts-ignore
-	gtag('js', new Date());
-	gtag('config', LittledataLayer.webPropertyID, {
-		...getConfig(),
-		send_page_view: false,
-	});
 
 	window.ga =
 		window.ga ||
@@ -33,15 +27,24 @@ export const initGtag = () => {
 			(window.ga.q = window.ga.q || []).push(arguments);
 		};
 	window.ga.l = +new Date();
-	// we need to wait for GA library (part of gtag)
-	waitForGaToLoad();
+	window.ga(() => {
+		waitForGaToLoad();
+	});
+
+	gtag('js', new Date());
+	gtag('config', LittledataLayer.webPropertyID, {
+		...getConfig(),
+		send_page_view: false,
+	});
 };
 
 let postClientIdTimeout: any;
-let nextTimeout = 250;
-const maximumTimeout = 360000; // 6 minutes in milliseconds
+let nextTimeout = 5;
+const maximumTimeout = 500;
 
 function waitForGaToLoad() {
+	// After GA queue is executed we need to wait
+	// until after ga.getAll is available but before hit is sent
 	const trackers = window.ga && window.ga.getAll && window.ga.getAll();
 	if (trackers && trackers.length) {
 		setCustomTask(trackers[0]);
