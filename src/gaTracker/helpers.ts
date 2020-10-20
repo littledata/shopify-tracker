@@ -229,7 +229,7 @@ export const getConfig = (): Gtag.CustomParams => {
 	];
 	const extraLinkerDomains = settings.extraLinkerDomains || [];
 
-	let excludeReferral = referralExclusion.test(document.referrer);
+	let excludeReferral = referralExclusion && referralExclusion.test(document.referrer);
 	const extraExcludedReferrers = ['shop.app'];
 	if (extraExcludedReferrers.includes(document.referrer)) {
 		excludeReferral = true;
