@@ -151,12 +151,7 @@ var initGtag = function initGtag() {
   }; //eslint-disable-line
 
 
-  window.gtag = window.gtag || stubFunction; // @ts-ignore
-
-  gtag('js', new Date());
-  gtag('config', LittledataLayer.webPropertyID, _objectSpread({}, getConfig(), {
-    send_page_view: false
-  }));
+  window.gtag = window.gtag || stubFunction;
 
   window.ga = window.ga || function () {
     (window.ga.q = window.ga.q || []).push(arguments);
@@ -164,16 +159,22 @@ var initGtag = function initGtag() {
 
   window.ga.l = +new Date();
   window.ga(function () {
-    // we need to wait for GA library (part of gtag)
     waitForGaToLoad();
-  });
+  }); // @ts-ignore
+
+  gtag('js', new Date());
+  gtag('config', LittledataLayer.webPropertyID, _objectSpread({}, getConfig(), {
+    send_page_view: false
+  }));
 };
 var postClientIdTimeout;
-var nextTimeout = 250;
-var maximumTimeout = 524288000; // about 6 hours in seconds
+var nextTimeout = 10;
+var maximumTimeout = 500;
 
 function waitForGaToLoad() {
-  var trackers = window.ga && window.ga.getAll();
+  // After GA queue is executed we need to wait
+  // until after ga.getAll is available but before hit is sent
+  var trackers = window.ga && window.ga.getAll && window.ga.getAll();
 
   if (trackers && trackers.length) {
     setCustomTask(trackers[0]);
