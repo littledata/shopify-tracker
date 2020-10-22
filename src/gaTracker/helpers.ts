@@ -31,6 +31,7 @@ export const initGtag = () => {
 		waitForGaToLoad();
 	});
 
+	// @ts-ignore
 	gtag('js', new Date());
 	gtag('config', LittledataLayer.webPropertyID, {
 		...getConfig(),
