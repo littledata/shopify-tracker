@@ -13,7 +13,7 @@ export const customTask = (endpoint: string) => {
 				const request = new XMLHttpRequest();
 				request.open('POST', endpoint, true);
 				request.withCredentials = false;
-				request.setRequestHeader('Content-type', 'text/plain; charset=UTF-8');
+				request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 				request.send(hitPayload);
 			} catch (err) {
 				originalSendHitTask(sendHitTaskModel);
