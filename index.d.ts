@@ -149,6 +149,7 @@ declare global {
 		dataLayer: any[];
 		LittledataScriptVersion: string;
 		Shopify: LooseObject;
+		_ga_originalSendHitTask: any;
 	}
 
 	interface TimeBombHTMLAnchor extends HTMLAnchorElement {
