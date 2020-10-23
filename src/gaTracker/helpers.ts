@@ -10,6 +10,7 @@ import {
 import productListViews from '../common/productListViews';
 import getProductDetail from '../common/getProductDetail';
 import { getCookie, getValidGAClientId } from '../common/getCookie';
+import { customTask } from './customTask';
 
 const event_category = 'Shopify (Littledata)';
 
@@ -19,18 +20,35 @@ export const initGtag = () => {
 		dataLayer.push(arguments);
 	}; //eslint-disable-line
 	window.gtag = window.gtag || stubFunction;
+
+	window.ga =
+		window.ga ||
+		function() {
+			(window.ga.q = window.ga.q || []).push(arguments);
+		};
+	window.ga.l = +new Date();
+	window.ga(() => {
+		waitForGaToLoad();
+	});
+
 	// @ts-ignore
 	gtag('js', new Date());
-	gtag('config', LittledataLayer.webPropertyID, getConfig());
+	gtag('config', LittledataLayer.webPropertyID, {
+		...getConfig(),
+		send_page_view: false,
+	});
 };
 
 let postClientIdTimeout: any;
-let nextTimeout = 500; // half a second
-const maximumTimeout = 524288000; // about 6 hours in seconds
+let nextTimeout = 10;
+const maximumTimeout = 500;
 
 function waitForGaToLoad() {
-	const trackers = window.ga && window.ga.getAll();
+	// After GA queue is executed we need to wait
+	// until after ga.getAll is available but before hit is sent
+	const trackers = window.ga && window.ga.getAll && window.ga.getAll();
 	if (trackers && trackers.length) {
+		setCustomTask(trackers[0]);
 		return setClientID(getGtagClientId, 'google');
 	}
 
@@ -50,6 +68,7 @@ export const sendPageview = () => {
 	const page_location = removePii(locationWithMedium);
 
 	gtag('config', LittledataLayer.webPropertyID, {
+		...getConfig(),
 		page_title,
 		page_location,
 	});
@@ -64,17 +83,6 @@ export const sendPageview = () => {
 	if (typeof googleAds === 'object' && googleAds.length > 0) {
 		googleAds.forEach(adId => gtag('config', adId));
 	}
-
-	window.ga =
-		window.ga ||
-		function() {
-			(window.ga.q = window.ga.q || []).push(arguments);
-		};
-	window.ga.l = +new Date();
-	window.ga(() => {
-		// we need to wait for GA library (part of gtag)
-		waitForGaToLoad();
-	});
 
 	const product = getProductDetail();
 	if (product) {
@@ -210,8 +218,8 @@ export const filterGAProductFields = (product: LooseObject) => {
 };
 
 export const getConfig = (): Gtag.CustomParams => {
-	const { anonymizeIp, googleSignals, ecommerce, optimizeId, referralExclusion } = LittledataLayer;
-	const userId = LittledataLayer.customer && LittledataLayer.customer.id;
+	const settings: LooseObject = window.LittledataLayer || {};
+	const { anonymizeIp, googleSignals, ecommerce, optimizeId, referralExclusion } = settings;
 
 	const DEFAULT_LINKER_DOMAINS = [
 		'^(?!cdn.)(.*)shopify.com',
@@ -221,9 +229,9 @@ export const getConfig = (): Gtag.CustomParams => {
 		'checkout.com',
 		'shop.app',
 	];
-	const extraLinkerDomains = LittledataLayer.extraLinkerDomains || [];
+	const extraLinkerDomains = settings.extraLinkerDomains || [];
 
-	let excludeReferral = referralExclusion.test(document.referrer);
+	let excludeReferral = referralExclusion && referralExclusion.test(document.referrer);
 	const extraExcludedReferrers = ['shop.app'];
 	if (extraExcludedReferrers.includes(document.referrer)) {
 		excludeReferral = true;
@@ -233,15 +241,18 @@ export const getConfig = (): Gtag.CustomParams => {
 		linker: {
 			domains: [...DEFAULT_LINKER_DOMAINS, ...extraLinkerDomains],
 		},
-		anonymize_ip: !!anonymizeIp,
-		allow_ad_personalization_signals: !!googleSignals,
-		currency: ecommerce.currencyCode,
+		anonymize_ip: anonymizeIp === false ? false : true, //default true
+		allow_ad_personalization_signals: googleSignals === true ? true : false, //default false
+		currency: (ecommerce && ecommerce.currencyCode) || 'USD',
 		link_attribution: true,
 		optimize_id: optimizeId,
 		page_referrer: excludeReferral ? document.referrer : null,
-		send_page_view: false,
-		user_id: userId,
 	};
+
+	const userId = settings.customer && settings.customer.id;
+	if (userId) {
+		config.user_id = userId;
+	}
 
 	const cookie = getCookie('_ga');
 	if (cookie && !getValidGAClientId(cookie)) {
@@ -250,13 +261,14 @@ export const getConfig = (): Gtag.CustomParams => {
 		config.cookie_expires = 0;
 	}
 
+	return config;
+};
+
+const setCustomTask = (tracker: LooseObject) => {
 	const MPEndpointLength = LittledataLayer.MPEndpoint && LittledataLayer.MPEndpoint.length;
 	if (MPEndpointLength) {
-		// remove '/collect' from end, since it is added by gtag
-		config.transport_url = LittledataLayer.MPEndpoint.slice(0, MPEndpointLength - '/collect'.length);
+		tracker.set('customTask', customTask(LittledataLayer.MPEndpoint));
 	}
-
-	return config;
 };
 
 const addUTMMediumIfMissing = (url: string) => {
