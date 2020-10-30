@@ -248,7 +248,7 @@ export const getConfig = (): Gtag.CustomParams => {
 		currency: (ecommerce && ecommerce.currencyCode) || 'USD',
 		link_attribution: true,
 		optimize_id: optimizeId,
-		page_referrer: excludeReferral ? document.referrer : null,
+		page_referrer: excludeReferral ? null : document.referrer,
 	};
 
 	const userId = settings.customer && settings.customer.id;
