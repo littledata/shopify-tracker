@@ -1,16 +1,18 @@
 /* global LittledataLayer */
 declare let window: CustomWindow;
+
+import { getCookie, getValidGAClientId } from '../common/getCookie';
 import {
 	productListClicks,
-	setClientID,
 	removePii,
+	setClientID,
 	trackProductImageClicks,
 	trackSocialShares,
 } from '../common/helpers';
-import productListViews from '../common/productListViews';
-import getProductDetail from '../common/getProductDetail';
-import { getCookie, getValidGAClientId } from '../common/getCookie';
+
 import { customTask } from './customTask';
+import getProductDetail from '../common/getProductDetail';
+import productListViews from '../common/productListViews';
 
 const event_category = 'Shopify (Littledata)';
 
@@ -41,7 +43,7 @@ export const initGtag = () => {
 
 let postClientIdTimeout: any;
 let nextTimeout = 10;
-const maximumTimeout = 500;
+const maximumTimeout = 524288000; // about 6 hours in seconds
 
 function waitForGaToLoad() {
 	// After GA queue is executed we need to wait
