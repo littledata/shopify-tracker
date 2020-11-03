@@ -620,9 +620,10 @@ var validateLittledataLayer = function validateLittledataLayer() {
     throw new Error('Aborting Littledata tracking as LittledataLayer was not found');
   }
 };
-var advertiseLD = function advertiseLD() {
+var advertiseLD = function advertiseLD(app) {
   if (!LittledataLayer.hideBranding) {
-    console.log('%c\nThis store uses Littledata 🚀 to automate its analytics and make better, data-driven decisions. Learn more at http://apps.shopify.com/littledata \n', 'color: #088f87;'); //eslint-disable-line
+    var appURI = app === 'Segment' ? 'segment-com-by-littledata' : 'littledata';
+    console.log("%c\nThis store uses Littledata \uD83D\uDE80 to automate its ".concat(app, " setup and make better, data-driven decisions. Learn more at http://apps.shopify.com/").concat(appURI, " \n"), 'color: #088f87;');
   }
 };
 
