@@ -238,8 +238,10 @@ export const getConfig = (): Gtag.CustomParams => {
 	if (extraExcludedReferrers.includes(document.referrer)) {
 		excludeReferral = true;
 	}
-	if (document.referrer.includes(location.host)) {
-		excludeReferral = true; //exclude self-referrals
+	if (document.referrer.includes(`${location.protocol}//${location.host}`)) {
+		//valid referrer may have host within the url, like https://newsite.com/about/shopify.com
+		//but less likely to have protocol as well, unless the same domain - self-referral
+		excludeReferral = true;
 	}
 	const config: Gtag.CustomParams = {
 		linker: {
