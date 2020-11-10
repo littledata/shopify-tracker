@@ -238,7 +238,9 @@ export const getConfig = (): Gtag.CustomParams => {
 	if (extraExcludedReferrers.includes(document.referrer)) {
 		excludeReferral = true;
 	}
-
+	if (document.referrer.includes(location.host)) {
+		excludeReferral = true; //exclude self-referrals
+	}
 	const config: Gtag.CustomParams = {
 		linker: {
 			domains: [...DEFAULT_LINKER_DOMAINS, ...extraLinkerDomains],
