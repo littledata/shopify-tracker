@@ -1,16 +1,18 @@
 /* global LittledataLayer */
 declare let window: CustomWindow;
+
+import { getCookie, getValidGAClientId } from '../common/getCookie';
 import {
 	productListClicks,
-	setClientID,
 	removePii,
+	setClientID,
 	trackProductImageClicks,
 	trackSocialShares,
 } from '../common/helpers';
-import productListViews from '../common/productListViews';
-import getProductDetail from '../common/getProductDetail';
-import { getCookie, getValidGAClientId } from '../common/getCookie';
+
 import { customTask } from './customTask';
+import getProductDetail from '../common/getProductDetail';
+import productListViews from '../common/productListViews';
 
 const event_category = 'Shopify (Littledata)';
 
@@ -41,7 +43,7 @@ export const initGtag = () => {
 
 let postClientIdTimeout: any;
 let nextTimeout = 10;
-const maximumTimeout = 500;
+const maximumTimeout = 524288000; // about 6 hours in seconds
 
 function waitForGaToLoad() {
 	// After GA queue is executed we need to wait
@@ -236,7 +238,11 @@ export const getConfig = (): Gtag.CustomParams => {
 	if (extraExcludedReferrers.includes(document.referrer)) {
 		excludeReferral = true;
 	}
-
+	if (document.referrer.includes(`${location.protocol}//${location.host}`)) {
+		//valid referrer may have host within the url, like https://newsite.com/about/shopify.com
+		//but less likely to have protocol as well, unless the same domain - self-referral
+		excludeReferral = true;
+	}
 	const config: Gtag.CustomParams = {
 		linker: {
 			domains: [...DEFAULT_LINKER_DOMAINS, ...extraLinkerDomains],
@@ -246,7 +252,7 @@ export const getConfig = (): Gtag.CustomParams => {
 		currency: (ecommerce && ecommerce.currencyCode) || 'USD',
 		link_attribution: true,
 		optimize_id: optimizeId,
-		page_referrer: excludeReferral ? document.referrer : null,
+		page_referrer: excludeReferral ? null : document.referrer,
 	};
 
 	const userId = settings.customer && settings.customer.id;
