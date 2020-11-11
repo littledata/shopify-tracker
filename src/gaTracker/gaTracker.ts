@@ -6,7 +6,7 @@ import { pageView, validateLittledataLayer, advertiseLD } from '../common/helper
 (function() {
 	validateLittledataLayer();
 	initGtag();
-	advertiseLD();
+	advertiseLD('Google Analytics');
 	trackEvents();
 	pageView(function() {
 		sendPageview();

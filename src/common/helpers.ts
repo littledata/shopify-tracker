@@ -235,11 +235,12 @@ export const validateLittledataLayer = () => {
 	}
 };
 
-export const advertiseLD = () => {
+export const advertiseLD = (app: string) => {
 	if (!LittledataLayer.hideBranding) {
+		const appURI = app === 'Segment' ? 'segment-com-by-littledata' : 'littledata';
 		console.log(
-			'%c\nThis store uses Littledata 🚀 to automate its analytics and make better, data-driven decisions. Learn more at http://apps.shopify.com/littledata \n',
+			`%c\nThis store uses Littledata 🚀 to automate its ${app} setup and make better, data-driven decisions. Learn more at http://apps.shopify.com/${appURI} \n`,
 			'color: #088f87;',
-		); //eslint-disable-line
+		);
 	}
 };

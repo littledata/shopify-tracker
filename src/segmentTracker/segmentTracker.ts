@@ -7,7 +7,7 @@ import { identifyCustomer, trackEvents, initSegment, callSegmentPage } from './h
 (function() {
 	validateLittledataLayer();
 	initSegment();
-	advertiseLD();
+	advertiseLD('Segment');
 	identifyCustomer(LittledataLayer.customer);
 	trackEvents();
 	pageView(function() {
