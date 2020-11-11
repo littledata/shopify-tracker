@@ -115,7 +115,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "loadGtagScript", function() { return loadGtagScript; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "initGtag", function() { return initGtag; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "sendCartId", function() { return sendCartId; });
-/* harmony import */ var _common_getCookie__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(7);
+/* harmony import */ var _common_getCookie__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
 /* eslint-env browser */
 
 var getWebPropertyIdPromise = function getWebPropertyIdPromise() {
@@ -233,7 +233,7 @@ function buildPostRequestParams(data) {
 
 /***/ }),
 
-/***/ 7:
+/***/ 2:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";

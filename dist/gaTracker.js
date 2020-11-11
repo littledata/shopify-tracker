@@ -91,7 +91,7 @@
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
-/* harmony import */ var _common_helpers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
+/* harmony import */ var _common_helpers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3);
 
 
 
@@ -116,11 +116,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "trackEvents", function() { return trackEvents; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "filterGAProductFields", function() { return filterGAProductFields; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getConfig", function() { return getConfig; });
-/* harmony import */ var _common_helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
-/* harmony import */ var _common_productListViews__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(5);
-/* harmony import */ var _common_getProductDetail__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(6);
-/* harmony import */ var _common_getCookie__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(7);
-/* harmony import */ var _customTask__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(8);
+/* harmony import */ var _common_getCookie__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
+/* harmony import */ var _common_helpers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3);
+/* harmony import */ var _customTask__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(6);
+/* harmony import */ var _common_getProductDetail__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(7);
+/* harmony import */ var _common_productListViews__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(8);
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
@@ -169,7 +169,7 @@ var initGtag = function initGtag() {
 };
 var postClientIdTimeout;
 var nextTimeout = 10;
-var maximumTimeout = 500;
+var maximumTimeout = 524288000; // about 6 hours in seconds
 
 function waitForGaToLoad() {
   // After GA queue is executed we need to wait
@@ -178,7 +178,7 @@ function waitForGaToLoad() {
 
   if (trackers && trackers.length) {
     setCustomTask(trackers[0]);
-    return Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(getGtagClientId, 'google');
+    return Object(_common_helpers__WEBPACK_IMPORTED_MODULE_1__["setClientID"])(getGtagClientId, 'google');
   }
 
   if (nextTimeout > maximumTimeout) return; // stop if not found already
@@ -191,9 +191,9 @@ function waitForGaToLoad() {
 }
 
 var sendPageview = function sendPageview() {
-  var page_title = Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["removePii"])(document.title);
+  var page_title = Object(_common_helpers__WEBPACK_IMPORTED_MODULE_1__["removePii"])(document.title);
   var locationWithMedium = addUTMMediumIfMissing(document.location.href);
-  var page_location = Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["removePii"])(locationWithMedium);
+  var page_location = Object(_common_helpers__WEBPACK_IMPORTED_MODULE_1__["removePii"])(locationWithMedium);
   gtag('config', LittledataLayer.webPropertyID, _objectSpread({}, getConfig(), {
     page_title: page_title,
     page_location: page_location
@@ -211,7 +211,7 @@ var sendPageview = function sendPageview() {
     });
   }
 
-  var product = Object(_common_getProductDetail__WEBPACK_IMPORTED_MODULE_2__["default"])();
+  var product = Object(_common_getProductDetail__WEBPACK_IMPORTED_MODULE_3__["default"])();
 
   if (product) {
     product.list_position = parseInt(window.localStorage.getItem('position')) || 1;
@@ -240,13 +240,13 @@ function getGtagClientId() {
   var trackers = ga.getAll();
   if (!trackers || !trackers.length) return '';
   var clientId = trackers[0].get('clientId');
-  return Object(_common_getCookie__WEBPACK_IMPORTED_MODULE_3__["getValidGAClientId"])(clientId) ? clientId : '';
+  return Object(_common_getCookie__WEBPACK_IMPORTED_MODULE_0__["getValidGAClientId"])(clientId) ? clientId : '';
 }
 
 var trackEvents = function trackEvents() {
   /* run list, product, and clientID scripts everywhere */
   if (LittledataLayer.ecommerce.impressions.length) {
-    Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["productListClicks"])(function (product, self) {
+    Object(_common_helpers__WEBPACK_IMPORTED_MODULE_1__["productListClicks"])(function (product, self) {
       var productFromImpressions = LittledataLayer.ecommerce.impressions.find(function (prod) {
         return prod.name === product.name && prod.handle === product.handle;
       });
@@ -274,7 +274,7 @@ var trackEvents = function trackEvents() {
         }
       });
     });
-    Object(_common_productListViews__WEBPACK_IMPORTED_MODULE_1__["default"])(function (products) {
+    Object(_common_productListViews__WEBPACK_IMPORTED_MODULE_4__["default"])(function (products) {
       var gaProducts = products.map(function (product) {
         return filterGAProductFields(product);
       });
@@ -293,11 +293,11 @@ var trackEvents = function trackEvents() {
     });
   }
 
-  var product = Object(_common_getProductDetail__WEBPACK_IMPORTED_MODULE_2__["default"])();
+  var product = Object(_common_getProductDetail__WEBPACK_IMPORTED_MODULE_3__["default"])();
 
   if (product) {
     // if PDP, we can also track clicks on images and social shares
-    Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["trackProductImageClicks"])(function (name) {
+    Object(_common_helpers__WEBPACK_IMPORTED_MODULE_1__["trackProductImageClicks"])(function (name) {
       dataLayer.push({
         event: 'product_image_click',
         name: name
@@ -308,7 +308,7 @@ var trackEvents = function trackEvents() {
         send_to: LittledataLayer.webPropertyID
       });
     });
-    Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["trackSocialShares"])(function (network) {
+    Object(_common_helpers__WEBPACK_IMPORTED_MODULE_1__["trackSocialShares"])(function (network) {
       dataLayer.push({
         event: 'share_product',
         network: network
@@ -347,6 +347,12 @@ var getConfig = function getConfig() {
     excludeReferral = true;
   }
 
+  if (document.referrer.includes("".concat(location.protocol, "//").concat(location.host))) {
+    //valid referrer may have host within the url, like https://newsite.com/about/shopify.com
+    //but less likely to have protocol as well, unless the same domain - self-referral
+    excludeReferral = true;
+  }
+
   var config = {
     linker: {
       domains: [].concat(DEFAULT_LINKER_DOMAINS, _toConsumableArray(extraLinkerDomains))
@@ -356,7 +362,7 @@ var getConfig = function getConfig() {
     currency: ecommerce && ecommerce.currencyCode || 'USD',
     link_attribution: true,
     optimize_id: optimizeId,
-    page_referrer: excludeReferral ? document.referrer : null
+    page_referrer: excludeReferral ? null : document.referrer
   };
   var userId = settings.customer && settings.customer.id;
 
@@ -364,9 +370,9 @@ var getConfig = function getConfig() {
     config.user_id = userId;
   }
 
-  var cookie = Object(_common_getCookie__WEBPACK_IMPORTED_MODULE_3__["getCookie"])('_ga');
+  var cookie = Object(_common_getCookie__WEBPACK_IMPORTED_MODULE_0__["getCookie"])('_ga');
 
-  if (cookie && !Object(_common_getCookie__WEBPACK_IMPORTED_MODULE_3__["getValidGAClientId"])(cookie)) {
+  if (cookie && !Object(_common_getCookie__WEBPACK_IMPORTED_MODULE_0__["getValidGAClientId"])(cookie)) {
     //expiring the cookie after this session ensures invalid clientID
     //is not propagated to future sessions
     config.cookie_expires = 0;
@@ -379,7 +385,7 @@ var setCustomTask = function setCustomTask(tracker) {
   var MPEndpointLength = LittledataLayer.MPEndpoint && LittledataLayer.MPEndpoint.length;
 
   if (MPEndpointLength) {
-    tracker.set('customTask', Object(_customTask__WEBPACK_IMPORTED_MODULE_4__["customTask"])(LittledataLayer.MPEndpoint));
+    tracker.set('customTask', Object(_customTask__WEBPACK_IMPORTED_MODULE_2__["customTask"])(LittledataLayer.MPEndpoint));
   }
 };
 
@@ -405,6 +411,39 @@ var addUTMMediumIfMissing = function addUTMMediumIfMissing(url) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getCookie", function() { return getCookie; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getValidGAClientId", function() { return getValidGAClientId; });
+var getCookie = function getCookie(name) {
+  if (document.cookie.length > 0) {
+    var cookieStart = document.cookie.indexOf("".concat(name, "="));
+
+    if (cookieStart !== -1) {
+      var valueStart = cookieStart + name.length + 1;
+      var cookieEnd = document.cookie.indexOf(';', valueStart);
+
+      if (cookieEnd === -1) {
+        cookieEnd = document.cookie.length;
+      }
+
+      var cookie = unescape(document.cookie.substring(valueStart, cookieEnd));
+      return cookie;
+    }
+  }
+
+  return '';
+};
+var getValidGAClientId = function getValidGAClientId() {
+  var cookie = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+  var match = cookie.match(/(\d{2,11})\.(\d{2,11})/g);
+  return match && match[0];
+};
+
+/***/ }),
+/* 3 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "pageView", function() { return pageView; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getElementsByHref", function() { return getElementsByHref; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "findDataLayerProduct", function() { return findDataLayerProduct; });
@@ -417,7 +456,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "trackSocialShares", function() { return trackSocialShares; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "validateLittledataLayer", function() { return validateLittledataLayer; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "advertiseLD", function() { return advertiseLD; });
-/* harmony import */ var _UrlChangeTracker__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3);
+/* harmony import */ var _UrlChangeTracker__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
@@ -648,13 +687,13 @@ var advertiseLD = function advertiseLD(app) {
 };
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return UrlChangeTracker; });
-/* harmony import */ var _MethodChain__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
+/* harmony import */ var _MethodChain__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5);
 
 
 /**
@@ -783,7 +822,7 @@ function getPath() {
 
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -962,12 +1001,71 @@ function getOrCreateMethodChain(context, methodName) {
 
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "customTask", function() { return customTask; });
+var customTask = function customTask(endpoint) {
+  return function (customTaskModel) {
+    window._ga_originalSendHitTask = window._ga_originalSendHitTask || customTaskModel.get('sendHitTask');
+    customTaskModel.set('sendHitTask', function (sendHitTaskModel) {
+      var originalSendHitTask = window._ga_originalSendHitTask;
+
+      try {
+        originalSendHitTask(sendHitTaskModel);
+        var hitPayload = sendHitTaskModel.get('hitPayload');
+        var request = new XMLHttpRequest();
+        request.open('POST', endpoint, true);
+        request.withCredentials = false;
+        request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        request.send(hitPayload);
+      } catch (err) {
+        originalSendHitTask(sendHitTaskModel);
+      }
+    });
+  };
+};
+
+/***/ }),
+/* 7 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (() => {
+	const detail = LittledataLayer.ecommerce.detail;
+	if (!detail) return null;
+
+	// Is the variant ID specified in the URL?
+	// variant is a 8 to 20 digit number like 31524084842532
+	const matches = document.location.href.match(/[0-9]{8,20}/);
+	const variantId = matches && Number(matches[0]);
+	if (variantId) {
+		detail.shopify_variant_id = variantId;
+		//find variant in the list of variants
+		const variantList = LittledataLayer.ecommerce.variants;
+		if (variantList) {
+			const variant = variantList.find(obj => obj.id === variantId);
+			if (variant) {
+				detail.id = variant.sku;
+				detail.variant = variant.title;
+			}
+		}
+	}
+
+	return detail;
+});
+
+
+/***/ }),
+/* 8 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3);
 
 /* harmony default export */ __webpack_exports__["default"] = (function (impressionTag) {
   var waitForScroll = 0;
@@ -1039,98 +1137,6 @@ var chunk = function chunk(arr, size) {
   }, function (v, i) {
     return arr.slice(i * size, i * size + size);
   });
-};
-
-/***/ }),
-/* 6 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony default export */ __webpack_exports__["default"] = (() => {
-	const detail = LittledataLayer.ecommerce.detail;
-	if (!detail) return null;
-
-	// Is the variant ID specified in the URL?
-	// variant is a 8 to 20 digit number like 31524084842532
-	const matches = document.location.href.match(/[0-9]{8,20}/);
-	const variantId = matches && Number(matches[0]);
-	if (variantId) {
-		detail.shopify_variant_id = variantId;
-		//find variant in the list of variants
-		const variantList = LittledataLayer.ecommerce.variants;
-		if (variantList) {
-			const variant = variantList.find(obj => obj.id === variantId);
-			if (variant) {
-				detail.id = variant.sku;
-				detail.variant = variant.title;
-			}
-		}
-	}
-
-	return detail;
-});
-
-
-/***/ }),
-/* 7 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getCookie", function() { return getCookie; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getValidGAClientId", function() { return getValidGAClientId; });
-var getCookie = function getCookie(name) {
-  if (document.cookie.length > 0) {
-    var cookieStart = document.cookie.indexOf("".concat(name, "="));
-
-    if (cookieStart !== -1) {
-      var valueStart = cookieStart + name.length + 1;
-      var cookieEnd = document.cookie.indexOf(';', valueStart);
-
-      if (cookieEnd === -1) {
-        cookieEnd = document.cookie.length;
-      }
-
-      var cookie = unescape(document.cookie.substring(valueStart, cookieEnd));
-      return cookie;
-    }
-  }
-
-  return '';
-};
-var getValidGAClientId = function getValidGAClientId() {
-  var cookie = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-  var match = cookie.match(/(\d{2,11})\.(\d{2,11})/g);
-  return match && match[0];
-};
-
-/***/ }),
-/* 8 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "customTask", function() { return customTask; });
-var customTask = function customTask(endpoint) {
-  return function (customTaskModel) {
-    window._ga_originalSendHitTask = window._ga_originalSendHitTask || customTaskModel.get('sendHitTask');
-    customTaskModel.set('sendHitTask', function (sendHitTaskModel) {
-      var originalSendHitTask = window._ga_originalSendHitTask;
-
-      try {
-        originalSendHitTask(sendHitTaskModel);
-        var hitPayload = sendHitTaskModel.get('hitPayload');
-        var request = new XMLHttpRequest();
-        request.open('POST', endpoint, true);
-        request.withCredentials = false;
-        request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        request.send(hitPayload);
-      } catch (err) {
-        originalSendHitTask(sendHitTaskModel);
-      }
-    });
-  };
 };
 
 /***/ })

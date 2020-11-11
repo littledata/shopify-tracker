@@ -92,6 +92,39 @@
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getCookie", function() { return getCookie; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getValidGAClientId", function() { return getValidGAClientId; });
+var getCookie = function getCookie(name) {
+  if (document.cookie.length > 0) {
+    var cookieStart = document.cookie.indexOf("".concat(name, "="));
+
+    if (cookieStart !== -1) {
+      var valueStart = cookieStart + name.length + 1;
+      var cookieEnd = document.cookie.indexOf(';', valueStart);
+
+      if (cookieEnd === -1) {
+        cookieEnd = document.cookie.length;
+      }
+
+      var cookie = unescape(document.cookie.substring(valueStart, cookieEnd));
+      return cookie;
+    }
+  }
+
+  return '';
+};
+var getValidGAClientId = function getValidGAClientId() {
+  var cookie = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+  var match = cookie.match(/(\d{2,11})\.(\d{2,11})/g);
+  return match && match[0];
+};
+
+/***/ }),
+/* 3 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "pageView", function() { return pageView; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getElementsByHref", function() { return getElementsByHref; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "findDataLayerProduct", function() { return findDataLayerProduct; });
@@ -104,7 +137,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "trackSocialShares", function() { return trackSocialShares; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "validateLittledataLayer", function() { return validateLittledataLayer; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "advertiseLD", function() { return advertiseLD; });
-/* harmony import */ var _UrlChangeTracker__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3);
+/* harmony import */ var _UrlChangeTracker__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
@@ -335,13 +368,13 @@ var advertiseLD = function advertiseLD(app) {
 };
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return UrlChangeTracker; });
-/* harmony import */ var _MethodChain__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
+/* harmony import */ var _MethodChain__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5);
 
 
 /**
@@ -470,7 +503,7 @@ function getPath() {
 
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -649,12 +682,44 @@ function getOrCreateMethodChain(context, methodName) {
 
 
 /***/ }),
-/* 5 */
+/* 6 */,
+/* 7 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
+/* harmony default export */ __webpack_exports__["default"] = (() => {
+	const detail = LittledataLayer.ecommerce.detail;
+	if (!detail) return null;
+
+	// Is the variant ID specified in the URL?
+	// variant is a 8 to 20 digit number like 31524084842532
+	const matches = document.location.href.match(/[0-9]{8,20}/);
+	const variantId = matches && Number(matches[0]);
+	if (variantId) {
+		detail.shopify_variant_id = variantId;
+		//find variant in the list of variants
+		const variantList = LittledataLayer.ecommerce.variants;
+		if (variantList) {
+			const variant = variantList.find(obj => obj.id === variantId);
+			if (variant) {
+				detail.id = variant.sku;
+				detail.variant = variant.title;
+			}
+		}
+	}
+
+	return detail;
+});
+
+
+/***/ }),
+/* 8 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3);
 
 /* harmony default export */ __webpack_exports__["default"] = (function (impressionTag) {
   var waitForScroll = 0;
@@ -729,77 +794,12 @@ var chunk = function chunk(arr, size) {
 };
 
 /***/ }),
-/* 6 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony default export */ __webpack_exports__["default"] = (() => {
-	const detail = LittledataLayer.ecommerce.detail;
-	if (!detail) return null;
-
-	// Is the variant ID specified in the URL?
-	// variant is a 8 to 20 digit number like 31524084842532
-	const matches = document.location.href.match(/[0-9]{8,20}/);
-	const variantId = matches && Number(matches[0]);
-	if (variantId) {
-		detail.shopify_variant_id = variantId;
-		//find variant in the list of variants
-		const variantList = LittledataLayer.ecommerce.variants;
-		if (variantList) {
-			const variant = variantList.find(obj => obj.id === variantId);
-			if (variant) {
-				detail.id = variant.sku;
-				detail.variant = variant.title;
-			}
-		}
-	}
-
-	return detail;
-});
-
-
-/***/ }),
-/* 7 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getCookie", function() { return getCookie; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getValidGAClientId", function() { return getValidGAClientId; });
-var getCookie = function getCookie(name) {
-  if (document.cookie.length > 0) {
-    var cookieStart = document.cookie.indexOf("".concat(name, "="));
-
-    if (cookieStart !== -1) {
-      var valueStart = cookieStart + name.length + 1;
-      var cookieEnd = document.cookie.indexOf(';', valueStart);
-
-      if (cookieEnd === -1) {
-        cookieEnd = document.cookie.length;
-      }
-
-      var cookie = unescape(document.cookie.substring(valueStart, cookieEnd));
-      return cookie;
-    }
-  }
-
-  return '';
-};
-var getValidGAClientId = function getValidGAClientId() {
-  var cookie = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-  var match = cookie.match(/(\d{2,11})\.(\d{2,11})/g);
-  return match && match[0];
-};
-
-/***/ }),
-/* 8 */,
 /* 9 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _common_helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
+/* harmony import */ var _common_helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3);
 /* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(10);
 
 
@@ -843,10 +843,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "trackEvents", function() { return trackEvents; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "initSegment", function() { return initSegment; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "callSegmentPage", function() { return callSegmentPage; });
-/* harmony import */ var _common_helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
-/* harmony import */ var _common_getCookie__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(7);
-/* harmony import */ var _common_productListViews__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(5);
-/* harmony import */ var _common_getProductDetail__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(6);
+/* harmony import */ var _common_helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3);
+/* harmony import */ var _common_getCookie__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
+/* harmony import */ var _common_productListViews__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(8);
+/* harmony import */ var _common_getProductDetail__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(7);
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
