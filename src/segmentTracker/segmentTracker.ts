@@ -23,7 +23,15 @@ import { identifyCustomer, trackEvents, initSegment, callSegmentPage } from './h
 					}
 				});
 			}
-			setClientID(window.analytics.user().anonymousId, 'segment');
+			const { user } = window.analytics;
+			if (user) {
+				setClientID(user().anonymousId, 'segment');
+				const { email } = user().traits();
+				if (email) {
+					const returnEmail = () => email;
+					setClientID(returnEmail, 'email');
+				}
+			}
 		});
 	});
 })();

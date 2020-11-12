@@ -9,6 +9,7 @@ import {
 import { getCookie } from '../common/getCookie';
 import productListViews from '../common/productListViews';
 import getProductDetail from '../common/getProductDetail';
+import { SegmentProduct } from '../../segmentInterface';
 
 const getContext = () => {
 	return {
@@ -23,24 +24,6 @@ const trackEvent = (eventName: string, params: object) => {
 	// @ts-ignore
 	window.analytics.track(eventName, params, { context: getContext() });
 };
-
-interface SegmentProduct {
-	brand: string;
-	category: string;
-	url: string;
-	product_id: string;
-	sku: string;
-	position: number;
-	name: string;
-	price: number;
-	variant: string;
-	list_id?: string;
-	image_url?: string;
-	currency?: string;
-	shopify_product_id?: string;
-	shopify_variant_id?: string;
-	compare_at_price?: string;
-}
 
 const segmentProduct = (dataLayerProduct: Detail): SegmentProduct => ({
 	brand: dataLayerProduct.brand,
