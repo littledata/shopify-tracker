@@ -219,4 +219,5 @@ export interface SegmentProduct {
 	shopify_product_id?: string;
 	shopify_variant_id?: string;
 	compare_at_price?: string;
+	email?: string;
 }

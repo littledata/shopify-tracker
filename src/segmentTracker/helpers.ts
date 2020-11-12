@@ -210,6 +210,10 @@ export const callSegmentPage = (integrations: Record<string, any>) => {
 		const product = segmentProduct(productDetail);
 		product.currency = LittledataLayer.ecommerce.currencyCode;
 		product.position = parseInt(window.localStorage.getItem('position')) || 1;
+		const email = window.analytics.user && window.analytics.user().traits().email;
+		if (email) {
+			product.email = email;
+		}
 		trackEvent('Product Viewed', product);
 	}
 };
