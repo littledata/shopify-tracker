@@ -1,6 +1,7 @@
 /* global LittledataLayer */
 declare let window: CustomWindow;
 
+import { clientID } from '../../index';
 import UrlChangeTracker from './UrlChangeTracker';
 
 /**
@@ -85,12 +86,7 @@ export const setCartOnlyAttributes = (setAttributes: LooseObject) => {
 	});
 };
 
-interface PostAttributes {
-	littledata_updatedAt?: number;
-	'google-clientID'?: string;
-	'segment-clientID'?: string;
-}
-const attributes: PostAttributes = {}; //persist any previous attributes sent from this page
+const attributes: Cart.Attributes = {}; //persist any previous attributes sent from this page
 
 function postClientID(getClientId: () => string, platform: string, sendCartToLittledata: boolean) {
 	const attribute = `${platform}-clientID`;
@@ -141,10 +137,10 @@ function postCartToLittledata(cart: Cart.RootObject) {
 	httpRequest.send(JSON.stringify(cart));
 }
 
-export function setClientID(getClientId: () => string, platform: 'google' | 'segment') {
+export function setClientID(getClientId: () => string, platform: 'google' | 'segment' | 'email') {
 	const { cart } = LittledataLayer;
 	const cartAttributes = (cart && cart.attributes) || {};
-	const clientIDProperty = `${platform}-clientID` as 'google-clientID' | 'segment-clientID';
+	const clientIDProperty = `${platform}-clientID` as clientID;
 
 	if (
 		!LittledataLayer[clientIDProperty] && // don't resend for the same page
