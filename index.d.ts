@@ -14,8 +14,6 @@ declare global {
 			'email-clientID'?: string;
 		}
 
-		export interface Properties {}
-
 		export interface FeaturedImage {
 			url?: any;
 			aspect_ratio?: any;
@@ -29,7 +27,7 @@ declare global {
 
 		export interface Item {
 			id: any;
-			properties: Properties;
+			properties: LooseObject;
 			quantity: number;
 			variant_id: any;
 			key: string;

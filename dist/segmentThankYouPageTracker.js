@@ -883,8 +883,9 @@ var trackEvents = function trackEvents() {
         });
         var pos = productFromImpressions && productFromImpressions.list_position;
         window.localStorage.setItem('position', String(pos));
-        var p = segmentProduct(product);
-        trackEvent('Product Clicked', _objectSpread({}, p, {
+        var properties = segmentProduct(product);
+        var propertiesWithEmail = addEmailToProperties(properties);
+        trackEvent('Product Clicked', _objectSpread({}, propertiesWithEmail, {
           currency: LittledataLayer.ecommerce.currencyCode,
           list_id: product.list
         }));
@@ -892,10 +893,11 @@ var trackEvents = function trackEvents() {
       Object(_common_productListViews__WEBPACK_IMPORTED_MODULE_2__["default"])(function (products) {
         var listId = products && products[0].list;
         var segmentProducts = products.map(segmentProduct);
-        trackEvent('Product List Viewed', {
+        var propertiesWithEmail = addEmailToProperties({});
+        trackEvent('Product List Viewed', _objectSpread({}, propertiesWithEmail, {
           list_id: listId,
           products: segmentProducts
-        });
+        }));
       });
     }
 
@@ -999,17 +1001,22 @@ var callSegmentPage = function callSegmentPage(integrations) {
   var productDetail = Object(_common_getProductDetail__WEBPACK_IMPORTED_MODULE_3__["default"])();
 
   if (productDetail) {
-    var product = segmentProduct(productDetail);
-    product.currency = LittledataLayer.ecommerce.currencyCode;
-    product.position = parseInt(window.localStorage.getItem('position')) || 1;
-    var email = window.analytics.user && window.analytics.user().traits().email;
-
-    if (email) {
-      product.email = email;
-    }
-
-    trackEvent('Product Viewed', product);
+    var properties = segmentProduct(productDetail);
+    properties.currency = LittledataLayer.ecommerce.currencyCode;
+    properties.position = parseInt(window.localStorage.getItem('position')) || 1;
+    var propertiesWithEmail = addEmailToProperties(properties);
+    trackEvent('Product Viewed', propertiesWithEmail);
   }
+};
+
+var addEmailToProperties = function addEmailToProperties(properties) {
+  var email = window.analytics.user && window.analytics.user().traits().email;
+
+  if (email) {
+    properties.email = email;
+  }
+
+  return properties;
 };
 
 /***/ }),
