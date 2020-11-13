@@ -585,7 +585,7 @@ var trackSocialShares = function trackSocialShares(clickTag) {
   });
 };
 var validateLittledataLayer = function validateLittledataLayer() {
-  window.LittledataScriptVersion = '8.7';
+  window.LittledataScriptVersion = '8.8';
 
   if (!window.LittledataLayer) {
     throw new Error('Aborting Littledata tracking as LittledataLayer was not found');
