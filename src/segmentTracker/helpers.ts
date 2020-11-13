@@ -6,6 +6,8 @@ import {
 	trackSocialShares,
 	setCartOnlyAttributes,
 } from '../common/helpers';
+import { addEmailToEvents } from './addEmailToEvents';
+
 import { getCookie } from '../common/getCookie';
 import productListViews from '../common/productListViews';
 import getProductDetail from '../common/getProductDetail';
@@ -71,11 +73,8 @@ export const trackEvents = () => {
 				const pos = productFromImpressions && productFromImpressions.list_position;
 				window.localStorage.setItem('position', String(pos));
 
-				const properties = segmentProduct(product);
-				const propertiesWithEmail = addEmailToProperties(properties);
-
 				trackEvent('Product Clicked', {
-					...propertiesWithEmail,
+					...segmentProduct(product),
 					currency: LittledataLayer.ecommerce.currencyCode,
 					list_id: product.list,
 				});
@@ -85,10 +84,7 @@ export const trackEvents = () => {
 				const listId = products && products[0].list;
 				const segmentProducts = products.map(segmentProduct);
 
-				const propertiesWithEmail = addEmailToProperties({});
-
 				trackEvent('Product List Viewed', {
-					...propertiesWithEmail,
 					list_id: listId,
 					products: segmentProducts,
 				});
@@ -164,6 +160,7 @@ export const initSegment = (writeKey?) => {
 				// @ts-ignore
 				analytics[e] = analytics.factory(e);
 			}
+
 			// @ts-ignore
 			analytics.load = function(t, e) {
 				var n = document.createElement('script');
@@ -177,6 +174,7 @@ export const initSegment = (writeKey?) => {
 			};
 			// @ts-ignore
 			analytics.SNIPPET_VERSION = '4.1.0'; //eslint-disable-line
+			window.analytics.addSourceMiddleware(addEmailToEvents);
 			window.analytics.load(writeKey || LittledataLayer.writeKey);
 			writeKey && window.analytics.page();
 		}
@@ -216,15 +214,6 @@ export const callSegmentPage = (integrations: Record<string, any>) => {
 		const properties = segmentProduct(productDetail);
 		properties.currency = LittledataLayer.ecommerce.currencyCode;
 		properties.position = parseInt(window.localStorage.getItem('position')) || 1;
-		const propertiesWithEmail = addEmailToProperties(properties);
-		trackEvent('Product Viewed', propertiesWithEmail);
+		trackEvent('Product Viewed', properties);
 	}
-};
-
-const addEmailToProperties = (properties: LooseObject) => {
-	const email = window.analytics.user && window.analytics.user().traits().email;
-	if (email) {
-		properties.email = email;
-	}
-	return properties;
 };
