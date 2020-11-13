@@ -936,7 +936,8 @@ var initSegment = function initSegment(writeKey) {
           var e = Array.prototype.slice.call(arguments);
           e.unshift(t); // @ts-ignore
 
-          analytics.push(e);
+          analytics.push(e); // @ts-ignore
+
           return analytics;
         };
       }; // @ts-ignore
@@ -1001,6 +1002,12 @@ var callSegmentPage = function callSegmentPage(integrations) {
     var product = segmentProduct(productDetail);
     product.currency = LittledataLayer.ecommerce.currencyCode;
     product.position = parseInt(window.localStorage.getItem('position')) || 1;
+    var email = window.analytics.user && window.analytics.user().traits().email;
+
+    if (email) {
+      product.email = email;
+    }
+
     trackEvent('Product Viewed', product);
   }
 };

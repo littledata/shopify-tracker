@@ -828,7 +828,22 @@ __webpack_require__.r(__webpack_exports__);
         });
       }
 
-      Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(window.analytics.user().anonymousId, 'segment');
+      var user = window.analytics.user;
+
+      if (user) {
+        Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(user().anonymousId, 'segment');
+
+        var _user$traits = user().traits(),
+            email = _user$traits.email;
+
+        if (email) {
+          var returnEmail = function returnEmail() {
+            return email;
+          };
+
+          Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(returnEmail, 'email');
+        }
+      }
     });
   });
 })();
@@ -975,7 +990,8 @@ var initSegment = function initSegment(writeKey) {
           var e = Array.prototype.slice.call(arguments);
           e.unshift(t); // @ts-ignore
 
-          analytics.push(e);
+          analytics.push(e); // @ts-ignore
+
           return analytics;
         };
       }; // @ts-ignore
@@ -1040,6 +1056,12 @@ var callSegmentPage = function callSegmentPage(integrations) {
     var product = segmentProduct(productDetail);
     product.currency = LittledataLayer.ecommerce.currencyCode;
     product.position = parseInt(window.localStorage.getItem('position')) || 1;
+    var email = window.analytics.user && window.analytics.user().traits().email;
+
+    if (email) {
+      product.email = email;
+    }
+
     trackEvent('Product Viewed', product);
   }
 };
