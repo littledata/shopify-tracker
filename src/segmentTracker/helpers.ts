@@ -141,7 +141,12 @@ export const initSegment = (writeKey?) => {
 				'once',
 				'off',
 				'on',
+				'addSourceMiddleware',
+				'addIntegrationMiddleware',
+				'setAnonymousId',
+				'addDestinationMiddleware',
 			];
+
 			// @ts-ignore
 			analytics.factory = function(t) {
 				return function() {

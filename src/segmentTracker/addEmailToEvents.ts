@@ -2,11 +2,11 @@ import { MiddlewareOptions } from '../../segmentInterface';
 declare let window: CustomWindow;
 
 export const addEmailToEvents = ({ payload, next }: MiddlewareOptions) => {
-	const payloadWithEmail = {
-		...payload,
-		properties: addEmailToProperties(payload.properties),
+	payload.obj = {
+		...payload.obj,
+		properties: addEmailToProperties(payload.obj.properties),
 	};
-	next(payloadWithEmail);
+	next(payload);
 };
 
 const addEmailToProperties = (properties: LooseObject) => {
