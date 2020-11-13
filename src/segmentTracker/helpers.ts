@@ -148,6 +148,7 @@ export const initSegment = (writeKey?) => {
 					e.unshift(t);
 					// @ts-ignore
 					analytics.push(e);
+					// @ts-ignore
 					return analytics;
 				};
 			};

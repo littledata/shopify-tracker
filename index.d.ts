@@ -151,6 +151,7 @@ declare global {
 		LittledataScriptVersion: string;
 		Shopify: LooseObject;
 		_ga_originalSendHitTask: any;
+		console: LooseObject;
 	}
 
 	interface TimeBombHTMLAnchor extends HTMLAnchorElement {
