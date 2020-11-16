@@ -68,6 +68,11 @@ interface InitOptions {
 interface IntegrationsSettings {
 	[key: string]: any;
 }
+export interface MiddlewareOptions {
+	payload: LooseObject;
+	next({}: LooseObject): void;
+	integrations?: LooseObject;
+}
 
 // The actual analytics.js object
 export interface AnalyticsJS {
@@ -169,6 +174,10 @@ export interface AnalyticsJS {
        reset function that is most commonly used when your identified users
        logout of your application. */
 	reset(): void;
+
+	addSourceMiddleware(callback: ({}: MiddlewareOptions) => void): void;
+
+	addDestinationMiddleware(callback: ({}: MiddlewareOptions) => void): void;
 
 	/* Once Analytics.js loaded, you can retrieve information about the
        currently identified user or group like their id and traits. */

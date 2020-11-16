@@ -4,6 +4,7 @@ declare let window: CustomWindow;
 
 import {
 	advertiseLD,
+	documentReady,
 	pageView,
 	retrieveAndStoreClientId,
 	setClientID,
@@ -16,7 +17,7 @@ import { callSegmentPage, identifyCustomer, initSegment, trackEvents } from './h
 	initSegment();
 	advertiseLD('Segment');
 	identifyCustomer(LittledataLayer.customer);
-	trackEvents();
+	documentReady(trackEvents);
 	pageView(function() {
 		callSegmentPage({});
 		window.analytics.ready(() => {
