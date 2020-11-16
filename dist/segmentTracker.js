@@ -137,6 +137,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "trackSocialShares", function() { return trackSocialShares; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "validateLittledataLayer", function() { return validateLittledataLayer; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "advertiseLD", function() { return advertiseLD; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "documentReady", function() { return documentReady; });
 /* harmony import */ var _UrlChangeTracker__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -364,6 +365,16 @@ var advertiseLD = function advertiseLD(app) {
   if (!LittledataLayer.hideBranding) {
     var appURI = app === 'Segment' ? 'segment-com-by-littledata' : 'littledata';
     console.log("%c\nThis store uses Littledata \uD83D\uDE80 to automate its ".concat(app, " setup and make better, data-driven decisions. Learn more at http://apps.shopify.com/").concat(appURI, " \n"), 'color: #088f87;');
+  }
+};
+var documentReady = function documentReady(callback) {
+  // see if DOM is already available
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    // call on next available tick
+    setTimeout(callback, 1);
+  } else {
+    // @ts-ignore
+    document.addEventListener('DOMContentLoaded', callback);
   }
 };
 
@@ -809,7 +820,7 @@ __webpack_require__.r(__webpack_exports__);
   Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["initSegment"])();
   Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["advertiseLD"])('Segment');
   Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["identifyCustomer"])(LittledataLayer.customer);
-  Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["trackEvents"])();
+  Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["documentReady"])(_helpers__WEBPACK_IMPORTED_MODULE_1__["trackEvents"]);
   Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["pageView"])(function () {
     Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["callSegmentPage"])({});
     window.analytics.ready(function () {
@@ -859,14 +870,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "initSegment", function() { return initSegment; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "callSegmentPage", function() { return callSegmentPage; });
 /* harmony import */ var _common_helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3);
-/* harmony import */ var _common_getCookie__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
-/* harmony import */ var _common_productListViews__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(8);
-/* harmony import */ var _common_getProductDetail__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(7);
+/* harmony import */ var _addEmailToEvents__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(11);
+/* harmony import */ var _common_getCookie__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(2);
+/* harmony import */ var _common_productListViews__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(8);
+/* harmony import */ var _common_getProductDetail__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(7);
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 
 
 
@@ -912,7 +925,7 @@ var identifyCustomer = function identifyCustomer(customer) {
 
   if (cookies) {
     cookies.forEach(function (cookie) {
-      cookieTraits[cookie] = Object(_common_getCookie__WEBPACK_IMPORTED_MODULE_1__["getCookie"])(cookie);
+      cookieTraits[cookie] = Object(_common_getCookie__WEBPACK_IMPORTED_MODULE_2__["getCookie"])(cookie);
     });
   }
 
@@ -937,25 +950,22 @@ var trackEvents = function trackEvents() {
         });
         var pos = productFromImpressions && productFromImpressions.list_position;
         window.localStorage.setItem('position', String(pos));
-        var properties = segmentProduct(product);
-        var propertiesWithEmail = addEmailToProperties(properties);
-        trackEvent('Product Clicked', _objectSpread({}, propertiesWithEmail, {
+        trackEvent('Product Clicked', _objectSpread({}, segmentProduct(product), {
           currency: LittledataLayer.ecommerce.currencyCode,
           list_id: product.list
         }));
       });
-      Object(_common_productListViews__WEBPACK_IMPORTED_MODULE_2__["default"])(function (products) {
+      Object(_common_productListViews__WEBPACK_IMPORTED_MODULE_3__["default"])(function (products) {
         var listId = products && products[0].list;
         var segmentProducts = products.map(segmentProduct);
-        var propertiesWithEmail = addEmailToProperties({});
-        trackEvent('Product List Viewed', _objectSpread({}, propertiesWithEmail, {
+        trackEvent('Product List Viewed', {
           list_id: listId,
           products: segmentProducts
-        }));
+        });
       });
     }
 
-    var productDetail = Object(_common_getProductDetail__WEBPACK_IMPORTED_MODULE_3__["default"])();
+    var productDetail = Object(_common_getProductDetail__WEBPACK_IMPORTED_MODULE_4__["default"])();
 
     if (productDetail) {
       var product = segmentProduct(productDetail); // if PDP, we can also track clicks on images and social shares
@@ -985,7 +995,7 @@ var initSegment = function initSegment(writeKey) {
       // @ts-ignore
       analytics.invoked = !0; // @ts-ignore
 
-      analytics.methods = ['trackSubmit', 'trackClick', 'trackLink', 'trackForm', 'pageview', 'identify', 'reset', 'group', 'track', 'ready', 'alias', 'debug', 'page', 'once', 'off', 'on']; // @ts-ignore
+      analytics.methods = ['trackSubmit', 'trackClick', 'trackLink', 'trackForm', 'pageview', 'identify', 'reset', 'group', 'track', 'ready', 'alias', 'debug', 'page', 'once', 'off', 'on', 'addSourceMiddleware', 'addIntegrationMiddleware', 'setAnonymousId', 'addDestinationMiddleware']; // @ts-ignore
 
       analytics.factory = function (t) {
         return function () {
@@ -1021,6 +1031,7 @@ var initSegment = function initSegment(writeKey) {
 
       analytics.SNIPPET_VERSION = '4.1.0'; //eslint-disable-line
 
+      window.analytics.addSourceMiddleware(_addEmailToEvents__WEBPACK_IMPORTED_MODULE_1__["addEmailToEvents"]);
       window.analytics.load(writeKey || LittledataLayer.writeKey);
       writeKey && window.analytics.page();
     }
@@ -1052,15 +1063,36 @@ var callSegmentPage = function callSegmentPage(integrations) {
     context: getContext(),
     integrations: integrations
   });
-  var productDetail = Object(_common_getProductDetail__WEBPACK_IMPORTED_MODULE_3__["default"])();
+  var productDetail = Object(_common_getProductDetail__WEBPACK_IMPORTED_MODULE_4__["default"])();
 
   if (productDetail) {
     var properties = segmentProduct(productDetail);
     properties.currency = LittledataLayer.ecommerce.currencyCode;
     properties.position = parseInt(window.localStorage.getItem('position')) || 1;
-    var propertiesWithEmail = addEmailToProperties(properties);
-    trackEvent('Product Viewed', propertiesWithEmail);
+    trackEvent('Product Viewed', properties);
   }
+};
+
+/***/ }),
+/* 11 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "addEmailToEvents", function() { return addEmailToEvents; });
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var addEmailToEvents = function addEmailToEvents(_ref) {
+  var payload = _ref.payload,
+      next = _ref.next;
+  payload.obj = _objectSpread({}, payload.obj, {
+    properties: addEmailToProperties(payload.obj.properties)
+  });
+  next(payload);
 };
 
 var addEmailToProperties = function addEmailToProperties(properties) {

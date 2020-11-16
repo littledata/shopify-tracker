@@ -99,7 +99,7 @@ __webpack_require__.r(__webpack_exports__);
   Object(_common_helpers__WEBPACK_IMPORTED_MODULE_1__["validateLittledataLayer"])();
   Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["initGtag"])();
   Object(_common_helpers__WEBPACK_IMPORTED_MODULE_1__["advertiseLD"])('Google Analytics');
-  Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["trackEvents"])();
+  Object(_common_helpers__WEBPACK_IMPORTED_MODULE_1__["documentReady"])(_helpers__WEBPACK_IMPORTED_MODULE_0__["trackEvents"]);
   Object(_common_helpers__WEBPACK_IMPORTED_MODULE_1__["pageView"])(function () {
     Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["sendPageview"])();
   });
@@ -456,6 +456,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "trackSocialShares", function() { return trackSocialShares; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "validateLittledataLayer", function() { return validateLittledataLayer; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "advertiseLD", function() { return advertiseLD; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "documentReady", function() { return documentReady; });
 /* harmony import */ var _UrlChangeTracker__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -683,6 +684,16 @@ var advertiseLD = function advertiseLD(app) {
   if (!LittledataLayer.hideBranding) {
     var appURI = app === 'Segment' ? 'segment-com-by-littledata' : 'littledata';
     console.log("%c\nThis store uses Littledata \uD83D\uDE80 to automate its ".concat(app, " setup and make better, data-driven decisions. Learn more at http://apps.shopify.com/").concat(appURI, " \n"), 'color: #088f87;');
+  }
+};
+var documentReady = function documentReady(callback) {
+  // see if DOM is already available
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    // call on next available tick
+    setTimeout(callback, 1);
+  } else {
+    // @ts-ignore
+    document.addEventListener('DOMContentLoaded', callback);
   }
 };
 
