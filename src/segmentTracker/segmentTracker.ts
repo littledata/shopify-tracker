@@ -1,7 +1,7 @@
 /* eslint-env browser */
 /* global LittledataLayer */
 declare let window: CustomWindow;
-import { pageView, validateLittledataLayer, advertiseLD, setClientID } from '../common/helpers';
+import { pageView, validateLittledataLayer, advertiseLD, setClientID, documentReady } from '../common/helpers';
 import { identifyCustomer, trackEvents, initSegment, callSegmentPage } from './helpers';
 
 (function() {
@@ -9,7 +9,7 @@ import { identifyCustomer, trackEvents, initSegment, callSegmentPage } from './h
 	initSegment();
 	advertiseLD('Segment');
 	identifyCustomer(LittledataLayer.customer);
-	trackEvents();
+	documentReady(trackEvents);
 	pageView(function() {
 		callSegmentPage({});
 		window.analytics.ready(() => {

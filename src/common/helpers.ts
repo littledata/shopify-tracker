@@ -240,3 +240,14 @@ export const advertiseLD = (app: string) => {
 		);
 	}
 };
+
+export const documentReady = (callback: Function) => {
+	// see if DOM is already available
+	if (document.readyState === 'complete' || document.readyState === 'interactive') {
+		// call on next available tick
+		setTimeout(callback, 1);
+	} else {
+		// @ts-ignore
+		document.addEventListener('DOMContentLoaded', callback);
+	}
+};
