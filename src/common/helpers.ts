@@ -1,8 +1,9 @@
 /* global LittledataLayer */
 declare let window: CustomWindow;
 
-import { clientID } from '../../index';
 import UrlChangeTracker from './UrlChangeTracker';
+import { clientID } from '../../index';
+import { customTask } from '../gaTracker/customTask';
 
 /**
  *
@@ -88,11 +89,10 @@ export const setCartOnlyAttributes = (setAttributes: LooseObject) => {
 
 const attributes: Cart.Attributes = {}; //persist any previous attributes sent from this page
 
-function postClientID(getClientId: () => string, platform: string, sendCartToLittledata: boolean) {
+function postClientID(clientId: string, platform: string, sendCartToLittledata: boolean) {
 	const attribute = `${platform}-clientID`;
-	const clientID = getClientId();
-	if (typeof clientID !== 'string' || clientID.length === 0) return;
-	(attributes as any)[attribute] = clientID;
+	if (typeof clientId !== 'string' || clientId.length === 0) return;
+	(attributes as any)[attribute] = clientId;
 
 	clearTimeout(postCartTimeout);
 	// timeout is to allow 2 client IDs posted within 1 second
@@ -137,7 +137,7 @@ function postCartToLittledata(cart: Cart.RootObject) {
 	httpRequest.send(JSON.stringify(cart));
 }
 
-export function setClientID(getClientId: () => string, platform: 'google' | 'segment' | 'email') {
+export function setClientID(clientId: string, platform: 'google' | 'segment' | 'email') {
 	const { cart } = LittledataLayer;
 	const cartAttributes = (cart && cart.attributes) || {};
 	const clientIDProperty = `${platform}-clientID` as clientID;
@@ -147,8 +147,8 @@ export function setClientID(getClientId: () => string, platform: 'google' | 'seg
 		!cartAttributes[clientIDProperty] // don't resend for the same cart
 	) {
 		// set it on data layer, so subsequent setClientID call is ignored
-		LittledataLayer[clientIDProperty] = getClientId();
-		postClientID(getClientId, platform, false);
+		LittledataLayer[clientIDProperty] = clientId;
+		postClientID(clientId, platform, false);
 	}
 
 	const updatedAt = cartAttributes.littledata_updatedAt;
@@ -160,7 +160,7 @@ export function setClientID(getClientId: () => string, platform: 'google' | 'seg
 		// only need to resend cart if it's expired from our Redis cache
 		if (timePassed > timeout) {
 			//cart from LittledataLayer may have no token, so we need to fetch from API before storing
-			postClientID(getClientId, platform, true);
+			postClientID(clientId, platform, true);
 		}
 	}
 }
@@ -238,5 +238,30 @@ export const advertiseLD = (app: string) => {
 			`%c\nThis store uses Littledata 🚀 to automate its ${app} setup and make better, data-driven decisions. Learn more at http://apps.shopify.com/${appURI} \n`,
 			'color: #088f87;',
 		);
+	}
+};
+
+export function retrieveAndStoreClientId(withCustomTask: boolean = false) {
+	const clientIdPromise = new Promise(resolve => {
+		// @ts-ignore
+		gtag('get', LittledataLayer.webPropertyID, 'client_id', resolve);
+	});
+
+	clientIdPromise.then((clientId: string) => {
+		if (withCustomTask) {
+			setCustomTask();
+		}
+
+		return setClientID(clientId, 'google');
+	});
+}
+
+const setCustomTask = () => {
+	const trackers = window.ga && window.ga.getAll && window.ga.getAll();
+	if (!trackers || !trackers.length) return;
+
+	const MPEndpointLength = LittledataLayer.MPEndpoint && LittledataLayer.MPEndpoint.length;
+	if (MPEndpointLength) {
+		trackers[0].set('customTask', customTask(LittledataLayer.MPEndpoint));
 	}
 };
