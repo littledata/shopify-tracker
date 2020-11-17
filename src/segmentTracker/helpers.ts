@@ -219,7 +219,7 @@ export const callSegmentPage = (integrations: Record<string, any>) => {
 		const properties = segmentProduct(productDetail);
 		properties.currency = LittledataLayer.ecommerce.currencyCode;
 		properties.position = parseInt(window.localStorage.getItem('position')) || 1;
-		window.analytics.ready(() => {
+		window.analytics.ready(() => { //need to wait for anonymousId to be available
 			trackEvent('Product Viewed', properties);
 		});
 	}
