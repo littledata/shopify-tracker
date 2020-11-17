@@ -6,9 +6,12 @@ import {
 	trackSocialShares,
 	setCartOnlyAttributes,
 } from '../common/helpers';
+import { addEmailToEvents } from './addEmailToEvents';
+
 import { getCookie } from '../common/getCookie';
 import productListViews from '../common/productListViews';
 import getProductDetail from '../common/getProductDetail';
+import { SegmentProduct } from '../../segmentInterface';
 
 const getContext = () => {
 	return {
@@ -23,24 +26,6 @@ const trackEvent = (eventName: string, params: object) => {
 	// @ts-ignore
 	window.analytics.track(eventName, params, { context: getContext() });
 };
-
-interface SegmentProduct {
-	brand: string;
-	category: string;
-	url: string;
-	product_id: string;
-	sku: string;
-	position: number;
-	name: string;
-	price: number;
-	variant: string;
-	list_id?: string;
-	image_url?: string;
-	currency?: string;
-	shopify_product_id?: string;
-	shopify_variant_id?: string;
-	compare_at_price?: string;
-}
 
 const segmentProduct = (dataLayerProduct: Detail): SegmentProduct => ({
 	brand: dataLayerProduct.brand,
@@ -88,9 +73,8 @@ export const trackEvents = () => {
 				const pos = productFromImpressions && productFromImpressions.list_position;
 				window.localStorage.setItem('position', String(pos));
 
-				const p = segmentProduct(product);
 				trackEvent('Product Clicked', {
-					...p,
+					...segmentProduct(product),
 					currency: LittledataLayer.ecommerce.currencyCode,
 					list_id: product.list,
 				});
@@ -157,7 +141,12 @@ export const initSegment = (writeKey?) => {
 				'once',
 				'off',
 				'on',
+				'addSourceMiddleware',
+				'addIntegrationMiddleware',
+				'setAnonymousId',
+				'addDestinationMiddleware',
 			];
+
 			// @ts-ignore
 			analytics.factory = function(t) {
 				return function() {
@@ -165,6 +154,7 @@ export const initSegment = (writeKey?) => {
 					e.unshift(t);
 					// @ts-ignore
 					analytics.push(e);
+					// @ts-ignore
 					return analytics;
 				};
 			};
@@ -175,6 +165,7 @@ export const initSegment = (writeKey?) => {
 				// @ts-ignore
 				analytics[e] = analytics.factory(e);
 			}
+
 			// @ts-ignore
 			analytics.load = function(t, e) {
 				var n = document.createElement('script');
@@ -188,6 +179,7 @@ export const initSegment = (writeKey?) => {
 			};
 			// @ts-ignore
 			analytics.SNIPPET_VERSION = '4.1.0'; //eslint-disable-line
+			window.analytics.addSourceMiddleware(addEmailToEvents);
 			window.analytics.load(writeKey || LittledataLayer.writeKey);
 			writeKey && window.analytics.page();
 		}
@@ -224,9 +216,12 @@ export const callSegmentPage = (integrations: Record<string, any>) => {
 
 	const productDetail = getProductDetail();
 	if (productDetail) {
-		const product = segmentProduct(productDetail);
-		product.currency = LittledataLayer.ecommerce.currencyCode;
-		product.position = parseInt(window.localStorage.getItem('position')) || 1;
-		trackEvent('Product Viewed', product);
+		const properties = segmentProduct(productDetail);
+		properties.currency = LittledataLayer.ecommerce.currencyCode;
+		properties.position = parseInt(window.localStorage.getItem('position')) || 1;
+		window.analytics.ready(() => {
+			//need to wait for anonymousId to be available
+			trackEvent('Product Viewed', properties);
+		});
 	}
 };
