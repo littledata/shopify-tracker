@@ -30,9 +30,8 @@ export const initGtag = () => {
 			(window.ga.q = window.ga.q || []).push(arguments);
 		};
 	window.ga.l = +new Date();
-	window.ga(() => {
-		retrieveAndStoreClientId(true);
-	});
+
+	retrieveAndStoreClientId(true);
 
 	// @ts-ignore
 	gtag('js', new Date());
