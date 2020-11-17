@@ -1,6 +1,7 @@
 /* global LittledataLayer */
 declare let window: CustomWindow;
 
+import { clientID } from '../../index';
 import UrlChangeTracker from './UrlChangeTracker';
 
 /**
@@ -85,12 +86,7 @@ export const setCartOnlyAttributes = (setAttributes: LooseObject) => {
 	});
 };
 
-interface PostAttributes {
-	littledata_updatedAt?: number;
-	'google-clientID'?: string;
-	'segment-clientID'?: string;
-}
-const attributes: PostAttributes = {}; //persist any previous attributes sent from this page
+const attributes: Cart.Attributes = {}; //persist any previous attributes sent from this page
 
 function postClientID(getClientId: () => string, platform: string, sendCartToLittledata: boolean) {
 	const attribute = `${platform}-clientID`;
@@ -141,10 +137,10 @@ function postCartToLittledata(cart: Cart.RootObject) {
 	httpRequest.send(JSON.stringify(cart));
 }
 
-export function setClientID(getClientId: () => string, platform: 'google' | 'segment') {
+export function setClientID(getClientId: () => string, platform: 'google' | 'segment' | 'email') {
 	const { cart } = LittledataLayer;
 	const cartAttributes = (cart && cart.attributes) || {};
-	const clientIDProperty = `${platform}-clientID` as 'google-clientID' | 'segment-clientID';
+	const clientIDProperty = `${platform}-clientID` as clientID;
 
 	if (
 		!LittledataLayer[clientIDProperty] && // don't resend for the same page
@@ -229,7 +225,7 @@ export const trackSocialShares = (clickTag: (name?: string) => void) => {
 };
 
 export const validateLittledataLayer = () => {
-	window.LittledataScriptVersion = '9.1';
+	window.LittledataScriptVersion = '9.2';
 	if (!window.LittledataLayer) {
 		throw new Error('Aborting Littledata tracking as LittledataLayer was not found');
 	}
@@ -242,5 +238,16 @@ export const advertiseLD = (app: string) => {
 			`%c\nThis store uses Littledata 🚀 to automate its ${app} setup and make better, data-driven decisions. Learn more at http://apps.shopify.com/${appURI} \n`,
 			'color: #088f87;',
 		);
+	}
+};
+
+export const documentReady = (callback: Function) => {
+	// see if DOM is already available
+	if (document.readyState === 'complete' || document.readyState === 'interactive') {
+		// call on next available tick
+		setTimeout(callback, 1);
+	} else {
+		// @ts-ignore
+		document.addEventListener('DOMContentLoaded', callback);
 	}
 };
