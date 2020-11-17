@@ -219,6 +219,8 @@ export const callSegmentPage = (integrations: Record<string, any>) => {
 		const properties = segmentProduct(productDetail);
 		properties.currency = LittledataLayer.ecommerce.currencyCode;
 		properties.position = parseInt(window.localStorage.getItem('position')) || 1;
-		trackEvent('Product Viewed', properties);
+		window.analytics.ready(() => {
+			trackEvent('Product Viewed', properties);
+		});
 	}
 };
