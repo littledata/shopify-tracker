@@ -1015,7 +1015,9 @@ var callSegmentPage = function callSegmentPage(integrations) {
     var properties = segmentProduct(productDetail);
     properties.currency = LittledataLayer.ecommerce.currencyCode;
     properties.position = parseInt(window.localStorage.getItem('position')) || 1;
-    trackEvent('Product Viewed', properties);
+    window.analytics.ready(function () {
+      trackEvent('Product Viewed', properties);
+    });
   }
 };
 
