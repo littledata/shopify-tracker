@@ -81,7 +81,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 14);
+/******/ 	return __webpack_require__(__webpack_require__.s = 9);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -805,7 +805,61 @@ var chunk = function chunk(arr, size) {
 };
 
 /***/ }),
-/* 9 */,
+/* 9 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _common_helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3);
+/* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(10);
+
+
+
+(function () {
+  Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["validateLittledataLayer"])();
+  Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["initSegment"])();
+  Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["advertiseLD"])('Segment');
+  Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["identifyCustomer"])(LittledataLayer.customer);
+  Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["documentReady"])(_helpers__WEBPACK_IMPORTED_MODULE_1__["trackEvents"]);
+  Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["pageView"])(function () {
+    Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["callSegmentPage"])({});
+    window.analytics.ready(function () {
+      // @ts-ignore 'Integrations' property does, in fact exist
+      if (window.analytics.Integrations['Google Analytics']) {
+        window.ga(function () {
+          var tracker = window.ga.getAll()[0];
+
+          if (tracker) {
+            var getClientID = function getClientID() {
+              return tracker.get('clientId');
+            };
+
+            Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(getClientID, 'google');
+          }
+        });
+      }
+
+      var user = window.analytics.user;
+
+      if (user) {
+        Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(user().anonymousId, 'segment');
+
+        var _user$traits = user().traits(),
+            email = _user$traits.email;
+
+        if (email) {
+          var returnEmail = function returnEmail() {
+            return email;
+          };
+
+          Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(returnEmail, 'email');
+        }
+      }
+    });
+  });
+})();
+
+/***/ }),
 /* 10 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -1052,98 +1106,6 @@ var addEmailToProperties = function addEmailToProperties(properties) {
   }
 
   return properties;
-};
-
-/***/ }),
-/* 12 */,
-/* 13 */,
-/* 14 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(15);
-/* harmony import */ var _segmentTracker_helpers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(10);
-
-
-
-(function () {
-  // @ts-ignore
-  if (window.Shopify.Checkout && window.Shopify.Checkout.page === 'thank_you') {
-    // @ts-ignore
-    var scriptSrc = document.currentScript.src;
-
-    var _getProperties = Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["getProperties"])(scriptSrc),
-        segmentProperty = _getProperties.segmentProperty;
-
-    if (!segmentProperty) {
-      throw new Error('Could not add segment thank you page script beacuse of missing segmentProperty');
-    }
-
-    Object(_segmentTracker_helpers__WEBPACK_IMPORTED_MODULE_1__["initSegment"])(segmentProperty); // @ts-ignore
-
-    var checkout = window.Shopify.checkout; // @ts-ignore
-
-    var products = checkout.line_items.map(function (product) {
-      return {
-        brand: product.vendor,
-        category: product.category,
-        url: product.handle,
-        product_id: product.sku,
-        position: product.list_position,
-        name: product.title,
-        price: parseFloat(product.price),
-        variant: product.variant_title,
-        quantity: product.quantity
-      };
-    }); // @ts-ignore
-
-    var orderNumberHTML = document.getElementsByClassName('os-order-number')[0].innerHTML;
-
-    if (!orderNumberHTML) {
-      throw new Error('Could not add segment thank you page script beacuse of missing order number in HTML');
-    }
-
-    var indexOfNumber = orderNumberHTML.indexOf('#');
-    var orderNumber = orderNumberHTML.substring(indexOfNumber).trim(); // @ts-ignore
-
-    analytics.track('Thank you page', {
-      properties: {
-        coupon: checkout.coupon,
-        currency: checkout.currency,
-        discount: checkout.discount,
-        email: checkout.email,
-        order_id: orderNumber,
-        presentment_currency: checkout.presentment_currency,
-        presentment_total: checkout.total_price_set && checkout.total_price_set.presentment_money && checkout.total_price_set.presentment_money.amount,
-        products: products,
-        sent_from: 'Littledata app',
-        shipping: checkout.shipping_rate && checkout.shipping_rate.price,
-        tax: checkout.total_tax,
-        total: checkout.total_price
-      }
-    });
-  }
-})();
-
-/***/ }),
-/* 15 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getProperties", function() { return getProperties; });
-var getProperties = function getProperties(scriptSrc) {
-  var startIndexGa = scriptSrc.indexOf('webPropertyId=');
-  var endIndexGa = scriptSrc.indexOf('&', startIndexGa);
-  var webPropertyId = startIndexGa && scriptSrc.substring(startIndexGa + 14, endIndexGa > -1 ? endIndexGa : scriptSrc.length);
-  var startIndexSegment = scriptSrc.indexOf('segmentProperty=');
-  var endIndexSegment = scriptSrc.indexOf('&', startIndexSegment);
-  var segmentProperty = startIndexSegment && scriptSrc.substring(startIndexSegment + 16, endIndexSegment ? endIndexSegment : scriptSrc.length);
-  return {
-    webPropertyId: webPropertyId,
-    segmentProperty: segmentProperty
-  };
 };
 
 /***/ })
