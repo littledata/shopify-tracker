@@ -6,12 +6,10 @@ import {
 	productListClicks,
 	removePii,
 	retrieveAndStoreClientId,
-	setClientID,
 	trackProductImageClicks,
 	trackSocialShares,
 } from '../common/helpers';
 
-import { customTask } from './customTask';
 import getProductDetail from '../common/getProductDetail';
 import productListViews from '../common/productListViews';
 
@@ -66,22 +64,7 @@ export const sendPageview = () => {
 	const product = getProductDetail();
 	if (product) {
 		product.list_position = parseInt(window.localStorage.getItem('position')) || 1;
-		gtag('event', 'view_item', {
-			event_category,
-			items: [filterGAProductFields(product)],
-			non_interaction: true,
-			send_to: LittledataLayer.webPropertyID,
-		});
-
-		dataLayer.push({
-			event: 'view_item',
-			ecommerce: {
-				detail: {
-					actionField: { list: product.list_name },
-					products: [product],
-				},
-			},
-		});
+		sendViewItemEvent(product);
 	}
 };
 
@@ -95,42 +78,12 @@ export const trackEvents = () => {
 
 			const pos = productFromImpressions && productFromImpressions.list_position;
 			window.localStorage.setItem('position', String(pos));
-			dataLayer.push({
-				event: 'select_content',
-				ecommerce: {
-					click: {
-						actionField: { list: product.list_name },
-						products: [product],
-					},
-				},
-			});
 
-			gtag('event', 'select_content', {
-				event_category,
-				content_type: 'product',
-				items: [filterGAProductFields(product)],
-				send_to: LittledataLayer.webPropertyID,
-				event_callback() {
-					window.clearTimeout(self.timeout);
-					document.location.href = self.href;
-				},
-			});
+			sendSelectContentEvent(product, self);
 		});
 
 		productListViews((products: Impression[]) => {
-			const gaProducts = products.map(product => filterGAProductFields(product));
-			gtag('event', 'view_item_list', {
-				event_category,
-				items: gaProducts,
-				send_to: LittledataLayer.webPropertyID,
-				non_interaction: true,
-			});
-			dataLayer.push({
-				event: 'view_item_list',
-				ecommerce: {
-					impressions: products,
-				},
-			});
+			sendViewItemListEvent(products);
 		});
 	}
 
@@ -252,3 +205,106 @@ const addUTMMediumIfMissing = (url: string) => {
 
 	return url.replace(sourceTag, utmTags);
 };
+
+function sendViewItemListEvent(products: Impression[]): void {
+	if (isGa4Format()) {
+		const listName = (products && products.length && products[0].list_name) || '';
+		gtag('event', 'view_item_list', {
+			items: convertProductsToGa4Format(products),
+			item_list_name: listName,
+			item_list_id: listName,
+		});
+	} else {
+		const gaProducts = products.map(product => filterGAProductFields(product));
+		gtag('event', 'view_item_list', {
+			event_category,
+			items: gaProducts,
+			send_to: LittledataLayer.webPropertyID,
+			non_interaction: true,
+		});
+	}
+
+	dataLayer.push({
+		event: 'view_item_list',
+		ecommerce: {
+			impressions: products,
+		},
+	});
+}
+
+function sendViewItemEvent(product: Detail): void {
+	if (isGa4Format()) {
+		gtag('event', 'view_item', {
+			items: [convertProductsToGa4Format(new Array(product))],
+		});
+	} else {
+		gtag('event', 'view_item', {
+			event_category,
+			items: [filterGAProductFields(product)],
+			non_interaction: true,
+			send_to: LittledataLayer.webPropertyID,
+		});
+	}
+
+	dataLayer.push({
+		event: 'view_item',
+		ecommerce: {
+			detail: {
+				actionField: { list: product.list_name },
+				products: [product],
+			},
+		},
+	});
+}
+
+function sendSelectContentEvent(product: Detail, self: TimeBombHTMLAnchor): void {
+	dataLayer.push({
+		event: 'select_content',
+		ecommerce: {
+			click: {
+				actionField: { list: product.list_name },
+				products: [product],
+			},
+		},
+	});
+
+	if (isGa4Format()) {
+		gtag('event', 'select_content', {
+			items: [convertProductsToGa4Format(new Array(product))],
+			event_callback() {
+				window.clearTimeout(self.timeout);
+				document.location.href = self.href;
+			},
+		});
+	} else {
+		gtag('event', 'select_content', {
+			event_category,
+			content_type: 'product',
+			items: [filterGAProductFields(product)],
+			send_to: LittledataLayer.webPropertyID,
+			event_callback() {
+				window.clearTimeout(self.timeout);
+				document.location.href = self.href;
+			},
+		});
+	}
+}
+
+function isGa4Format(): boolean {
+	return LittledataLayer.webPropertyID && LittledataLayer.webPropertyID.includes('G-');
+}
+
+function convertProductsToGa4Format(products: Detail[]): LooseObject {
+	return products.map(product => {
+		return {
+			currency: (LittledataLayer.ecommerce && LittledataLayer.ecommerce.currencyCode) || '',
+			item_id: product.id,
+			item_name: product.name,
+			item_brand: product.brand,
+			item_category: product.category,
+			item_variant: product.variant,
+			price: product.price,
+			index: product.list_position,
+		};
+	});
+}
