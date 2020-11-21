@@ -103,3 +103,9 @@ Example: `['iterableEmailCampaignId]` (array)
 If you wish to direct the Measurement Protocol hits to a custom collection endpoint of your choosing, add it here. **NOTE**: this will block the sending of hits to Google Analytics.
 
 Example: `https://collector.littledata.io/collect` (string)
+
+**CDNForAnalyticsJS**
+
+If you have a [proxy CDN setup](https://segment.com/docs/connections/sources/catalog/libraries/website/javascript/custom-proxy/), redirecting to `https://cdn.segment.com`, to load Segment's AnalyticsJS library from your own domain you can specify it here. It must include the full domain, with no trailing slash.
+
+Default: `https://cdn.segment.com` (string)

@@ -111,7 +111,7 @@ export const trackEvents = () => {
 	}
 };
 
-export const initSegment = (writeKey?: string) => {
+export const initSegment = () => {
 	// Create a queue, but don't obliterate an existing one!
 	// @ts-ignore
 	const analytics: any = (window.analytics = window.analytics || []);
@@ -162,14 +162,17 @@ export const initSegment = (writeKey?: string) => {
 		analytics[e] = analytics.factory(e);
 	}
 
-	// Define a method to load Analytics.js from our CDN,
+	// use custom CDN path, or fallback to Segment's CDN
+	const CDNdomain = LittledataLayer.CDNForAnalyticsJS || 'https://cdn.segment.com';
+
+	// Define a method to load Analytics.js from CDN,
 	// and that will be sure to only ever load it once.
 	analytics.load = function(key: string, options: LooseObject) {
 		// Create an async script element based on your key.
 		var script = document.createElement('script');
 		script.type = 'text/javascript';
 		script.async = true;
-		script.src = 'https://cdn.segment.com/analytics.js/v1/' + key + '/analytics.min.js';
+		script.src = `${CDNdomain}/analytics.js/v1/${key}/analytics.min.js`;
 
 		// Insert our script next to the first script element.
 		var first = document.getElementsByTagName('script')[0];
@@ -181,7 +184,7 @@ export const initSegment = (writeKey?: string) => {
 	analytics.SNIPPET_VERSION = '4.1.0';
 
 	analytics.addSourceMiddleware(addEmailToEvents);
-	analytics.load(writeKey || LittledataLayer.writeKey);
+	analytics.load(LittledataLayer.writeKey);
 	analytics.page();
 	window.dataLayer = window.dataLayer || [];
 };

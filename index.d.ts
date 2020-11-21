@@ -135,6 +135,7 @@ declare global {
 		cookiesToTrack?: string[];
 		doNotTrackReplaceState?: boolean;
 		MPEndpoint?: string;
+		CDNForAnalyticsJS?: string;
 	}
 
 	var LittledataLayer: OwnLayer;
