@@ -5,6 +5,7 @@ import { getCookie, getValidGAClientId } from '../common/getCookie';
 import {
 	productListClicks,
 	removePii,
+	retrieveAndStoreClientId,
 	setClientID,
 	trackProductImageClicks,
 	trackSocialShares,
@@ -29,9 +30,8 @@ export const initGtag = () => {
 			(window.ga.q = window.ga.q || []).push(arguments);
 		};
 	window.ga.l = +new Date();
-	window.ga(() => {
-		waitForGaToLoad();
-	});
+
+	retrieveAndStoreClientId(true);
 
 	// @ts-ignore
 	gtag('js', new Date());
@@ -40,29 +40,6 @@ export const initGtag = () => {
 		send_page_view: false,
 	});
 };
-
-let postClientIdTimeout: any;
-let nextTimeout = 10;
-const maximumTimeout = 524288000; // about 6 hours in seconds
-
-function waitForGaToLoad() {
-	// After GA queue is executed we need to wait
-	// until after ga.getAll is available but before hit is sent
-	const trackers = window.ga && window.ga.getAll && window.ga.getAll();
-	if (trackers && trackers.length) {
-		setCustomTask(trackers[0]);
-		return setClientID(getGtagClientId, 'google');
-	}
-
-	if (nextTimeout > maximumTimeout) return; // stop if not found already
-	nextTimeout *= 2;
-
-	clearTimeout(postClientIdTimeout);
-
-	postClientIdTimeout = window.setTimeout(function() {
-		waitForGaToLoad();
-	}, nextTimeout);
-}
 
 export const sendPageview = () => {
 	const page_title = removePii(document.title);
@@ -107,15 +84,6 @@ export const sendPageview = () => {
 		});
 	}
 };
-
-function getGtagClientId(): string {
-	// @ts-ignore
-	const trackers = ga.getAll();
-	if (!trackers || !trackers.length) return '';
-
-	const clientId = trackers[0].get('clientId');
-	return getValidGAClientId(clientId) ? clientId : '';
-}
 
 export const trackEvents = () => {
 	/* run list, product, and clientID scripts everywhere */
@@ -268,13 +236,6 @@ export const getConfig = (): Gtag.CustomParams => {
 	}
 
 	return config;
-};
-
-const setCustomTask = (tracker: LooseObject) => {
-	const MPEndpointLength = LittledataLayer.MPEndpoint && LittledataLayer.MPEndpoint.length;
-	if (MPEndpointLength) {
-		tracker.set('customTask', customTask(LittledataLayer.MPEndpoint));
-	}
 };
 
 const addUTMMediumIfMissing = (url: string) => {
