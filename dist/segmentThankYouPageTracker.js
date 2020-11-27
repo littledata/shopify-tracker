@@ -137,13 +137,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "trackSocialShares", function() { return trackSocialShares; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "validateLittledataLayer", function() { return validateLittledataLayer; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "advertiseLD", function() { return advertiseLD; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "retrieveAndStoreClientId", function() { return retrieveAndStoreClientId; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "documentReady", function() { return documentReady; });
 /* harmony import */ var _UrlChangeTracker__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
+/* harmony import */ var _gaTracker_customTask__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(6);
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 
 
 /**
@@ -226,11 +229,10 @@ var setCartOnlyAttributes = function setCartOnlyAttributes(setAttributes) {
 };
 var attributes = {}; //persist any previous attributes sent from this page
 
-function postClientID(getClientId, platform, sendCartToLittledata) {
+function postClientID(clientId, platform, sendCartToLittledata) {
   var attribute = "".concat(platform, "-clientID");
-  var clientID = getClientId();
-  if (typeof clientID !== 'string' || clientID.length === 0) return;
-  attributes[attribute] = clientID;
+  if (typeof clientId !== 'string' || clientId.length === 0) return;
+  attributes[attribute] = clientId;
   clearTimeout(postCartTimeout); // timeout is to allow 2 client IDs posted within 1 second
   // to be included in the same cart update
 
@@ -273,7 +275,7 @@ function postCartToLittledata(cart) {
   httpRequest.send(JSON.stringify(cart));
 }
 
-function setClientID(getClientId, platform) {
+function setClientID(clientId, platform) {
   var _LittledataLayer = LittledataLayer,
       cart = _LittledataLayer.cart;
   var cartAttributes = cart && cart.attributes || {};
@@ -283,8 +285,8 @@ function setClientID(getClientId, platform) {
   !cartAttributes[clientIDProperty] // don't resend for the same cart
   ) {
       // set it on data layer, so subsequent setClientID call is ignored
-      LittledataLayer[clientIDProperty] = getClientId();
-      postClientID(getClientId, platform, false);
+      LittledataLayer[clientIDProperty] = clientId;
+      postClientID(clientId, platform, false);
     }
 
   var updatedAt = cartAttributes.littledata_updatedAt;
@@ -297,7 +299,7 @@ function setClientID(getClientId, platform) {
 
     if (timePassed > timeout) {
       //cart from LittledataLayer may have no token, so we need to fetch from API before storing
-      postClientID(getClientId, platform, true);
+      postClientID(clientId, platform, true);
     }
   }
 }
@@ -367,6 +369,31 @@ var advertiseLD = function advertiseLD(app) {
     console.log("%c\nThis store uses Littledata \uD83D\uDE80 to automate its ".concat(app, " setup and make better, data-driven decisions. Learn more at http://apps.shopify.com/").concat(appURI, " \n"), 'color: #088f87;');
   }
 };
+function retrieveAndStoreClientId() {
+  var withCustomTask = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+  var clientIdPromise = new Promise(function (resolve) {
+    // @ts-ignore
+    gtag('get', LittledataLayer.webPropertyID, 'client_id', resolve);
+  });
+  clientIdPromise.then(function (clientId) {
+    if (withCustomTask) {
+      setCustomTask();
+    }
+
+    return setClientID(clientId, 'google');
+  });
+}
+
+var setCustomTask = function setCustomTask() {
+  var trackers = window.ga && window.ga.getAll && window.ga.getAll();
+  if (!trackers || !trackers.length) return;
+  var MPEndpointLength = LittledataLayer.MPEndpoint && LittledataLayer.MPEndpoint.length;
+
+  if (MPEndpointLength) {
+    trackers[0].set('customTask', Object(_gaTracker_customTask__WEBPACK_IMPORTED_MODULE_1__["customTask"])(LittledataLayer.MPEndpoint));
+  }
+};
+
 var documentReady = function documentReady(callback) {
   // see if DOM is already available
   if (document.readyState === 'complete' || document.readyState === 'interactive') {
@@ -693,7 +720,34 @@ function getOrCreateMethodChain(context, methodName) {
 
 
 /***/ }),
-/* 6 */,
+/* 6 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "customTask", function() { return customTask; });
+var customTask = function customTask(endpoint) {
+  return function (customTaskModel) {
+    window._ga_originalSendHitTask = window._ga_originalSendHitTask || customTaskModel.get('sendHitTask');
+    customTaskModel.set('sendHitTask', function (sendHitTaskModel) {
+      var originalSendHitTask = window._ga_originalSendHitTask;
+
+      try {
+        originalSendHitTask(sendHitTaskModel);
+        var hitPayload = sendHitTaskModel.get('hitPayload');
+        var request = new XMLHttpRequest();
+        request.open('POST', endpoint, true);
+        request.withCredentials = false;
+        request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        request.send(hitPayload);
+      } catch (err) {
+        originalSendHitTask(sendHitTaskModel);
+      }
+    });
+  };
+};
+
+/***/ }),
 /* 7 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 

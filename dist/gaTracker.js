@@ -118,9 +118,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getConfig", function() { return getConfig; });
 /* harmony import */ var _common_getCookie__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
 /* harmony import */ var _common_helpers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3);
-/* harmony import */ var _customTask__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(6);
-/* harmony import */ var _common_getProductDetail__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(7);
-/* harmony import */ var _common_productListViews__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(8);
+/* harmony import */ var _common_getProductDetail__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(7);
+/* harmony import */ var _common_productListViews__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(8);
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
@@ -136,7 +135,6 @@ function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (O
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 
 
 
@@ -158,38 +156,13 @@ var initGtag = function initGtag() {
   };
 
   window.ga.l = +new Date();
-  window.ga(function () {
-    waitForGaToLoad();
-  }); // @ts-ignore
+  Object(_common_helpers__WEBPACK_IMPORTED_MODULE_1__["retrieveAndStoreClientId"])(true); // @ts-ignore
 
   gtag('js', new Date());
   gtag('config', LittledataLayer.webPropertyID, _objectSpread({}, getConfig(), {
     send_page_view: false
   }));
 };
-var postClientIdTimeout;
-var nextTimeout = 10;
-var maximumTimeout = 524288000; // about 6 hours in seconds
-
-function waitForGaToLoad() {
-  // After GA queue is executed we need to wait
-  // until after ga.getAll is available but before hit is sent
-  var trackers = window.ga && window.ga.getAll && window.ga.getAll();
-
-  if (trackers && trackers.length) {
-    setCustomTask(trackers[0]);
-    return Object(_common_helpers__WEBPACK_IMPORTED_MODULE_1__["setClientID"])(getGtagClientId, 'google');
-  }
-
-  if (nextTimeout > maximumTimeout) return; // stop if not found already
-
-  nextTimeout *= 2;
-  clearTimeout(postClientIdTimeout);
-  postClientIdTimeout = window.setTimeout(function () {
-    waitForGaToLoad();
-  }, nextTimeout);
-}
-
 var sendPageview = function sendPageview() {
   var page_title = Object(_common_helpers__WEBPACK_IMPORTED_MODULE_1__["removePii"])(document.title);
   var locationWithMedium = addUTMMediumIfMissing(document.location.href);
@@ -211,7 +184,7 @@ var sendPageview = function sendPageview() {
     });
   }
 
-  var product = Object(_common_getProductDetail__WEBPACK_IMPORTED_MODULE_3__["default"])();
+  var product = Object(_common_getProductDetail__WEBPACK_IMPORTED_MODULE_2__["default"])();
 
   if (product) {
     product.list_position = parseInt(window.localStorage.getItem('position')) || 1;
@@ -234,15 +207,6 @@ var sendPageview = function sendPageview() {
     });
   }
 };
-
-function getGtagClientId() {
-  // @ts-ignore
-  var trackers = ga.getAll();
-  if (!trackers || !trackers.length) return '';
-  var clientId = trackers[0].get('clientId');
-  return Object(_common_getCookie__WEBPACK_IMPORTED_MODULE_0__["getValidGAClientId"])(clientId) ? clientId : '';
-}
-
 var trackEvents = function trackEvents() {
   /* run list, product, and clientID scripts everywhere */
   if (LittledataLayer.ecommerce.impressions.length) {
@@ -274,7 +238,7 @@ var trackEvents = function trackEvents() {
         }
       });
     });
-    Object(_common_productListViews__WEBPACK_IMPORTED_MODULE_4__["default"])(function (products) {
+    Object(_common_productListViews__WEBPACK_IMPORTED_MODULE_3__["default"])(function (products) {
       var gaProducts = products.map(function (product) {
         return filterGAProductFields(product);
       });
@@ -293,7 +257,7 @@ var trackEvents = function trackEvents() {
     });
   }
 
-  var product = Object(_common_getProductDetail__WEBPACK_IMPORTED_MODULE_3__["default"])();
+  var product = Object(_common_getProductDetail__WEBPACK_IMPORTED_MODULE_2__["default"])();
 
   if (product) {
     // if PDP, we can also track clicks on images and social shares
@@ -381,14 +345,6 @@ var getConfig = function getConfig() {
   return config;
 };
 
-var setCustomTask = function setCustomTask(tracker) {
-  var MPEndpointLength = LittledataLayer.MPEndpoint && LittledataLayer.MPEndpoint.length;
-
-  if (MPEndpointLength) {
-    tracker.set('customTask', Object(_customTask__WEBPACK_IMPORTED_MODULE_2__["customTask"])(LittledataLayer.MPEndpoint));
-  }
-};
-
 var addUTMMediumIfMissing = function addUTMMediumIfMissing(url) {
   var utmMedium = /(\?|&)utm_medium=/;
   var utmSource = /utm_source=[a-z,A-Z,0-9,-,_]+/;
@@ -456,13 +412,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "trackSocialShares", function() { return trackSocialShares; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "validateLittledataLayer", function() { return validateLittledataLayer; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "advertiseLD", function() { return advertiseLD; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "retrieveAndStoreClientId", function() { return retrieveAndStoreClientId; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "documentReady", function() { return documentReady; });
 /* harmony import */ var _UrlChangeTracker__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
+/* harmony import */ var _gaTracker_customTask__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(6);
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 
 
 /**
@@ -545,11 +504,10 @@ var setCartOnlyAttributes = function setCartOnlyAttributes(setAttributes) {
 };
 var attributes = {}; //persist any previous attributes sent from this page
 
-function postClientID(getClientId, platform, sendCartToLittledata) {
+function postClientID(clientId, platform, sendCartToLittledata) {
   var attribute = "".concat(platform, "-clientID");
-  var clientID = getClientId();
-  if (typeof clientID !== 'string' || clientID.length === 0) return;
-  attributes[attribute] = clientID;
+  if (typeof clientId !== 'string' || clientId.length === 0) return;
+  attributes[attribute] = clientId;
   clearTimeout(postCartTimeout); // timeout is to allow 2 client IDs posted within 1 second
   // to be included in the same cart update
 
@@ -592,7 +550,7 @@ function postCartToLittledata(cart) {
   httpRequest.send(JSON.stringify(cart));
 }
 
-function setClientID(getClientId, platform) {
+function setClientID(clientId, platform) {
   var _LittledataLayer = LittledataLayer,
       cart = _LittledataLayer.cart;
   var cartAttributes = cart && cart.attributes || {};
@@ -602,8 +560,8 @@ function setClientID(getClientId, platform) {
   !cartAttributes[clientIDProperty] // don't resend for the same cart
   ) {
       // set it on data layer, so subsequent setClientID call is ignored
-      LittledataLayer[clientIDProperty] = getClientId();
-      postClientID(getClientId, platform, false);
+      LittledataLayer[clientIDProperty] = clientId;
+      postClientID(clientId, platform, false);
     }
 
   var updatedAt = cartAttributes.littledata_updatedAt;
@@ -616,7 +574,7 @@ function setClientID(getClientId, platform) {
 
     if (timePassed > timeout) {
       //cart from LittledataLayer may have no token, so we need to fetch from API before storing
-      postClientID(getClientId, platform, true);
+      postClientID(clientId, platform, true);
     }
   }
 }
@@ -686,6 +644,31 @@ var advertiseLD = function advertiseLD(app) {
     console.log("%c\nThis store uses Littledata \uD83D\uDE80 to automate its ".concat(app, " setup and make better, data-driven decisions. Learn more at http://apps.shopify.com/").concat(appURI, " \n"), 'color: #088f87;');
   }
 };
+function retrieveAndStoreClientId() {
+  var withCustomTask = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+  var clientIdPromise = new Promise(function (resolve) {
+    // @ts-ignore
+    gtag('get', LittledataLayer.webPropertyID, 'client_id', resolve);
+  });
+  clientIdPromise.then(function (clientId) {
+    if (withCustomTask) {
+      setCustomTask();
+    }
+
+    return setClientID(clientId, 'google');
+  });
+}
+
+var setCustomTask = function setCustomTask() {
+  var trackers = window.ga && window.ga.getAll && window.ga.getAll();
+  if (!trackers || !trackers.length) return;
+  var MPEndpointLength = LittledataLayer.MPEndpoint && LittledataLayer.MPEndpoint.length;
+
+  if (MPEndpointLength) {
+    trackers[0].set('customTask', Object(_gaTracker_customTask__WEBPACK_IMPORTED_MODULE_1__["customTask"])(LittledataLayer.MPEndpoint));
+  }
+};
+
 var documentReady = function documentReady(callback) {
   // see if DOM is already available
   if (document.readyState === 'complete' || document.readyState === 'interactive') {
