@@ -981,62 +981,57 @@ var trackEvents = function trackEvents() {
       });
     }
   }
-}; // @ts-ignore
-
-var initSegment = function initSegment(writeKey) {
+};
+var initSegment = function initSegment() {
+  // Create a queue, but don't obliterate an existing one!
   // @ts-ignore
-  window.analytics = window.analytics || []; // @ts-ignore
+  var analytics = window.analytics = window.analytics || []; // If the real analytics.js is already on the page return.
 
-  if (!analytics.initialize) {
-    // @ts-ignore
-    if (analytics.invoked) {
-      window.console && console.error && console.error('Segment snippet included twice.');
-    } else {
-      // @ts-ignore
-      analytics.invoked = !0; // @ts-ignore
+  if (analytics.initialize) return;
 
-      analytics.methods = ['trackSubmit', 'trackClick', 'trackLink', 'trackForm', 'pageview', 'identify', 'reset', 'group', 'track', 'ready', 'alias', 'debug', 'page', 'once', 'off', 'on', 'addSourceMiddleware', 'addIntegrationMiddleware', 'setAnonymousId', 'addDestinationMiddleware']; // @ts-ignore
-
-      analytics.factory = function (t) {
-        return function () {
-          var e = Array.prototype.slice.call(arguments);
-          e.unshift(t); // @ts-ignore
-
-          analytics.push(e); // @ts-ignore
-
-          return analytics;
-        };
-      }; // @ts-ignore
-
-
-      for (var t = 0; t < analytics.methods.length; t++) {
-        // @ts-ignore
-        var e = analytics.methods[t]; // @ts-ignore
-
-        analytics[e] = analytics.factory(e);
-      } // @ts-ignore
-
-
-      analytics.load = function (t, e) {
-        var n = document.createElement('script');
-        n.type = 'text/javascript';
-        n.async = !0;
-        n.src = 'https://cdn.segment.com/analytics.js/v1/' + t + '/analytics.min.js';
-        var a = document.getElementsByTagName('script')[0];
-        a.parentNode.insertBefore(n, a); // @ts-ignore
-
-        analytics._loadOptions = e;
-      }; // @ts-ignore
-
-
-      analytics.SNIPPET_VERSION = '4.1.0'; //eslint-disable-line
-
-      window.analytics.addSourceMiddleware(_addEmailToEvents__WEBPACK_IMPORTED_MODULE_1__["addEmailToEvents"]);
-      window.analytics.load(writeKey || LittledataLayer.writeKey);
-      writeKey && window.analytics.page();
-    }
+  if (analytics.invoked) {
+    window.console && console.error && console.error('Segment snippet included twice.');
+    return;
   }
 
+  analytics.invoked = true;
+  analytics.methods = ['trackSubmit', 'trackClick', 'trackLink', 'trackForm', 'pageview', 'identify', 'reset', 'group', 'track', 'ready', 'alias', 'debug', 'page', 'once', 'off', 'on', 'addSourceMiddleware', 'addIntegrationMiddleware', 'setAnonymousId', 'addDestinationMiddleware'];
+
+  analytics.factory = function (t) {
+    return function () {
+      var e = Array.prototype.slice.call(arguments);
+      e.unshift(t);
+      analytics.push(e);
+      return analytics;
+    };
+  };
+
+  for (var t = 0; t < analytics.methods.length; t++) {
+    var e = analytics.methods[t];
+    analytics[e] = analytics.factory(e);
+  } // use custom CDN path, or fallback to Segment's CDN
+
+
+  var CDNdomain = LittledataLayer.CDNForAnalyticsJS || 'https://cdn.segment.com'; // Define a method to load Analytics.js from CDN,
+  // and that will be sure to only ever load it once.
+
+  analytics.load = function (key, options) {
+    // Create an async script element based on your key.
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.async = true;
+    script.src = "".concat(CDNdomain, "/analytics.js/v1/").concat(key, "/analytics.min.js"); // Insert our script next to the first script element.
+
+    var first = document.getElementsByTagName('script')[0];
+    first.parentNode.insertBefore(script, first);
+    analytics._loadOptions = options;
+  }; // Add a version to keep track of what's in the wild.
+
+
+  analytics.SNIPPET_VERSION = '4.1.0';
+  analytics.addSourceMiddleware(_addEmailToEvents__WEBPACK_IMPORTED_MODULE_1__["addEmailToEvents"]);
+  analytics.load(LittledataLayer.writeKey);
+  analytics.page();
   window.dataLayer = window.dataLayer || [];
 };
 
@@ -1134,7 +1129,7 @@ __webpack_require__.r(__webpack_exports__);
       throw new Error('Could not add segment thank you page script beacuse of missing segmentProperty');
     }
 
-    Object(_segmentTracker_helpers__WEBPACK_IMPORTED_MODULE_1__["initSegment"])(segmentProperty); // @ts-ignore
+    Object(_segmentTracker_helpers__WEBPACK_IMPORTED_MODULE_1__["initSegment"])(); // @ts-ignore
 
     var checkout = window.Shopify.checkout; // @ts-ignore
 
