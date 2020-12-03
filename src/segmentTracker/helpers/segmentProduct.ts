@@ -1,3 +1,4 @@
+import { Detail } from '../../..';
 import { SegmentProduct } from '../../../segmentInterface';
 
 export const segmentProduct = (dataLayerProduct: Detail): SegmentProduct => ({

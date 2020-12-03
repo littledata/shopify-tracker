@@ -5,13 +5,15 @@
 		"start": "node ./node_modules/webpack/bin/webpack.js --watch",
 		"lint": "node ./node_modules/eslint/bin/eslint.js --ext .ts ./src",
 		"prettier": "prettier --write \"**/*.{[tj]s,html}\"",
-		"test": "env TEST=true mocha -r esm -r ts-node/register --recursive  ./src/segmentTracker/tests"
+		"test": "env TEST=true mocha -r esm -r ts-node/register --recursive  ./src/segmentTracker/tests/*.ts"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.5.5",
 		"@babel/preset-env": "^7.5.5",
+		"@types/chai": "^4.2.14",
 		"@types/gtag.js": "0.0.2",
 		"@types/jquery": "^3.3.31",
+		"@types/sinon": "^9.0.9",
 		"@typescript-eslint/eslint-plugin": "^1.13.0",
 		"@typescript-eslint/parser": "^1.13.0",
 		"babel-loader": "^8.0.6",
@@ -33,7 +35,9 @@
 		"webpack": "^5.9.0",
 		"webpack-cli": "^3.3.11"
 	},
-	"dependencies": {},
+	"dependencies": {
+		"@types/mocha": "^8.0.4"
+	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/littledata/shopify-tracker.git"
