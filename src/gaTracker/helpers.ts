@@ -96,11 +96,20 @@ export const trackEvents = () => {
 				name,
 			});
 
-			gtag('event', 'Product image click', {
-				event_category,
-				event_label: name,
-				send_to: LittledataLayer.webPropertyID,
-			});
+			if (hasGA4()) {
+				gtag('event', 'select_content', {
+					content_type: 'product',
+					item_id: product.id,
+					send_to: LittledataLayer.measurementId,
+				});
+			}
+			if (hasGA3()) {
+				gtag('event', 'Product image click', {
+					event_category,
+					event_label: name,
+					send_to: LittledataLayer.webPropertyID,
+				});
+			}
 		});
 
 		trackSocialShares(network => {
@@ -109,11 +118,19 @@ export const trackEvents = () => {
 				network,
 			});
 
-			gtag('event', 'Social share', {
-				event_category,
-				event_label: network,
-				send_to: LittledataLayer.webPropertyID,
-			});
+			if (hasGA4()) {
+				gtag('event', 'share', {
+					method: network,
+					send_to: LittledataLayer.measurementId,
+				});
+			}
+			if (hasGA3()) {
+				gtag('event', 'Social share', {
+					event_category,
+					event_label: network,
+					send_to: LittledataLayer.webPropertyID,
+				});
+			}
 		});
 	}
 };
@@ -274,7 +291,7 @@ function sendSelectContentEvent(product: Detail, self: TimeBombHTMLAnchor): void
 	});
 
 	if (hasGA4()) {
-		gtag('event', 'select_content', {
+		gtag('event', 'select_item', {
 			items: [convertProductsToGa4Format(new Array(product))],
 			send_to: LittledataLayer.measurementId,
 			event_callback() {
