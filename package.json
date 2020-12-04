@@ -33,9 +33,7 @@
 		"ts-node": "^9.0.0",
 		"typescript": "^3.5.3",
 		"webpack": "^5.9.0",
-		"webpack-cli": "^3.3.11"
-	},
-	"dependencies": {
+		"webpack-cli": "^3.3.11",
 		"@types/mocha": "^8.0.4"
 	},
 	"repository": {

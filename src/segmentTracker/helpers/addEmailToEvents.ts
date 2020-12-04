@@ -1,4 +1,4 @@
-import { MiddlewareOptions } from '../../segmentInterface';
+import { MiddlewareOptions } from '../../../segmentInterface';
 declare let window: CustomWindow;
 
 export const addEmailToEvents = ({ payload, next }: MiddlewareOptions) => {

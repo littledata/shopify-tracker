@@ -200,15 +200,14 @@ export const guid: string = (function() {
 // 	document.cookie = `${name}=${value}${expires}; path=/;`
 // }
 
-export const trackProductImageClicks = (clickTag: (name: string) => void) => {
+export const trackProductImageClicks = (clickTag: (image: HTMLImageElement) => void) => {
 	if (LittledataLayer.productPageClicks === false) return false;
 	getElementsByHref('^https://cdn.shopify.com/s/files/.*/products/').forEach(element => {
 		element.addEventListener('click', function() {
 			// only add event to product images
 			const image = this.getElementsByTagName('img')[0];
-			const name = image && image.alt;
-
-			clickTag(name);
+			if (!image) return false;
+			clickTag(image);
 		});
 	});
 };

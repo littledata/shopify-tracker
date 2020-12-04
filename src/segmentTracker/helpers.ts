@@ -81,8 +81,8 @@ export const trackEvents = () => {
 			const product = segmentProduct(productDetail);
 
 			// if PDP, we can also track clicks on images and social shares
-			trackProductImageClicks(name => {
-				product.image_url = name;
+			trackProductImageClicks(image => {
+				product.image_url = image.src;
 				trackEvent('Product Image Clicked', product);
 			});
 

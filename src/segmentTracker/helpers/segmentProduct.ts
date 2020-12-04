@@ -4,7 +4,7 @@ import { SegmentProduct } from '../../../segmentInterface';
 export const segmentProduct = (dataLayerProduct: Detail): SegmentProduct => ({
 	brand: dataLayerProduct.brand,
 	category: dataLayerProduct.category,
-	url: dataLayerProduct.handle,
+	url: `${window.document.location.origin}/products/${dataLayerProduct.handle}`,
 	product_id: dataLayerProduct.id,
 	sku: dataLayerProduct.id,
 	position: dataLayerProduct.list_position,
