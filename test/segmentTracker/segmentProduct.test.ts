@@ -1,7 +1,7 @@
-import { Detail } from '../../..';
+import { Detail } from '../../';
 import { should } from 'chai';
 import sinon from 'sinon';
-import { segmentProduct } from '../helpers/segmentProduct';
+import { segmentProduct } from '../../src/segmentTracker/helpers/segmentProduct';
 declare let window: CustomWindow;
 
 should();
@@ -35,8 +35,8 @@ describe('segmentProduct function', () => {
 	});
 	it('should return product with correct types', () => {
 		segmentProduct(productView).should.deep.equal({
-			shopify_product_id: sinon.match.string,
-			shopify_variant_id: sinon.match.string,
+			shopify_product_id: productView.shopify_product_id,
+			shopify_variant_id: productView.shopify_variant_id,
 			sku: productView.id,
 			product_id: productView.id, //we know this to be incorrect but its a big change
 			price: 29,
