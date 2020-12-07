@@ -3,6 +3,10 @@ import { convertToGtagProducts, sumProductTax, sumShipping, sumProductSubtotal }
 declare let window: CartHookWindow;
 
 export const sendThankYouEvents = () => {
+	if (!window.chData) {
+		console.error('Littledata script unable to find chData');
+		return;
+	}
 	const { order } = window.chData;
 	const stepCharged = window.chData.last_charged_page_type;
 	const lastChargedLineItems = order.last_charged_line_items;
