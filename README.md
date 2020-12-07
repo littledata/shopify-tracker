@@ -100,7 +100,7 @@ Example: `['iterableEmailCampaignId]` (array)
 
 **MPEndpoint**
 
-If you wish to direct the Measurement Protocol hits to a custom collection endpoint of your choosing, add it here. **NOTE**: this will block the sending of hits to Google Analytics.
+If you wish to duplicate the Measurement Protocol hits sent to Google Analytics to a custom collection endpoint of your choosing, add it here.
 
 Example: `https://collector.littledata.io/collect` (string)
 
