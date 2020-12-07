@@ -137,15 +137,16 @@ export const trackEvents = () => {
 	const product = getProductDetail();
 	if (product) {
 		// if PDP, we can also track clicks on images and social shares
-		trackProductImageClicks(name => {
+		trackProductImageClicks(image => {
 			dataLayer.push({
 				event: 'product_image_click',
-				name,
+				name: image.name,
 			});
 
 			gtag('event', 'Product image click', {
 				event_category,
-				event_label: name,
+				event_label: image.name,
+				image_url: image.src,
 				send_to: LittledataLayer.webPropertyID,
 			});
 		});

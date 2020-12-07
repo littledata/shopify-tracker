@@ -6,12 +6,12 @@ import {
 	trackSocialShares,
 	setCartOnlyAttributes,
 } from '../common/helpers';
-import { addEmailToEvents } from './addEmailToEvents';
+import { addEmailToEvents } from './helpers/addEmailToEvents';
+import { segmentProduct } from './helpers/segmentProduct';
 
 import { getCookie } from '../common/getCookie';
 import productListViews from '../common/productListViews';
 import getProductDetail from '../common/getProductDetail';
-import { SegmentProduct } from '../../segmentInterface';
 
 const getContext = () => {
 	return {
@@ -26,21 +26,6 @@ const trackEvent = (eventName: string, params: object) => {
 	// @ts-ignore
 	window.analytics.track(eventName, params, { context: getContext() });
 };
-
-const segmentProduct = (dataLayerProduct: Detail): SegmentProduct => ({
-	brand: dataLayerProduct.brand,
-	category: dataLayerProduct.category,
-	url: dataLayerProduct.handle,
-	product_id: dataLayerProduct.id,
-	sku: dataLayerProduct.id,
-	position: dataLayerProduct.list_position,
-	name: dataLayerProduct.name,
-	price: parseFloat(dataLayerProduct.price),
-	variant: dataLayerProduct.variant,
-	shopify_product_id: dataLayerProduct.shopify_product_id,
-	shopify_variant_id: dataLayerProduct.shopify_variant_id,
-	compare_at_price: dataLayerProduct.compare_at_price,
-});
 
 export const identifyCustomer = (customer: Customer) => {
 	const cookieTraits: any = {};
@@ -96,8 +81,8 @@ export const trackEvents = () => {
 			const product = segmentProduct(productDetail);
 
 			// if PDP, we can also track clicks on images and social shares
-			trackProductImageClicks(name => {
-				product.image_url = name;
+			trackProductImageClicks(image => {
+				product.image_url = image.src;
 				trackEvent('Product Image Clicked', product);
 			});
 
