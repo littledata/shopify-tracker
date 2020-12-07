@@ -111,8 +111,9 @@ function buildPostRequestParams(data: object): object {
 
 export const getPageType = () => {
 	const { href } = document.location;
-	if (href.includes('checkout')) return 'checkout';
+	if (href.includes('/checkout')) return 'checkout';
 	if (href.includes('/oto')) return 'upsell';
+	if (href.includes('/thank-you')) return 'thankyou';
 };
 
 export const convertToGtagProducts = (lineItems: LooseObject) => {
@@ -133,5 +134,11 @@ export const sumProductTax = (lineItems: LooseObject) => {
 export const sumProductSubtotal = (lineItems: LooseObject) => {
 	return lineItems.reduce((sum: number, item: LooseObject) => {
 		return sum + (item.price || 0) * (item.quantity || 0);
+	}, 0);
+};
+
+export const sumShipping = (shippingLines: LooseObject) => {
+	return shippingLines.reduce((sum: number, item: LooseObject) => {
+		return sum + (item.price || 0);
 	}, 0);
 };

@@ -1,6 +1,7 @@
 /* eslint-env browser */
 import { getWebPropertyIdPromise, sendCartId, initGtag, loadGtagScript, getPageType } from './helpers';
 import { sendCheckoutEvents } from './sendCheckoutEvents';
+import { sendThankYouEvents } from './sendThankYouEvents';
 import { sendUpsellEvents } from './sendUpsellEvents';
 
 declare let window: CartHookWindow;
@@ -19,6 +20,7 @@ declare let window: CartHookWindow;
 			const pageType = getPageType();
 			if (pageType === 'checkout') sendCheckoutEvents(data);
 			if (pageType === 'upsell') sendUpsellEvents();
+			if (pageType === 'thankyou') sendThankYouEvents();
 		}
 	});
 })();
