@@ -21,8 +21,8 @@ export const sendCheckoutEvents = (data: LooseObject) => {
 		event_label: 'Contact information',
 		checkout_step: 1,
 	});
-	var contactInfoField = document.getElementById('customer_email');
-	var shippingInfoField = document.getElementById('shipping_zip');
+	const contactInfoField = document.getElementById('customer_email');
+	const shippingInfoField = document.getElementById('shipping_zip');
 
 	// GA event for Shipping info step, triggered on leaving email field
 	// we are intentionally removing the event listener to avoid event repetitions

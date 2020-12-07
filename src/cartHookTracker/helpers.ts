@@ -116,17 +116,13 @@ export const getPageType = () => {
 };
 
 export const convertToGtagProducts = (lineItems: LooseObject) => {
-	let items = [] as LooseObject;
-	lineItems.forEach((item: LooseObject) => {
-		items.push({
-			id: item.sku,
-			sku: item.sku,
-			quantity: item.quantity,
-			price: item.line_price || item.price,
-			name: item.title,
-		});
-	});
-	return items;
+	return lineItems.map((item: LooseObject) => ({
+		id: item.sku,
+		sku: item.sku,
+		quantity: item.quantity,
+		price: item.line_price || item.price,
+		name: item.title,
+	}));
 };
 
 export const sumProductTax = (lineItems: LooseObject) => {

@@ -18,7 +18,7 @@ declare let window: CartHookWindow;
 		if (EVENT == 'INITIATED_PAGE') {
 			const pageType = getPageType();
 			if (pageType === 'checkout') sendCheckoutEvents(data);
-			if (pageType === 'upsell') sendUpsellEvents(data);
+			if (pageType === 'upsell') sendUpsellEvents();
 		}
 	});
 })();

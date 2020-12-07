@@ -4,13 +4,13 @@ import { convertToGtagProducts, sumProductTax, sumProductSubtotal } from './help
 declare let window: CartHookWindow;
 
 export const sendUpsellEvents = () => {
-	var acceptButton = document.querySelector('.ch-accept-button'); // HTML selector for Accept button
-	var rejectButton = document.querySelector('.ch-decline-button'); // HTML selector for Decline button
+	const acceptButton = document.querySelector('.ch-accept-button'); // HTML selector for Accept button
+	const rejectButton = document.querySelector('.ch-decline-button'); // HTML selector for Decline button
 	const { order } = window.chData;
 
-	var orderId = order.carthook_order_id;
-	var upsellProduct = window.chData.cart_data.line_items[0];
-	var lastChargedPage = window.chData.last_charged_page_type;
+	const orderId = order.carthook_order_id;
+	const upsellProduct = window.chData.cart_data.line_items[0];
+	const lastChargedPage = window.chData.last_charged_page_type;
 	const value = order.total_price;
 
 	// Tracking transaction from the Checkout page, before upsell/downsell
@@ -19,9 +19,9 @@ export const sendUpsellEvents = () => {
 	const tax = sumProductTax(lineItems);
 	const subtotal = sumProductSubtotal(lineItems);
 
-	var shippingRates = window.chData.order.last_charged_shipping_rates;
-	var shipping = 0;
-	for (var i = 0; i < shippingRates.length; i++) {
+	const shippingRates = window.chData.order.last_charged_shipping_rates;
+	let shipping = 0;
+	for (let i = 0; i < shippingRates.length; i++) {
 		shipping += parseFloat(shippingRates[i].price);
 	}
 	if (items.length > 0) {
