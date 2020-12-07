@@ -1,6 +1,6 @@
 import { should } from 'chai';
 import { sampleCartHookLineItems } from './sampleCartHookLineItems';
-import { convertToGtagProducts, sumProductSubtotal, sumProductTax } from '../../src/carthookTracker/helpers';
+import { convertToGtagProducts, sumProductSubtotal, sumProductTax } from '../../src/cartHookTracker/helpers';
 
 should();
 
