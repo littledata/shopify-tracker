@@ -1,6 +1,5 @@
 import { Detail } from '../../';
 import { should } from 'chai';
-import sinon from 'sinon';
 import { segmentProduct } from '../../src/segmentTracker/helpers/segmentProduct';
 declare let window: CustomWindow;
 

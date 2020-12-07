@@ -6,12 +6,10 @@ import {
 	productListClicks,
 	removePii,
 	retrieveAndStoreClientId,
-	setClientID,
 	trackProductImageClicks,
 	trackSocialShares,
 } from '../common/helpers';
 
-import { customTask } from './customTask';
 import getProductDetail from '../common/getProductDetail';
 import productListViews from '../common/productListViews';
 
