@@ -117,11 +117,12 @@ export const getPageType = () => {
 
 export const convertToGtagProducts = (lineItems: LooseObject) => {
 	return lineItems.map((item: LooseObject) => ({
-		id: item.sku,
-		sku: item.sku,
-		quantity: item.quantity,
-		price: item.line_price || item.price,
+		id: item.sku || String(item.foreign_product_id), //sku or Shopify product ID
+		quantity: Number(item.quantity),
+		price: Number(item.line_price || item.price || 0).toFixed(2),
 		name: item.title,
+		variant: item.variant_title,
+		brand: item.vendor,
 	}));
 };
 
