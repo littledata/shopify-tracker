@@ -1,3 +1,5 @@
+import { AnalyticsJS } from './segmentInterface';
+
 declare global {
 	interface LooseObject {
 		[index: string]: any;
@@ -5,13 +7,12 @@ declare global {
 
 	namespace Cart {
 		export interface Attributes {
-			littledata_updatedAt?: string;
 			updatedAt?: string; //old format pre v8.3
-			['segment-clientID']?: string;
-			['google-clientID']?: string;
+			littledata_updatedAt?: number;
+			'google-clientID'?: string;
+			'segment-clientID'?: string;
+			'email-clientID'?: string;
 		}
-
-		export interface Properties {}
 
 		export interface FeaturedImage {
 			url?: any;
@@ -26,7 +27,7 @@ declare global {
 
 		export interface Item {
 			id: any;
-			properties: Properties;
+			properties: LooseObject;
 			quantity: number;
 			variant_id: any;
 			key: string;
@@ -108,7 +109,7 @@ declare global {
 		value_type: string;
 	}
 
-	interface OwnLayer {
+	interface OwnLayer extends Cart.Attributes {
 		version?: string;
 		persistentUserId?: string;
 		customer?: Customer;
@@ -133,9 +134,8 @@ declare global {
 		extraLinkerDomains?: string[];
 		cookiesToTrack?: string[];
 		doNotTrackReplaceState?: boolean;
-		'google-clientID'?: string;
-		'segment-clientID'?: string;
 		MPEndpoint?: string;
+		CDNForAnalyticsJS?: string;
 	}
 
 	var LittledataLayer: OwnLayer;
@@ -144,7 +144,7 @@ declare global {
 	interface CustomWindow extends Window {
 		ga: any;
 		LittledataLayer: OwnLayer;
-		analytics: SegmentAnalytics.AnalyticsJS;
+		analytics: AnalyticsJS;
 		gtag: Gtag.Gtag;
 		dataLayer: any[];
 		LittledataScriptVersion: string;
@@ -157,6 +157,8 @@ declare global {
 		dataLayer: any[];
 		CH?: LooseObject;
 		chData: LooseObject;
+		_ga_originalSendHitTask: any;
+		console: LooseObject;
 	}
 
 	interface TimeBombHTMLAnchor extends HTMLAnchorElement {
@@ -202,4 +204,4 @@ declare global {
 	}
 }
 
-export {};
+export type clientID = 'google-clientID' | 'segment-clientID' | 'email-clientID';

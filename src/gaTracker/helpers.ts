@@ -1,15 +1,19 @@
 /* global LittledataLayer */
 declare let window: CustomWindow;
+
+import { getCookie, getValidGAClientId } from '../common/getCookie';
 import {
 	productListClicks,
-	setClientID,
 	removePii,
+	retrieveAndStoreClientId,
+	setClientID,
 	trackProductImageClicks,
 	trackSocialShares,
 } from '../common/helpers';
-import productListViews from '../common/productListViews';
+
+import { customTask } from './customTask';
 import getProductDetail from '../common/getProductDetail';
-import { getCookie, getValidGAClientId } from '../common/getCookie';
+import productListViews from '../common/productListViews';
 
 const event_category = 'Shopify (Littledata)';
 
@@ -19,6 +23,16 @@ export const initGtag = () => {
 		dataLayer.push(arguments);
 	}; //eslint-disable-line
 	window.gtag = window.gtag || stubFunction;
+
+	window.ga =
+		window.ga ||
+		function() {
+			(window.ga.q = window.ga.q || []).push(arguments);
+		};
+	window.ga.l = +new Date();
+
+	retrieveAndStoreClientId(true);
+
 	// @ts-ignore
 	gtag('js', new Date());
 	gtag('config', LittledataLayer.webPropertyID, {
@@ -26,26 +40,6 @@ export const initGtag = () => {
 		send_page_view: false,
 	});
 };
-
-let postClientIdTimeout: any;
-let nextTimeout = 500; // half a second
-const maximumTimeout = 524288000; // about 6 hours in seconds
-
-function waitForGaToLoad() {
-	const trackers = window.ga && window.ga.getAll();
-	if (trackers && trackers.length) {
-		return setClientID(getGtagClientId, 'google');
-	}
-
-	if (nextTimeout > maximumTimeout) return; // stop if not found already
-	nextTimeout *= 2;
-
-	clearTimeout(postClientIdTimeout);
-
-	postClientIdTimeout = window.setTimeout(function() {
-		waitForGaToLoad();
-	}, nextTimeout);
-}
 
 export const sendPageview = () => {
 	const page_title = removePii(document.title);
@@ -69,17 +63,6 @@ export const sendPageview = () => {
 		googleAds.forEach(adId => gtag('config', adId));
 	}
 
-	window.ga =
-		window.ga ||
-		function() {
-			(window.ga.q = window.ga.q || []).push(arguments);
-		};
-	window.ga.l = +new Date();
-	window.ga(() => {
-		// we need to wait for GA library (part of gtag)
-		waitForGaToLoad();
-	});
-
 	const product = getProductDetail();
 	if (product) {
 		product.list_position = parseInt(window.localStorage.getItem('position')) || 1;
@@ -101,15 +84,6 @@ export const sendPageview = () => {
 		});
 	}
 };
-
-function getGtagClientId(): string {
-	// @ts-ignore
-	const trackers = ga.getAll();
-	if (!trackers || !trackers.length) return '';
-
-	const clientId = trackers[0].get('clientId');
-	return getValidGAClientId(clientId) ? clientId : '';
-}
 
 export const trackEvents = () => {
 	/* run list, product, and clientID scripts everywhere */
@@ -214,7 +188,7 @@ export const filterGAProductFields = (product: LooseObject) => {
 };
 
 export const getConfig = (): Gtag.CustomParams => {
-	const settings: LooseObject = LittledataLayer || {};
+	const settings: LooseObject = window.LittledataLayer || {};
 	const { anonymizeIp, googleSignals, ecommerce, optimizeId, referralExclusion } = settings;
 
 	const DEFAULT_LINKER_DOMAINS = [
@@ -227,12 +201,16 @@ export const getConfig = (): Gtag.CustomParams => {
 	];
 	const extraLinkerDomains = settings.extraLinkerDomains || [];
 
-	let excludeReferral = referralExclusion.test(document.referrer);
+	let excludeReferral = referralExclusion && referralExclusion.test(document.referrer);
 	const extraExcludedReferrers = ['shop.app'];
 	if (extraExcludedReferrers.includes(document.referrer)) {
 		excludeReferral = true;
 	}
-
+	if (document.referrer.includes(`${location.protocol}//${location.host}`)) {
+		//valid referrer may have host within the url, like https://newsite.com/about/shopify.com
+		//but less likely to have protocol as well, unless the same domain - self-referral
+		excludeReferral = true;
+	}
 	const config: Gtag.CustomParams = {
 		linker: {
 			domains: [...DEFAULT_LINKER_DOMAINS, ...extraLinkerDomains],
@@ -242,7 +220,7 @@ export const getConfig = (): Gtag.CustomParams => {
 		currency: (ecommerce && ecommerce.currencyCode) || 'USD',
 		link_attribution: true,
 		optimize_id: optimizeId,
-		page_referrer: excludeReferral ? document.referrer : null,
+		page_referrer: excludeReferral ? null : document.referrer,
 	};
 
 	const userId = settings.customer && settings.customer.id;
@@ -255,12 +233,6 @@ export const getConfig = (): Gtag.CustomParams => {
 		//expiring the cookie after this session ensures invalid clientID
 		//is not propagated to future sessions
 		config.cookie_expires = 0;
-	}
-
-	const MPEndpointLength = settings.MPEndpoint && settings.MPEndpoint.length;
-	if (MPEndpointLength) {
-		// remove '/collect' from end, since it is added by gtag
-		config.transport_url = settings.MPEndpoint.slice(0, MPEndpointLength - '/collect'.length);
 	}
 
 	return config;

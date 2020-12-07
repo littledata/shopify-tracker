@@ -6,9 +6,11 @@ Littledata's tracking script for Shopify stores.
 
 This code is used by two Littledata apps:
 
--   [Google Analytics by Littledata](https://apps.shopify.com/littledata)
+-   [Google Analytics by Littledata](https://apps.shopify.com/littledata) ([source code](https://github.com/littledata/shopify-tracker/tree/master/src/gaTracker))
 
--   [Segment.com by Littedata](https://apps.shopify.com/segment-com-by-littledata)
+-   [Segment.com by Littedata](https://apps.shopify.com/segment-com-by-littledata) ([source code](https://github.com/littledata/shopify-tracker/tree/master/src/segmentTracker))
+
+There is also an extra tracker for our [Carthook checkout connection](https://www.littledata.io/connections/carthook) ([source code](https://github.com/littledata/shopify-tracker/tree/master/src/cartHookTracker))
 
 ## Latest version
 
@@ -17,6 +19,8 @@ The latest minified versions of these scripts are hosted on a CDN:
 -   https://cdn.jsdelivr.net/gh/littledata/shopify-tracker/dist/gaTracker.js
 
 -   https://cdn.jsdelivr.net/gh/littledata/shopify-tracker/dist/segmentTracker.js
+
+You can find which version your browser has loaded by looking at `LittledataScriptVersion` window-scope variable.
 
 ## Dependencies
 
@@ -99,3 +103,9 @@ Example: `['iterableEmailCampaignId]` (array)
 If you wish to direct the Measurement Protocol hits to a custom collection endpoint of your choosing, add it here. **NOTE**: this will block the sending of hits to Google Analytics.
 
 Example: `https://collector.littledata.io/collect` (string)
+
+**CDNForAnalyticsJS**
+
+If you have a [proxy CDN setup](https://segment.com/docs/connections/sources/catalog/libraries/website/javascript/custom-proxy/), redirecting to `https://cdn.segment.com`, to load Segment's AnalyticsJS library from your own domain you can specify it here. It must include the full domain, with no trailing slash.
+
+Default: `https://cdn.segment.com` (string)
