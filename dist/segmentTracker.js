@@ -1,100 +1,18 @@
-/******/ (function(modules) { // webpackBootstrap
-/******/ 	// The module cache
-/******/ 	var installedModules = {};
-/******/
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-/******/
-/******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId]) {
-/******/ 			return installedModules[moduleId].exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = installedModules[moduleId] = {
-/******/ 			i: moduleId,
-/******/ 			l: false,
-/******/ 			exports: {}
-/******/ 		};
-/******/
-/******/ 		// Execute the module function
-/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/
-/******/ 		// Flag the module as loaded
-/******/ 		module.l = true;
-/******/
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/
-/******/
-/******/ 	// expose the modules object (__webpack_modules__)
-/******/ 	__webpack_require__.m = modules;
-/******/
-/******/ 	// expose the module cache
-/******/ 	__webpack_require__.c = installedModules;
-/******/
-/******/ 	// define getter function for harmony exports
-/******/ 	__webpack_require__.d = function(exports, name, getter) {
-/******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
-/******/ 		}
-/******/ 	};
-/******/
-/******/ 	// define __esModule on exports
-/******/ 	__webpack_require__.r = function(exports) {
-/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 		}
-/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 	};
-/******/
-/******/ 	// create a fake namespace object
-/******/ 	// mode & 1: value is a module id, require it
-/******/ 	// mode & 2: merge all properties of value into the ns
-/******/ 	// mode & 4: return value when already ns object
-/******/ 	// mode & 8|1: behave like require
-/******/ 	__webpack_require__.t = function(value, mode) {
-/******/ 		if(mode & 1) value = __webpack_require__(value);
-/******/ 		if(mode & 8) return value;
-/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
-/******/ 		var ns = Object.create(null);
-/******/ 		__webpack_require__.r(ns);
-/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
-/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
-/******/ 		return ns;
-/******/ 	};
-/******/
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = function(module) {
-/******/ 		var getter = module && module.__esModule ?
-/******/ 			function getDefault() { return module['default']; } :
-/******/ 			function getModuleExports() { return module; };
-/******/ 		__webpack_require__.d(getter, 'a', getter);
-/******/ 		return getter;
-/******/ 	};
-/******/
-/******/ 	// Object.prototype.hasOwnProperty.call
-/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
-/******/
-/******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "";
-/******/
-/******/
-/******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 9);
-/******/ })
-/************************************************************************/
-/******/ ([
+/******/ (() => { // webpackBootstrap
+/******/ 	"use strict";
+/******/ 	var __webpack_modules__ = ([
 /* 0 */,
 /* 1 */,
 /* 2 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, exports) => {
 
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getCookie", function() { return getCookie; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getValidGAClientId", function() { return getValidGAClientId; });
-var getCookie = function getCookie(name) {
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+
+exports.getCookie = function (name) {
   if (document.cookie.length > 0) {
     var cookieStart = document.cookie.indexOf("".concat(name, "="));
 
@@ -113,7 +31,8 @@ var getCookie = function getCookie(name) {
 
   return '';
 };
-var getValidGAClientId = function getValidGAClientId() {
+
+exports.getValidGAClientId = function () {
   var cookie = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
   var match = cookie.match(/(\d{2,11})\.(\d{2,11})/g);
   return match && match[0];
@@ -121,40 +40,36 @@ var getValidGAClientId = function getValidGAClientId() {
 
 /***/ }),
 /* 3 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "pageView", function() { return pageView; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getElementsByHref", function() { return getElementsByHref; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "findDataLayerProduct", function() { return findDataLayerProduct; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "productListClicks", function() { return productListClicks; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setCartOnlyAttributes", function() { return setCartOnlyAttributes; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setClientID", function() { return setClientID; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "removePii", function() { return removePii; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "guid", function() { return guid; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "trackProductImageClicks", function() { return trackProductImageClicks; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "trackSocialShares", function() { return trackSocialShares; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "validateLittledataLayer", function() { return validateLittledataLayer; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "advertiseLD", function() { return advertiseLD; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "retrieveAndStoreClientId", function() { return retrieveAndStoreClientId; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "documentReady", function() { return documentReady; });
-/* harmony import */ var _UrlChangeTracker__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
-/* harmony import */ var _gaTracker_customTask__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(6);
+
+
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
 
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
 
+var UrlChangeTracker_1 = __importDefault(__webpack_require__(4));
+
+var customTask_1 = __webpack_require__(6);
 /**
  *
  * @param fireTag - callback to call when willing to fire pageviews
  */
 
-var pageView = function pageView(fireTag) {
+
+exports.pageView = function (fireTag) {
   if (document.hidden === true) {
     // delay page firing until the page is visible
     var triggeredPageView = false;
@@ -176,18 +91,20 @@ var pageView = function pageView(fireTag) {
 
 
   if (LittledataLayer.doNotTrackReplaceState !== true) {
-    var urlChangeTracker = new _UrlChangeTracker__WEBPACK_IMPORTED_MODULE_0__["default"](true);
+    var urlChangeTracker = new UrlChangeTracker_1["default"](true);
     urlChangeTracker.setCallback(fireTag);
   }
 };
-var getElementsByHref = function getElementsByHref(regex) {
+
+exports.getElementsByHref = function (regex) {
   var htmlCollection = document.getElementsByTagName('a');
   var r = new RegExp(regex);
   return Array.prototype.slice.call(htmlCollection).filter(function (element) {
     return element.href && r.test(element.href);
   });
 };
-var findDataLayerProduct = function findDataLayerProduct(link) {
+
+exports.findDataLayerProduct = function (link) {
   return LittledataLayer.ecommerce.impressions.find(function (p) {
     var linkSplit = link.split('/products/');
     var productLinkWithParams = linkSplit && linkSplit[1];
@@ -196,13 +113,14 @@ var findDataLayerProduct = function findDataLayerProduct(link) {
     return productLink ? productLink === p.handle : productLinkWithParams === p.handle;
   });
 };
-var productListClicks = function productListClicks(clickTag) {
+
+exports.productListClicks = function (clickTag) {
   /* product list clicks */
   if (!LittledataLayer.productClicks) return;
-  getElementsByHref('/products/').forEach(function (element) {
+  exports.getElementsByHref('/products/').forEach(function (element) {
     element.addEventListener('click', function (ev) {
       // only add event to products
-      var product = findDataLayerProduct(this.href);
+      var product = exports.findDataLayerProduct(this.href);
 
       if (product) {
         ev.preventDefault();
@@ -218,15 +136,18 @@ var productListClicks = function productListClicks(clickTag) {
     });
   });
 };
+
 var postCartTimeout;
 var cartOnlyAttributes = {};
-var setCartOnlyAttributes = function setCartOnlyAttributes(setAttributes) {
+
+exports.setCartOnlyAttributes = function (setAttributes) {
   var toSet = Object.keys(setAttributes);
   toSet.forEach(function (name) {
     var fieldName = "littledata_".concat(name);
     cartOnlyAttributes[fieldName] = setAttributes[name];
   });
 };
+
 var attributes = {}; //persist any previous attributes sent from this page
 
 function postClientID(clientId, platform, sendCartToLittledata) {
@@ -303,6 +224,9 @@ function setClientID(clientId, platform) {
     }
   }
 }
+
+exports.setClientID = setClientID;
+
 function removePii(str) {
   var piiRegexs = [{
     key: 'email',
@@ -315,11 +239,13 @@ function removePii(str) {
     return memo.replace(curr.regex, 'REMOVED');
   }, str);
 }
+
+exports.removePii = removePii;
 /**
  * guid
  */
 
-var guid = function () {
+exports.guid = function () {
   function s10() {
     return Math.floor(Math.random() * 10e9);
   }
@@ -335,40 +261,45 @@ var guid = function () {
 // 	document.cookie = `${name}=${value}${expires}; path=/;`
 // }
 
-var trackProductImageClicks = function trackProductImageClicks(clickTag) {
+
+exports.trackProductImageClicks = function (clickTag) {
   if (LittledataLayer.productPageClicks === false) return false;
-  getElementsByHref('^https://cdn.shopify.com/s/files/.*/products/').forEach(function (element) {
+  exports.getElementsByHref('^https://cdn.shopify.com/s/files/.*/products/').forEach(function (element) {
     element.addEventListener('click', function () {
       // only add event to product images
       var image = this.getElementsByTagName('img')[0];
-      var name = image && image.alt;
-      clickTag(name);
+      if (!image) return false;
+      clickTag(image);
     });
   });
 };
-var trackSocialShares = function trackSocialShares(clickTag) {
+
+exports.trackSocialShares = function (clickTag) {
   if (LittledataLayer.productPageClicks === false) return false;
   var networks = '(facebook|pinterest|twitter|linkedin|plus.google|instagram)';
-  getElementsByHref("".concat(networks, ".com/(share|pin|intent)")).forEach(function (element) {
+  exports.getElementsByHref("".concat(networks, ".com/(share|pin|intent)")).forEach(function (element) {
     element.addEventListener('click', function () {
       var match = this.href.match(new RegExp(networks));
       clickTag(match && match[0]);
     });
   });
 };
-var validateLittledataLayer = function validateLittledataLayer() {
-  window.LittledataScriptVersion = '9.2';
+
+exports.validateLittledataLayer = function () {
+  window.LittledataScriptVersion = '9.3';
 
   if (!window.LittledataLayer) {
     throw new Error('Aborting Littledata tracking as LittledataLayer was not found');
   }
 };
-var advertiseLD = function advertiseLD(app) {
+
+exports.advertiseLD = function (app) {
   if (!LittledataLayer.hideBranding) {
     var appURI = app === 'Segment' ? 'segment-com-by-littledata' : 'littledata';
     console.log("%c\nThis store uses Littledata \uD83D\uDE80 to automate its ".concat(app, " setup and make better, data-driven decisions. Learn more at http://apps.shopify.com/").concat(appURI, " \n"), 'color: #088f87;');
   }
 };
+
 function retrieveAndStoreClientId() {
   var withCustomTask = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
   var clientIdPromise = new Promise(function (resolve) {
@@ -384,17 +315,19 @@ function retrieveAndStoreClientId() {
   });
 }
 
+exports.retrieveAndStoreClientId = retrieveAndStoreClientId;
+
 var setCustomTask = function setCustomTask() {
   var trackers = window.ga && window.ga.getAll && window.ga.getAll();
   if (!trackers || !trackers.length) return;
   var MPEndpointLength = LittledataLayer.MPEndpoint && LittledataLayer.MPEndpoint.length;
 
   if (MPEndpointLength) {
-    trackers[0].set('customTask', Object(_gaTracker_customTask__WEBPACK_IMPORTED_MODULE_1__["customTask"])(LittledataLayer.MPEndpoint));
+    trackers[0].set('customTask', customTask_1.customTask(LittledataLayer.MPEndpoint));
   }
 };
 
-var documentReady = function documentReady(callback) {
+exports.documentReady = function (callback) {
   // see if DOM is already available
   if (document.readyState === 'complete' || document.readyState === 'interactive') {
     // call on next available tick
@@ -407,11 +340,12 @@ var documentReady = function documentReady(callback) {
 
 /***/ }),
 /* 4 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return UrlChangeTracker; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => /* binding */ UrlChangeTracker
+/* harmony export */ });
 /* harmony import */ var _MethodChain__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5);
 
 
@@ -443,8 +377,8 @@ class UrlChangeTracker {
 		this.handlePopState = this.handlePopState.bind(this);
 
 		// Watches for history changes.
-		_MethodChain__WEBPACK_IMPORTED_MODULE_0__["default"].add(history, 'pushState', this.pushStateOverride);
-		_MethodChain__WEBPACK_IMPORTED_MODULE_0__["default"].add(history, 'replaceState', this.replaceStateOverride);
+		_MethodChain__WEBPACK_IMPORTED_MODULE_0__.default.add(history, 'pushState', this.pushStateOverride);
+		_MethodChain__WEBPACK_IMPORTED_MODULE_0__.default.add(history, 'replaceState', this.replaceStateOverride);
 		window.addEventListener('popstate', this.handlePopState);
 	}
 
@@ -526,8 +460,8 @@ class UrlChangeTracker {
 	 */
 	remove() {
 		this.queue.destroy();
-		_MethodChain__WEBPACK_IMPORTED_MODULE_0__["default"].remove(history, 'pushState', this.pushStateOverride);
-		_MethodChain__WEBPACK_IMPORTED_MODULE_0__["default"].remove(history, 'replaceState', this.replaceStateOverride);
+		_MethodChain__WEBPACK_IMPORTED_MODULE_0__.default.remove(history, 'pushState', this.pushStateOverride);
+		_MethodChain__WEBPACK_IMPORTED_MODULE_0__.default.remove(history, 'replaceState', this.replaceStateOverride);
 		window.removeEventListener('popstate', this.handlePopState);
 	}
 }
@@ -542,11 +476,12 @@ function getPath() {
 
 /***/ }),
 /* 5 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return MethodChain; });
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => /* binding */ MethodChain
+/* harmony export */ });
 /**
  * Copyright 2017 Google Inc. All Rights Reserved.
  *
@@ -721,12 +656,15 @@ function getOrCreateMethodChain(context, methodName) {
 
 /***/ }),
 /* 6 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, exports) => {
 
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "customTask", function() { return customTask; });
-var customTask = function customTask(endpoint) {
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+
+exports.customTask = function (endpoint) {
   return function (customTaskModel) {
     window._ga_originalSendHitTask = window._ga_originalSendHitTask || customTaskModel.get('sendHitTask');
     customTaskModel.set('sendHitTask', function (sendHitTaskModel) {
@@ -749,11 +687,13 @@ var customTask = function customTask(endpoint) {
 
 /***/ }),
 /* 7 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony default export */ __webpack_exports__["default"] = (() => {
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => __WEBPACK_DEFAULT_EXPORT__
+/* harmony export */ });
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (() => {
 	const detail = LittledataLayer.ecommerce.detail;
 	if (!detail) return null;
 
@@ -780,15 +720,19 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 /* 8 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3);
 
-/* harmony default export */ __webpack_exports__["default"] = (function (impressionTag) {
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+
+var helpers_1 = __webpack_require__(3);
+
+exports.default = function (impressionTag) {
   var waitForScroll = 0;
-  var products = Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["getElementsByHref"])('/products/');
+  var products = helpers_1.getElementsByHref('/products/');
 
   if (products.length === 0) {
     return;
@@ -820,7 +764,7 @@ __webpack_require__.r(__webpack_exports__);
           //remove product from collection
           products[index] = null; //find this product in the datalayer
 
-          var product = Object(_helpers__WEBPACK_IMPORTED_MODULE_0__["findDataLayerProduct"])(element.href);
+          var product = helpers_1.findDataLayerProduct(element.href);
           if (product) impressions.push(product);
         }
       }
@@ -848,7 +792,7 @@ __webpack_require__.r(__webpack_exports__);
       trackImpressions();
     }, 300);
   });
-});
+};
 
 var chunk = function chunk(arr, size) {
   return Array.from({
@@ -860,39 +804,42 @@ var chunk = function chunk(arr, size) {
 
 /***/ }),
 /* 9 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _common_helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3);
-/* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(10);
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+
+var helpers_1 = __webpack_require__(3);
+
+var helpers_2 = __webpack_require__(10);
 
 (function () {
-  Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["validateLittledataLayer"])();
-  Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["initSegment"])();
-  Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["advertiseLD"])('Segment');
-  Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["identifyCustomer"])(LittledataLayer.customer);
-  Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["documentReady"])(_helpers__WEBPACK_IMPORTED_MODULE_1__["trackEvents"]);
-  Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["pageView"])(function () {
-    Object(_helpers__WEBPACK_IMPORTED_MODULE_1__["callSegmentPage"])({});
+  helpers_1.validateLittledataLayer();
+  helpers_2.initSegment();
+  helpers_1.advertiseLD('Segment');
+  helpers_2.identifyCustomer(LittledataLayer.customer);
+  helpers_1.documentReady(helpers_2.trackEvents);
+  helpers_1.pageView(function () {
+    helpers_2.callSegmentPage({});
     window.analytics.ready(function () {
       // @ts-ignore 'Integrations' property does, in fact exist
       if (window.analytics.Integrations['Google Analytics']) {
-        Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["retrieveAndStoreClientId"])();
+        helpers_1.retrieveAndStoreClientId();
       }
 
       var user = window.analytics.user;
 
       if (user) {
-        Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(user().anonymousId(), 'segment');
+        helpers_1.setClientID(user().anonymousId(), 'segment');
 
         var _user$traits = user().traits(),
             email = _user$traits.email;
 
         if (email) {
-          Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["setClientID"])(email, 'email');
+          helpers_1.setClientID(email, 'email');
         }
       }
     });
@@ -901,30 +848,37 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 /* 10 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "identifyCustomer", function() { return identifyCustomer; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "trackEvents", function() { return trackEvents; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "initSegment", function() { return initSegment; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "callSegmentPage", function() { return callSegmentPage; });
-/* harmony import */ var _common_helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3);
-/* harmony import */ var _addEmailToEvents__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(11);
-/* harmony import */ var _common_getCookie__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(2);
-/* harmony import */ var _common_productListViews__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(8);
-/* harmony import */ var _common_getProductDetail__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(7);
+
+
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
 
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
 
+var helpers_1 = __webpack_require__(3);
 
+var addEmailToEvents_1 = __webpack_require__(11);
 
+var segmentProduct_1 = __webpack_require__(12);
 
+var getCookie_1 = __webpack_require__(2);
+
+var productListViews_1 = __importDefault(__webpack_require__(8));
+
+var getProductDetail_1 = __importDefault(__webpack_require__(7));
 
 var getContext = function getContext() {
   return {
@@ -942,34 +896,17 @@ var trackEvent = function trackEvent(eventName, params) {
   });
 };
 
-var segmentProduct = function segmentProduct(dataLayerProduct) {
-  return {
-    brand: dataLayerProduct.brand,
-    category: dataLayerProduct.category,
-    url: dataLayerProduct.handle,
-    product_id: dataLayerProduct.id,
-    sku: dataLayerProduct.id,
-    position: dataLayerProduct.list_position,
-    name: dataLayerProduct.name,
-    price: parseFloat(dataLayerProduct.price),
-    variant: dataLayerProduct.variant,
-    shopify_product_id: dataLayerProduct.shopify_product_id,
-    shopify_variant_id: dataLayerProduct.shopify_variant_id,
-    compare_at_price: dataLayerProduct.compare_at_price
-  };
-};
-
-var identifyCustomer = function identifyCustomer(customer) {
+exports.identifyCustomer = function (customer) {
   var cookieTraits = {};
   var cookies = LittledataLayer.cookiesToTrack;
 
   if (cookies) {
     cookies.forEach(function (cookie) {
-      cookieTraits[cookie] = Object(_common_getCookie__WEBPACK_IMPORTED_MODULE_2__["getCookie"])(cookie);
+      cookieTraits[cookie] = getCookie_1.getCookie(cookie);
     });
   }
 
-  Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["setCartOnlyAttributes"])(cookieTraits); //this will add to Shopify cart
+  helpers_1.setCartOnlyAttributes(cookieTraits); //this will add to Shopify cart
 
   if (customer) {
     window.analytics.identify(customer.id, _objectSpread({
@@ -980,24 +917,25 @@ var identifyCustomer = function identifyCustomer(customer) {
     }, cookieTraits));
   }
 };
-var trackEvents = function trackEvents() {
+
+exports.trackEvents = function () {
   if (LittledataLayer) {
     /* run list, product, and clientID scripts everywhere */
     if (LittledataLayer.ecommerce.impressions.length) {
-      Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["productListClicks"])(function (product) {
+      helpers_1.productListClicks(function (product) {
         var productFromImpressions = LittledataLayer.ecommerce.impressions.find(function (prod) {
           return prod.name === product.name && prod.handle === product.handle;
         });
         var pos = productFromImpressions && productFromImpressions.list_position;
         window.localStorage.setItem('position', String(pos));
-        trackEvent('Product Clicked', _objectSpread({}, segmentProduct(product), {
+        trackEvent('Product Clicked', _objectSpread({}, segmentProduct_1.segmentProduct(product), {
           currency: LittledataLayer.ecommerce.currencyCode,
           list_id: product.list
         }));
       });
-      Object(_common_productListViews__WEBPACK_IMPORTED_MODULE_3__["default"])(function (products) {
+      productListViews_1["default"](function (products) {
         var listId = products && products[0].list;
-        var segmentProducts = products.map(segmentProduct);
+        var segmentProducts = products.map(segmentProduct_1.segmentProduct);
         trackEvent('Product List Viewed', {
           list_id: listId,
           products: segmentProducts
@@ -1005,16 +943,16 @@ var trackEvents = function trackEvents() {
       });
     }
 
-    var productDetail = Object(_common_getProductDetail__WEBPACK_IMPORTED_MODULE_4__["default"])();
+    var productDetail = getProductDetail_1["default"]();
 
     if (productDetail) {
-      var product = segmentProduct(productDetail); // if PDP, we can also track clicks on images and social shares
+      var product = segmentProduct_1.segmentProduct(productDetail); // if PDP, we can also track clicks on images and social shares
 
-      Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["trackProductImageClicks"])(function (name) {
-        product.image_url = name;
+      helpers_1.trackProductImageClicks(function (image) {
+        product.image_url = image.src;
         trackEvent('Product Image Clicked', product);
       });
-      Object(_common_helpers__WEBPACK_IMPORTED_MODULE_0__["trackSocialShares"])(function (network) {
+      helpers_1.trackSocialShares(function (network) {
         trackEvent('Product Shared', _objectSpread({}, product, {
           share_via: network
         }));
@@ -1022,7 +960,8 @@ var trackEvents = function trackEvents() {
     }
   }
 };
-var initSegment = function initSegment() {
+
+exports.initSegment = function () {
   // Create a queue, but don't obliterate an existing one!
   // @ts-ignore
   var analytics = window.analytics = window.analytics || []; // If the real analytics.js is already on the page return.
@@ -1069,7 +1008,7 @@ var initSegment = function initSegment() {
 
 
   analytics.SNIPPET_VERSION = '4.1.0';
-  analytics.addSourceMiddleware(_addEmailToEvents__WEBPACK_IMPORTED_MODULE_1__["addEmailToEvents"]);
+  analytics.addSourceMiddleware(addEmailToEvents_1.addEmailToEvents);
   analytics.load(LittledataLayer.writeKey);
   analytics.page();
   window.dataLayer = window.dataLayer || [];
@@ -1091,17 +1030,17 @@ var parseAddress = function parseAddress(a) {
   return output;
 };
 
-var callSegmentPage = function callSegmentPage(integrations) {
+exports.callSegmentPage = function (integrations) {
   // https://segment.com/docs/sources/website/analytics.js/#page
   var pageName = document.title;
   window.analytics.page(pageName, {}, {
     context: getContext(),
     integrations: integrations
   });
-  var productDetail = Object(_common_getProductDetail__WEBPACK_IMPORTED_MODULE_4__["default"])();
+  var productDetail = getProductDetail_1["default"]();
 
   if (productDetail) {
-    var properties = segmentProduct(productDetail);
+    var properties = segmentProduct_1.segmentProduct(productDetail);
     properties.currency = LittledataLayer.ecommerce.currencyCode;
     properties.position = parseInt(window.localStorage.getItem('position')) || 1;
     window.analytics.ready(function () {
@@ -1113,18 +1052,21 @@ var callSegmentPage = function callSegmentPage(integrations) {
 
 /***/ }),
 /* 11 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ ((__unused_webpack_module, exports) => {
 
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "addEmailToEvents", function() { return addEmailToEvents; });
+
+
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var addEmailToEvents = function addEmailToEvents(_ref) {
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+
+exports.addEmailToEvents = function (_ref) {
   var payload = _ref.payload,
       next = _ref.next;
   payload.obj = _objectSpread({}, payload.obj, {
@@ -1143,5 +1085,92 @@ var addEmailToProperties = function addEmailToProperties(properties) {
   return properties;
 };
 
+/***/ }),
+/* 12 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+
+exports.segmentProduct = function (dataLayerProduct) {
+  return {
+    brand: dataLayerProduct.brand,
+    category: dataLayerProduct.category,
+    url: "".concat(window.document.location.origin, "/products/").concat(dataLayerProduct.handle),
+    product_id: dataLayerProduct.id,
+    sku: dataLayerProduct.id,
+    position: dataLayerProduct.list_position,
+    name: dataLayerProduct.name,
+    price: parseFloat(dataLayerProduct.price),
+    variant: dataLayerProduct.variant,
+    shopify_product_id: String(dataLayerProduct.shopify_product_id),
+    shopify_variant_id: String(dataLayerProduct.shopify_variant_id),
+    compare_at_price: dataLayerProduct.compare_at_price
+  };
+};
+
 /***/ })
-/******/ ]);
+/******/ 	]);
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		if(__webpack_module_cache__[moduleId]) {
+/******/ 			return __webpack_module_cache__[moduleId].exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__webpack_require__.o = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop)
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/************************************************************************/
+/******/ 	// startup
+/******/ 	// Load entry module
+/******/ 	__webpack_require__(9);
+/******/ 	// This entry module used 'exports' so it can't be inlined
+/******/ })()
+;
