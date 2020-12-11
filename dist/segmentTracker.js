@@ -286,7 +286,7 @@ exports.trackSocialShares = function (clickTag) {
 };
 
 exports.validateLittledataLayer = function () {
-  window.LittledataScriptVersion = '9.3';
+  window.LittledataScriptVersion = '9.4';
 
   if (!window.LittledataLayer) {
     throw new Error('Aborting Littledata tracking as LittledataLayer was not found');
@@ -1096,20 +1096,32 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 
 exports.segmentProduct = function (dataLayerProduct) {
-  return {
+  var output = {
     brand: dataLayerProduct.brand,
     category: dataLayerProduct.category,
     url: "".concat(window.document.location.origin, "/products/").concat(dataLayerProduct.handle),
     product_id: dataLayerProduct.id,
     sku: dataLayerProduct.id,
-    position: dataLayerProduct.list_position,
     name: dataLayerProduct.name,
     price: parseFloat(dataLayerProduct.price),
     variant: dataLayerProduct.variant,
     shopify_product_id: String(dataLayerProduct.shopify_product_id),
-    shopify_variant_id: String(dataLayerProduct.shopify_variant_id),
-    compare_at_price: dataLayerProduct.compare_at_price
+    shopify_variant_id: String(dataLayerProduct.shopify_variant_id)
   };
+
+  if (dataLayerProduct.image_url) {
+    output.image_url = dataLayerProduct.image_url;
+  }
+
+  if (dataLayerProduct.list_position) {
+    output.position = dataLayerProduct.list_position;
+  }
+
+  if (dataLayerProduct.compare_at_price) {
+    output.compare_at_price = dataLayerProduct.compare_at_price;
+  }
+
+  return output;
 };
 
 /***/ })
