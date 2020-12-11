@@ -101,36 +101,42 @@ export interface AnalyticsJS {
 
 	/* The identify method is how you tie one of your users and their actions
        to a recognizable userId and traits. */
-	identify(userId: string, traits?: Object, options?: SegmentOpts, callback?: () => void): void;
-	identify(userId: string, traits: Object, callback?: () => void): void;
+	identify(userId: string, traits?: Record<string, any>, options?: SegmentOpts, callback?: () => void): void;
+	identify(userId: string, traits: Record<string, any>, callback?: () => void): void;
 	identify(userId: string, callback?: () => void): void;
-	identify(traits?: Object, options?: SegmentOpts, callback?: () => void): void;
-	identify(traits?: Object, callback?: () => void): void;
+	identify(traits?: Record<string, any>, options?: SegmentOpts, callback?: () => void): void;
+	identify(traits?: Record<string, any>, callback?: () => void): void;
 	identify(callback: () => void): void;
 
 	/* The track method lets you record any actions your users perform. */
-	track(event: string, properties?: Object, options?: SegmentOpts, callback?: () => void): void;
-	track(event: string, properties?: Object, callback?: () => void): void;
+	track(event: string, properties?: Record<string, any>, options?: SegmentOpts, callback?: () => void): void;
+	track(event: string, properties?: Record<string, any>, callback?: () => void): void;
 	track(event: string, callback?: () => void): void;
 
 	/* The page method lets you record page views on your website, along with
        optional extra information about the page being viewed. */
-	page(category?: string, name?: string, properties?: Object, options?: SegmentOpts, callback?: () => void): void;
-	page(name?: string, properties?: Object, options?: SegmentOpts, callback?: () => void): void;
-	page(name?: string, properties?: Object, callback?: () => void): void;
+	page(
+		category?: string,
+		name?: string,
+		properties?: Record<string, any>,
+		options?: SegmentOpts,
+		callback?: () => void,
+	): void;
+	page(name?: string, properties?: Record<string, any>, options?: SegmentOpts, callback?: () => void): void;
+	page(name?: string, properties?: Record<string, any>, callback?: () => void): void;
 	page(name?: string, callback?: () => void): void;
-	page(properties?: Object, options?: SegmentOpts, callback?: () => void): void;
+	page(properties?: Record<string, any>, options?: SegmentOpts, callback?: () => void): void;
 	page(callback?: () => void): void;
 
 	/* The group method associates an individual user with a group. The group
        can a company, organization, account, project, team or any other name
        you came up with for the same concept. */
-	group(groupId: string, traits?: Object, options?: SegmentOpts, callback?: () => void): void;
-	group(groupId: string, traits?: Object, callback?: () => void): void;
+	group(groupId: string, traits?: Record<string, any>, options?: SegmentOpts, callback?: () => void): void;
+	group(groupId: string, traits?: Record<string, any>, callback?: () => void): void;
 	group(groupId: string, callback?: () => void): void;
 	group(): {
 		id(): string;
-		traits(newTraits?: Object): void;
+		traits(newTraits?: Record<string, any>): void;
 	};
 
 	/* The alias method combines two previously unassociated user identities.
@@ -152,7 +158,7 @@ export interface AnalyticsJS {
 	trackLink(
 		elements: JQuery | Element[] | Element,
 		event: string | { (elm: Element): string },
-		properties?: Object | { (elm: Element): Object },
+		properties?: Record<string, any> | { (elm: Element): Record<string, any> },
 	): void;
 
 	/* trackForm is a helper that binds a track call to a form submission.
@@ -162,7 +168,7 @@ export interface AnalyticsJS {
 	trackForm(
 		elements: JQuery | Element[] | Element,
 		event: string | { (elm: Element): string },
-		properties?: Object | { (elm: Element): Object },
+		properties?: Record<string, any> | { (elm: Element): Record<string, any> },
 	): void;
 
 	/* The ready method allows you to pass in a callback that will be called as
@@ -187,7 +193,7 @@ export interface AnalyticsJS {
 		reset(): void;
 		anonymousId(newId?: string): string;
 		traits(
-			newTraits?: Object,
+			newTraits?: Record<string, any>,
 		): {
 			email?: string;
 		};
@@ -203,7 +209,7 @@ export interface AnalyticsJS {
 	on(
 		event: string,
 		callback: {
-			(event: string, properties: Object, options: SegmentOpts): void;
+			(event: string, properties: Record<string, any>, options: SegmentOpts): void;
 		},
 	): void;
 
@@ -218,7 +224,7 @@ export interface SegmentProduct {
 	url: string;
 	product_id: string;
 	sku: string;
-	position: number;
+	position?: number;
 	name: string;
 	price: number;
 	variant: string;
