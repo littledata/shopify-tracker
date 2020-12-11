@@ -2,7 +2,7 @@ import { convertToGtagProducts, sumProductTax, sumShipping, sumProductSubtotal }
 
 declare let window: CartHookWindow;
 
-export const sendThankYouEvents = () => {
+export const sendThankYouEvents = (orderId: string) => {
 	if (!window.chData) {
 		console.error('Littledata script unable to find chData');
 		return;
@@ -34,7 +34,7 @@ export const sendThankYouEvents = () => {
 	if (lineItems.length > 0) {
 		window.dataLayer.push({
 			event: 'transactionComplete',
-			transactionId: order.order_number,
+			transactionId: order[orderId],
 			transactionSubTotal: sumProductSubtotal(lineItems),
 			transactionTotal: order.total_price,
 			transactionTax: sumProductTax(lineItems),
