@@ -12,7 +12,7 @@ import { initSegment } from '../segmentTracker/helpers';
 			throw new Error('Could not add segment thank you page script beacuse of missing segmentProperty');
 		}
 
-		initSegment(segmentProperty);
+		initSegment();
 		// @ts-ignore
 		const checkout = window.Shopify.checkout;
 		// @ts-ignore
