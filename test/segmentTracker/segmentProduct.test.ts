@@ -19,6 +19,7 @@ const productView: Detail = {
 	shopify_product_id: '4169037119550',
 	shopify_variant_id: '30293801304126',
 	compare_at_price: '99.95',
+	image_url: 'https://images.shopify.com/image',
 };
 
 describe('segmentProduct function', () => {
@@ -46,6 +47,19 @@ describe('segmentProduct function', () => {
 			category: productView.category,
 			name: productView.name,
 			url: 'https//mystore.com/products/vans-authentic-lo-pro-burgandy-white',
+			image_url: 'https://images.shopify.com/image',
 		});
+	});
+
+	it('should omit undefined fields', () => {
+		const limitedProduct: Detail = {
+			...productView,
+			list_position: undefined,
+			image_url: '',
+			compare_at_price: undefined,
+		};
+		segmentProduct(limitedProduct).should.not.have.own.property('position');
+		segmentProduct(limitedProduct).should.not.have.own.property('image_url');
+		segmentProduct(limitedProduct).should.not.have.own.property('compare_at_price');
 	});
 });
