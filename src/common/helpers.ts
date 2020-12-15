@@ -246,13 +246,23 @@ export function retrieveAndStoreClientId(withCustomTask: boolean = false) {
 		gtag('get', LittledataLayer.webPropertyID, 'client_id', resolve);
 	});
 
-	clientIdPromise.then((clientId: string) => {
-		if (withCustomTask) {
-			setCustomTask();
-		}
+	return clientIdPromise
+		.then((clientId: string) => {
+			if (withCustomTask) {
+				setCustomTask();
+			}
 
-		return setClientID(clientId, 'google');
-	});
+			return setClientID(clientId, 'google');
+		})
+		.catch(() => {
+			window.ga(() => {
+				const tracker = window.ga.getAll()[0];
+				if (tracker) {
+					const clientId = tracker.get('clientId');
+					return setClientID(clientId, 'google');
+				}
+			});
+		});
 }
 
 const setCustomTask = () => {
