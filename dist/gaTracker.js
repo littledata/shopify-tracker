@@ -352,11 +352,15 @@ Object.defineProperty(exports, "__esModule", ({
 var UrlChangeTracker_1 = __importDefault(__webpack_require__(4));
 
 var customTask_1 = __webpack_require__(6);
+
+var getCookie_1 = __webpack_require__(2);
+
+var maximumTimeout = 524288000; // about 6 hours in seconds
+
 /**
  *
  * @param fireTag - callback to call when willing to fire pageviews
  */
-
 
 exports.pageView = function (fireTag) {
   if (document.hidden === true) {
@@ -595,18 +599,22 @@ function retrieveAndStoreClientId() {
     // @ts-ignore
     gtag('get', LittledataLayer.webPropertyID, 'client_id', resolve);
   });
-  clientIdPromise.then(function (clientId) {
+  return clientIdPromise.then(function (clientId) {
     if (withCustomTask) {
-      setCustomTask();
+      exports.setCustomTask();
     }
 
     return setClientID(clientId, 'google');
+  })["catch"](function () {
+    var postClientIdTimeout;
+    var nextTimeout = 10;
+    waitForGaToLoad(postClientIdTimeout, nextTimeout);
   });
 }
 
 exports.retrieveAndStoreClientId = retrieveAndStoreClientId;
 
-var setCustomTask = function setCustomTask() {
+exports.setCustomTask = function () {
   var trackers = window.ga && window.ga.getAll && window.ga.getAll();
   if (!trackers || !trackers.length) return;
   var MPEndpointLength = LittledataLayer.MPEndpoint && LittledataLayer.MPEndpoint.length;
@@ -626,6 +634,30 @@ exports.documentReady = function (callback) {
     document.addEventListener('DOMContentLoaded', callback);
   }
 };
+
+function waitForGaToLoad(postClientIdTimeout, nextTimeout) {
+  // After GA queue is executed we need to wait
+  // until after ga.getAll is available but before hit is sent
+  var trackers = window.ga && window.ga.getAll && window.ga.getAll();
+
+  if (trackers && trackers.length) {
+    exports.setCustomTask();
+    return setClientID(getGAClientId(trackers[0]), 'google');
+  }
+
+  if (nextTimeout > maximumTimeout) return; // stop if not found already
+
+  nextTimeout *= 2;
+  clearTimeout(postClientIdTimeout);
+  postClientIdTimeout = window.setTimeout(function () {
+    waitForGaToLoad(postClientIdTimeout, nextTimeout);
+  }, nextTimeout);
+}
+
+function getGAClientId(tracker) {
+  var clientId = tracker.get('clientId');
+  return getCookie_1.getValidGAClientId(clientId) ? clientId : '';
+}
 
 /***/ }),
 /* 4 */
