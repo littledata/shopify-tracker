@@ -6,12 +6,12 @@ import {
 	trackSocialShares,
 	setCartOnlyAttributes,
 } from '../common/helpers';
-import { addEmailToEvents } from './addEmailToEvents';
+import { addEmailToEvents } from './helpers/addEmailToEvents';
+import { segmentProduct } from './helpers/segmentProduct';
 
 import { getCookie } from '../common/getCookie';
 import productListViews from '../common/productListViews';
 import getProductDetail from '../common/getProductDetail';
-import { SegmentProduct } from '../../segmentInterface';
 
 const getContext = () => {
 	return {
@@ -26,21 +26,6 @@ const trackEvent = (eventName: string, params: object) => {
 	// @ts-ignore
 	window.analytics.track(eventName, params, { context: getContext() });
 };
-
-const segmentProduct = (dataLayerProduct: Detail): SegmentProduct => ({
-	brand: dataLayerProduct.brand,
-	category: dataLayerProduct.category,
-	url: dataLayerProduct.handle,
-	product_id: dataLayerProduct.id,
-	sku: dataLayerProduct.id,
-	position: dataLayerProduct.list_position,
-	name: dataLayerProduct.name,
-	price: parseFloat(dataLayerProduct.price),
-	variant: dataLayerProduct.variant,
-	shopify_product_id: dataLayerProduct.shopify_product_id,
-	shopify_variant_id: dataLayerProduct.shopify_variant_id,
-	compare_at_price: dataLayerProduct.compare_at_price,
-});
 
 export const identifyCustomer = (customer: Customer) => {
 	const cookieTraits: any = {};
@@ -96,8 +81,8 @@ export const trackEvents = () => {
 			const product = segmentProduct(productDetail);
 
 			// if PDP, we can also track clicks on images and social shares
-			trackProductImageClicks(name => {
-				product.image_url = name;
+			trackProductImageClicks(image => {
+				product.image_url = image.src;
 				trackEvent('Product Image Clicked', product);
 			});
 
@@ -111,79 +96,81 @@ export const trackEvents = () => {
 	}
 };
 
-// @ts-ignore
-export const initSegment = (writeKey?) => {
+export const initSegment = () => {
+	// Create a queue, but don't obliterate an existing one!
 	// @ts-ignore
-	window.analytics = window.analytics || [];
-	// @ts-ignore
-	if (!analytics.initialize) {
-		// @ts-ignore
-		if (analytics.invoked) {
-			window.console && console.error && console.error('Segment snippet included twice.');
-		} else {
-			// @ts-ignore
-			analytics.invoked = !0;
-			// @ts-ignore
-			analytics.methods = [
-				'trackSubmit',
-				'trackClick',
-				'trackLink',
-				'trackForm',
-				'pageview',
-				'identify',
-				'reset',
-				'group',
-				'track',
-				'ready',
-				'alias',
-				'debug',
-				'page',
-				'once',
-				'off',
-				'on',
-				'addSourceMiddleware',
-				'addIntegrationMiddleware',
-				'setAnonymousId',
-				'addDestinationMiddleware',
-			];
+	const analytics: any = (window.analytics = window.analytics || []);
 
-			// @ts-ignore
-			analytics.factory = function(t) {
-				return function() {
-					var e = Array.prototype.slice.call(arguments);
-					e.unshift(t);
-					// @ts-ignore
-					analytics.push(e);
-					// @ts-ignore
-					return analytics;
-				};
-			};
-			// @ts-ignore
-			for (var t = 0; t < analytics.methods.length; t++) {
-				// @ts-ignore
-				var e = analytics.methods[t];
-				// @ts-ignore
-				analytics[e] = analytics.factory(e);
-			}
+	// If the real analytics.js is already on the page return.
+	if (analytics.initialize) return;
 
-			// @ts-ignore
-			analytics.load = function(t, e) {
-				var n = document.createElement('script');
-				n.type = 'text/javascript';
-				n.async = !0;
-				n.src = 'https://cdn.segment.com/analytics.js/v1/' + t + '/analytics.min.js';
-				var a = document.getElementsByTagName('script')[0];
-				a.parentNode.insertBefore(n, a);
-				// @ts-ignore
-				analytics._loadOptions = e;
-			};
-			// @ts-ignore
-			analytics.SNIPPET_VERSION = '4.1.0'; //eslint-disable-line
-			window.analytics.addSourceMiddleware(addEmailToEvents);
-			window.analytics.load(writeKey || LittledataLayer.writeKey);
-			writeKey && window.analytics.page();
-		}
+	if (analytics.invoked) {
+		window.console && console.error && console.error('Segment snippet included twice.');
+		return;
 	}
+
+	analytics.invoked = true;
+	analytics.methods = [
+		'trackSubmit',
+		'trackClick',
+		'trackLink',
+		'trackForm',
+		'pageview',
+		'identify',
+		'reset',
+		'group',
+		'track',
+		'ready',
+		'alias',
+		'debug',
+		'page',
+		'once',
+		'off',
+		'on',
+		'addSourceMiddleware',
+		'addIntegrationMiddleware',
+		'setAnonymousId',
+		'addDestinationMiddleware',
+	];
+
+	analytics.factory = function(t: any) {
+		return function() {
+			var e = Array.prototype.slice.call(arguments);
+			e.unshift(t);
+			analytics.push(e);
+			return analytics;
+		};
+	};
+
+	for (var t = 0; t < analytics.methods.length; t++) {
+		var e = analytics.methods[t];
+		analytics[e] = analytics.factory(e);
+	}
+
+	// use custom CDN path, or fallback to Segment's CDN
+	const CDNdomain = LittledataLayer.CDNForAnalyticsJS || 'https://cdn.segment.com';
+
+	// Define a method to load Analytics.js from CDN,
+	// and that will be sure to only ever load it once.
+	analytics.load = function(key: string, options: LooseObject) {
+		// Create an async script element based on your key.
+		var script = document.createElement('script');
+		script.type = 'text/javascript';
+		script.async = true;
+		script.src = `${CDNdomain}/analytics.js/v1/${key}/analytics.min.js`;
+
+		// Insert our script next to the first script element.
+		var first = document.getElementsByTagName('script')[0];
+		first.parentNode.insertBefore(script, first);
+		analytics._loadOptions = options;
+	};
+
+	// Add a version to keep track of what's in the wild.
+	analytics.SNIPPET_VERSION = '4.1.0';
+
+	analytics.addSourceMiddleware(addEmailToEvents);
+	analytics.load(LittledataLayer.writeKey);
+	analytics.page();
 	window.dataLayer = window.dataLayer || [];
 };
 

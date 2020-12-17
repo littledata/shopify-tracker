@@ -1,9 +1,12 @@
 /* global LittledataLayer */
 declare let window: CustomWindow;
 
-import { clientID } from '../../index';
 import UrlChangeTracker from './UrlChangeTracker';
+import { clientID } from '../../index';
+import { customTask } from '../gaTracker/customTask';
+import { getValidGAClientId } from '../common/getCookie';
 
+const maximumTimeout = 524288000; // about 6 hours in seconds
 /**
  *
  * @param fireTag - callback to call when willing to fire pageviews
@@ -88,11 +91,10 @@ export const setCartOnlyAttributes = (setAttributes: LooseObject) => {
 
 const attributes: Cart.Attributes = {}; //persist any previous attributes sent from this page
 
-function postClientID(getClientId: () => string, platform: string, sendCartToLittledata: boolean) {
+function postClientID(clientId: string, platform: string, sendCartToLittledata: boolean) {
 	const attribute = `${platform}-clientID`;
-	const clientID = getClientId();
-	if (typeof clientID !== 'string' || clientID.length === 0) return;
-	(attributes as any)[attribute] = clientID;
+	if (typeof clientId !== 'string' || clientId.length === 0) return;
+	(attributes as any)[attribute] = clientId;
 
 	clearTimeout(postCartTimeout);
 	// timeout is to allow 2 client IDs posted within 1 second
@@ -137,7 +139,7 @@ function postCartToLittledata(cart: Cart.RootObject) {
 	httpRequest.send(JSON.stringify(cart));
 }
 
-export function setClientID(getClientId: () => string, platform: 'google' | 'segment' | 'email') {
+export function setClientID(clientId: string, platform: 'google' | 'segment' | 'email') {
 	const { cart } = LittledataLayer;
 	const cartAttributes = (cart && cart.attributes) || {};
 	const clientIDProperty = `${platform}-clientID` as clientID;
@@ -147,8 +149,8 @@ export function setClientID(getClientId: () => string, platform: 'google' | 'seg
 		!cartAttributes[clientIDProperty] // don't resend for the same cart
 	) {
 		// set it on data layer, so subsequent setClientID call is ignored
-		LittledataLayer[clientIDProperty] = getClientId();
-		postClientID(getClientId, platform, false);
+		LittledataLayer[clientIDProperty] = clientId;
+		postClientID(clientId, platform, false);
 	}
 
 	const updatedAt = cartAttributes.littledata_updatedAt;
@@ -160,7 +162,7 @@ export function setClientID(getClientId: () => string, platform: 'google' | 'seg
 		// only need to resend cart if it's expired from our Redis cache
 		if (timePassed > timeout) {
 			//cart from LittledataLayer may have no token, so we need to fetch from API before storing
-			postClientID(getClientId, platform, true);
+			postClientID(clientId, platform, true);
 		}
 	}
 }
@@ -200,15 +202,14 @@ export const guid: string = (function() {
 // 	document.cookie = `${name}=${value}${expires}; path=/;`
 // }
 
-export const trackProductImageClicks = (clickTag: (name: string) => void) => {
+export const trackProductImageClicks = (clickTag: (image: HTMLImageElement) => void) => {
 	if (LittledataLayer.productPageClicks === false) return false;
 	getElementsByHref('^https://cdn.shopify.com/s/files/.*/products/').forEach(element => {
 		element.addEventListener('click', function() {
 			// only add event to product images
 			const image = this.getElementsByTagName('img')[0];
-			const name = image && image.alt;
-
-			clickTag(name);
+			if (!image) return false;
+			clickTag(image);
 		});
 	});
 };
@@ -225,7 +226,7 @@ export const trackSocialShares = (clickTag: (name?: string) => void) => {
 };
 
 export const validateLittledataLayer = () => {
-	window.LittledataScriptVersion = '9.2';
+	window.LittledataScriptVersion = '9.4';
 	if (!window.LittledataLayer) {
 		throw new Error('Aborting Littledata tracking as LittledataLayer was not found');
 	}
@@ -241,6 +242,37 @@ export const advertiseLD = (app: string) => {
 	}
 };
 
+export function retrieveAndStoreClientId(withCustomTask: boolean = false) {
+	const clientIdPromise = new Promise(resolve => {
+		// @ts-ignore
+		gtag('get', LittledataLayer.webPropertyID, 'client_id', resolve);
+	});
+
+	return clientIdPromise
+		.then((clientId: string) => {
+			if (withCustomTask) {
+				setCustomTask();
+			}
+
+			return setClientID(clientId, 'google');
+		})
+		.catch(() => {
+			let postClientIdTimeout: any;
+			let nextTimeout = 10;
+			waitForGaToLoad(postClientIdTimeout, nextTimeout);
+		});
+}
+
+export const setCustomTask = () => {
+	const trackers = window.ga && window.ga.getAll && window.ga.getAll();
+	if (!trackers || !trackers.length) return;
+
+	const MPEndpointLength = LittledataLayer.MPEndpoint && LittledataLayer.MPEndpoint.length;
+	if (MPEndpointLength) {
+		trackers[0].set('customTask', customTask(LittledataLayer.MPEndpoint));
+	}
+};
+
 export const documentReady = (callback: Function) => {
 	// see if DOM is already available
 	if (document.readyState === 'complete' || document.readyState === 'interactive') {
@@ -251,3 +283,27 @@ export const documentReady = (callback: Function) => {
 		document.addEventListener('DOMContentLoaded', callback);
 	}
 };
+
+function waitForGaToLoad(postClientIdTimeout: any, nextTimeout: number) {
+	// After GA queue is executed we need to wait
+	// until after ga.getAll is available but before hit is sent
+	const trackers = window.ga && window.ga.getAll && window.ga.getAll();
+	if (trackers && trackers.length) {
+		setCustomTask();
+		return setClientID(getGAClientId(trackers[0]), 'google');
+	}
+
+	if (nextTimeout > maximumTimeout) return; // stop if not found already
+	nextTimeout *= 2;
+
+	clearTimeout(postClientIdTimeout);
+
+	postClientIdTimeout = window.setTimeout(function() {
+		waitForGaToLoad(postClientIdTimeout, nextTimeout);
+	}, nextTimeout);
+}
+
+function getGAClientId(tracker: any): string {
+	const clientId = tracker.get('clientId');
+	return getValidGAClientId(clientId) ? clientId : '';
+}

@@ -1,5 +1,22 @@
 import { AnalyticsJS } from './segmentInterface';
 
+export interface Detail {
+	id: string;
+	name: string;
+	price: string;
+	brand: string;
+	category: string;
+	variant: string;
+	list_name: string;
+	list: string; // duplicate property for GTM
+	handle: string;
+	list_position?: number;
+	shopify_product_id?: string;
+	shopify_variant_id?: string;
+	compare_at_price?: string;
+	image_url?: string;
+}
+
 declare global {
 	interface LooseObject {
 		[index: string]: any;
@@ -79,22 +96,6 @@ declare global {
 		}
 	}
 
-	interface Detail {
-		id: string;
-		name: string;
-		price: string;
-		brand: string;
-		category: string;
-		variant: string;
-		list_name: string;
-		list: string; // duplicate property for GTM
-		handle: string;
-		list_position?: number;
-		shopify_product_id?: string;
-		shopify_variant_id?: string;
-		compare_at_price?: string;
-	}
-
 	interface Impression extends Detail {
 		list_position: number;
 	}
@@ -135,6 +136,7 @@ declare global {
 		cookiesToTrack?: string[];
 		doNotTrackReplaceState?: boolean;
 		MPEndpoint?: string;
+		CDNForAnalyticsJS?: string;
 	}
 
 	var LittledataLayer: OwnLayer;
