@@ -14,6 +14,7 @@ export interface Detail {
 	shopify_product_id?: string;
 	shopify_variant_id?: string;
 	compare_at_price?: string;
+	image_url?: string;
 }
 
 declare global {
