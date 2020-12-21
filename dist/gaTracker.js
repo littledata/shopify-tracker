@@ -114,23 +114,7 @@ exports.sendPageview = function () {
 
   if (product) {
     product.list_position = parseInt(window.localStorage.getItem('position')) || 1;
-    gtag('event', 'view_item', {
-      event_category: event_category,
-      items: [exports.filterGAProductFields(product)],
-      non_interaction: true,
-      send_to: LittledataLayer.webPropertyID
-    });
-    dataLayer.push({
-      event: 'view_item',
-      ecommerce: {
-        detail: {
-          actionField: {
-            list: product.list_name
-          },
-          products: [product]
-        }
-      }
-    });
+    sendViewItemEvent(product);
   }
 };
 
@@ -143,44 +127,10 @@ exports.trackEvents = function () {
       });
       var pos = productFromImpressions && productFromImpressions.list_position;
       window.localStorage.setItem('position', String(pos));
-      dataLayer.push({
-        event: 'select_content',
-        ecommerce: {
-          click: {
-            actionField: {
-              list: product.list_name
-            },
-            products: [product]
-          }
-        }
-      });
-      gtag('event', 'select_content', {
-        event_category: event_category,
-        content_type: 'product',
-        items: [exports.filterGAProductFields(product)],
-        send_to: LittledataLayer.webPropertyID,
-        event_callback: function event_callback() {
-          window.clearTimeout(self.timeout);
-          document.location.href = self.href;
-        }
-      });
+      sendSelectContentEvent(product, self);
     });
     productListViews_1["default"](function (products) {
-      var gaProducts = products.map(function (product) {
-        return exports.filterGAProductFields(product);
-      });
-      gtag('event', 'view_item_list', {
-        event_category: event_category,
-        items: gaProducts,
-        send_to: LittledataLayer.webPropertyID,
-        non_interaction: true
-      });
-      dataLayer.push({
-        event: 'view_item_list',
-        ecommerce: {
-          impressions: products
-        }
-      });
+      sendViewItemListEvent(products);
     });
   }
 
@@ -191,25 +141,47 @@ exports.trackEvents = function () {
     helpers_1.trackProductImageClicks(function (image) {
       dataLayer.push({
         event: 'product_image_click',
-        name: image.name
+        name: image.name,
+        image_url: image.src
       });
-      gtag('event', 'Product image click', {
-        event_category: event_category,
-        event_label: image.name,
-        image_url: image.src,
-        send_to: LittledataLayer.webPropertyID
-      });
+
+      if (hasGA4()) {
+        gtag('event', 'select_content', {
+          content_type: 'product',
+          item_id: product.id,
+          image_url: image.src,
+          send_to: LittledataLayer.measurementId
+        });
+      }
+
+      if (hasGA3()) {
+        gtag('event', 'Product image click', {
+          event_category: event_category,
+          event_label: image.name,
+          send_to: LittledataLayer.webPropertyID
+        });
+      }
     });
     helpers_1.trackSocialShares(function (network) {
       dataLayer.push({
         event: 'share_product',
         network: network
       });
-      gtag('event', 'Social share', {
-        event_category: event_category,
-        event_label: network,
-        send_to: LittledataLayer.webPropertyID
-      });
+
+      if (hasGA4()) {
+        gtag('event', 'share', {
+          method: network,
+          send_to: LittledataLayer.measurementId
+        });
+      }
+
+      if (hasGA3()) {
+        gtag('event', 'Social share', {
+          event_category: event_category,
+          event_label: network,
+          send_to: LittledataLayer.webPropertyID
+        });
+      }
     });
   }
 };
@@ -290,6 +262,128 @@ var addUTMMediumIfMissing = function addUTMMediumIfMissing(url) {
   var utmTags = sourceTag + '&utm_medium=referral';
   return url.replace(sourceTag, utmTags);
 };
+
+function sendViewItemListEvent(products) {
+  if (hasGA4()) {
+    var listName = products && products.length && products[0].list_name || '';
+    gtag('event', 'view_item_list', {
+      items: convertProductsToGa4Format(products),
+      item_list_name: listName,
+      item_list_id: listName,
+      send_to: LittledataLayer.measurementId
+    });
+  }
+
+  if (hasGA3()) {
+    var gaProducts = products.map(function (product) {
+      return exports.filterGAProductFields(product);
+    });
+    gtag('event', 'view_item_list', {
+      event_category: event_category,
+      items: gaProducts,
+      send_to: LittledataLayer.webPropertyID,
+      non_interaction: true
+    });
+  }
+
+  dataLayer.push({
+    event: 'view_item_list',
+    ecommerce: {
+      impressions: products
+    }
+  });
+}
+
+function sendViewItemEvent(product) {
+  if (hasGA4()) {
+    gtag('event', 'view_item', {
+      items: [convertProductsToGa4Format(new Array(product))],
+      send_to: LittledataLayer.measurementId
+    });
+  }
+
+  if (hasGA3()) {
+    gtag('event', 'view_item', {
+      event_category: event_category,
+      items: [exports.filterGAProductFields(product)],
+      non_interaction: true,
+      send_to: LittledataLayer.webPropertyID
+    });
+  }
+
+  dataLayer.push({
+    event: 'view_item',
+    ecommerce: {
+      detail: {
+        actionField: {
+          list: product.list_name
+        },
+        products: [product]
+      }
+    }
+  });
+}
+
+function sendSelectContentEvent(product, self) {
+  dataLayer.push({
+    event: 'select_content',
+    ecommerce: {
+      click: {
+        actionField: {
+          list: product.list_name
+        },
+        products: [product]
+      }
+    }
+  });
+
+  if (hasGA4()) {
+    gtag('event', 'select_item', {
+      items: [convertProductsToGa4Format(new Array(product))],
+      send_to: LittledataLayer.measurementId,
+      event_callback: function event_callback() {
+        window.clearTimeout(self.timeout);
+        document.location.href = self.href;
+      }
+    });
+  }
+
+  if (hasGA3()) {
+    gtag('event', 'select_content', {
+      event_category: event_category,
+      content_type: 'product',
+      items: [exports.filterGAProductFields(product)],
+      send_to: LittledataLayer.webPropertyID,
+      event_callback: function event_callback() {
+        window.clearTimeout(self.timeout);
+        document.location.href = self.href;
+      }
+    });
+  }
+}
+
+function hasGA4() {
+  return LittledataLayer.measurementId !== undefined;
+}
+
+function hasGA3() {
+  return LittledataLayer.webPropertyID !== undefined;
+}
+
+function convertProductsToGa4Format(products) {
+  return products.map(function (product) {
+    return {
+      currency: LittledataLayer.ecommerce && LittledataLayer.ecommerce.currencyCode || '',
+      item_id: product.id,
+      item_name: product.name,
+      item_brand: product.brand,
+      item_category: product.category,
+      item_variant: product.variant,
+      price: product.price,
+      index: product.list_position
+    };
+  });
+}
 
 /***/ }),
 /* 2 */
@@ -579,7 +673,7 @@ exports.trackSocialShares = function (clickTag) {
 };
 
 exports.validateLittledataLayer = function () {
-  window.LittledataScriptVersion = '9.4';
+  window.LittledataScriptVersion = '9.5';
 
   if (!window.LittledataLayer) {
     throw new Error('Aborting Littledata tracking as LittledataLayer was not found');
