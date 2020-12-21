@@ -10,6 +10,7 @@ import {
 	trackSocialShares,
 } from '../common/helpers';
 
+import { Detail } from '../..';
 import getProductDetail from '../common/getProductDetail';
 import productListViews from '../common/productListViews';
 
