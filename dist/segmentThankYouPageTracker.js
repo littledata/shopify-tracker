@@ -1089,7 +1089,7 @@ exports.segmentProduct = function (dataLayerProduct) {
     brand: dataLayerProduct.brand,
     category: dataLayerProduct.category,
     url: "".concat(window.document.location.origin, "/products/").concat(dataLayerProduct.handle),
-    product_id: dataLayerProduct.id,
+    product_id: String(dataLayerProduct.id),
     sku: dataLayerProduct.id,
     name: dataLayerProduct.name,
     price: parseFloat(dataLayerProduct.price),
@@ -1151,7 +1151,7 @@ var helpers_2 = __webpack_require__(10);
         brand: product.vendor,
         category: product.category,
         url: product.handle,
-        product_id: product.sku,
+        product_id: String(product.sku),
         position: product.list_position,
         name: product.title,
         price: parseFloat(product.price),
@@ -1169,7 +1169,7 @@ var helpers_2 = __webpack_require__(10);
     var indexOfNumber = orderNumberHTML.indexOf('#');
     var orderNumber = orderNumberHTML.substring(indexOfNumber).trim(); // @ts-ignore
 
-    analytics.track('Thank you page', {
+    analytics.track('Thankyou Page Viewed', {
       properties: {
         coupon: checkout.coupon,
         currency: checkout.currency,

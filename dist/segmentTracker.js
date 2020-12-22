@@ -1132,7 +1132,7 @@ exports.segmentProduct = function (dataLayerProduct) {
     brand: dataLayerProduct.brand,
     category: dataLayerProduct.category,
     url: "".concat(window.document.location.origin, "/products/").concat(dataLayerProduct.handle),
-    product_id: dataLayerProduct.id,
+    product_id: String(dataLayerProduct.id),
     sku: dataLayerProduct.id,
     name: dataLayerProduct.name,
     price: parseFloat(dataLayerProduct.price),
