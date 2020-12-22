@@ -4,7 +4,9 @@ declare let window: CustomWindow;
 import UrlChangeTracker from './UrlChangeTracker';
 import { clientID } from '../../index';
 import { customTask } from '../gaTracker/customTask';
+import { getValidGAClientId } from '../common/getCookie';
 
+const maximumTimeout = 524288000; // about 6 hours in seconds
 /**
  *
  * @param fireTag - callback to call when willing to fire pageviews
@@ -224,7 +226,7 @@ export const trackSocialShares = (clickTag: (name?: string) => void) => {
 };
 
 export const validateLittledataLayer = () => {
-	window.LittledataScriptVersion = '9.4';
+	window.LittledataScriptVersion = '10.0.1';
 	if (!window.LittledataLayer) {
 		throw new Error('Aborting Littledata tracking as LittledataLayer was not found');
 	}
@@ -246,16 +248,22 @@ export function retrieveAndStoreClientId(withCustomTask: boolean = false) {
 		gtag('get', LittledataLayer.webPropertyID, 'client_id', resolve);
 	});
 
-	clientIdPromise.then((clientId: string) => {
-		if (withCustomTask) {
-			setCustomTask();
-		}
+	return clientIdPromise
+		.then((clientId: string) => {
+			if (withCustomTask) {
+				setCustomTask();
+			}
 
-		return setClientID(clientId, 'google');
-	});
+			return setClientID(clientId, 'google');
+		})
+		.catch(() => {
+			let postClientIdTimeout: any;
+			let nextTimeout = 10;
+			waitForGaToLoad(postClientIdTimeout, nextTimeout);
+		});
 }
 
-const setCustomTask = () => {
+export const setCustomTask = () => {
 	const trackers = window.ga && window.ga.getAll && window.ga.getAll();
 	if (!trackers || !trackers.length) return;
 
@@ -275,3 +283,27 @@ export const documentReady = (callback: Function) => {
 		document.addEventListener('DOMContentLoaded', callback);
 	}
 };
+
+function waitForGaToLoad(postClientIdTimeout: any, nextTimeout: number) {
+	// After GA queue is executed we need to wait
+	// until after ga.getAll is available but before hit is sent
+	const trackers = window.ga && window.ga.getAll && window.ga.getAll();
+	if (trackers && trackers.length) {
+		setCustomTask();
+		return setClientID(getGAClientId(trackers[0]), 'google');
+	}
+
+	if (nextTimeout > maximumTimeout) return; // stop if not found already
+	nextTimeout *= 2;
+
+	clearTimeout(postClientIdTimeout);
+
+	postClientIdTimeout = window.setTimeout(function() {
+		waitForGaToLoad(postClientIdTimeout, nextTimeout);
+	}, nextTimeout);
+}
+
+function getGAClientId(tracker: any): string {
+	const clientId = tracker.get('clientId');
+	return getValidGAClientId(clientId) ? clientId : '';
+}
