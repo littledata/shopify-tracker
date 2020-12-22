@@ -103,7 +103,7 @@ export const trackEvents = () => {
 					content_type: 'product',
 					item_id: product.id,
 					image_url: image.src,
-					send_to: LittledataLayer.measurementId,
+					send_to: LittledataLayer.measurementID,
 				});
 			}
 			if (hasGA3()) {
@@ -124,7 +124,7 @@ export const trackEvents = () => {
 			if (hasGA4()) {
 				gtag('event', 'share', {
 					method: network,
-					send_to: LittledataLayer.measurementId,
+					send_to: LittledataLayer.measurementID,
 				});
 			}
 			if (hasGA3()) {
@@ -233,7 +233,7 @@ function sendViewItemListEvent(products: Impression[]): void {
 			items: convertProductsToGa4Format(products),
 			page_title: listName,
 			item_list_id: listName,
-			send_to: LittledataLayer.measurementId,
+			send_to: LittledataLayer.measurementID,
 		});
 	}
 
@@ -259,7 +259,7 @@ function sendViewItemEvent(product: Detail): void {
 	if (hasGA4()) {
 		gtag('event', 'view_item', {
 			items: convertProductsToGa4Format(new Array(product)),
-			send_to: LittledataLayer.measurementId,
+			send_to: LittledataLayer.measurementID,
 		});
 	}
 	if (hasGA3()) {
@@ -296,7 +296,7 @@ function sendSelectContentEvent(product: Detail, self: TimeBombHTMLAnchor): void
 	if (hasGA4()) {
 		gtag('event', 'select_item', {
 			items: convertProductsToGa4Format(new Array(product)),
-			send_to: LittledataLayer.measurementId,
+			send_to: LittledataLayer.measurementID,
 			event_callback() {
 				window.clearTimeout(self.timeout);
 				document.location.href = self.href;
@@ -318,7 +318,7 @@ function sendSelectContentEvent(product: Detail, self: TimeBombHTMLAnchor): void
 }
 
 function hasGA4(): boolean {
-	return LittledataLayer.measurementId !== undefined;
+	return LittledataLayer.measurementID !== undefined;
 }
 
 function hasGA3(): boolean {
