@@ -127,7 +127,7 @@ exports.trackEvents = function () {
           content_type: 'product',
           item_id: product.id,
           image_url: image.src,
-          send_to: LittledataLayer.measurementId
+          send_to: LittledataLayer.measurementID
         });
       }
 
@@ -148,7 +148,7 @@ exports.trackEvents = function () {
       if (hasGA4()) {
         gtag('event', 'share', {
           method: network,
-          send_to: LittledataLayer.measurementId
+          send_to: LittledataLayer.measurementID
         });
       }
 
@@ -247,7 +247,7 @@ function sendViewItemListEvent(products) {
       items: convertProductsToGa4Format(products),
       page_title: listName,
       item_list_id: listName,
-      send_to: LittledataLayer.measurementId
+      send_to: LittledataLayer.measurementID
     });
   }
 
@@ -275,7 +275,7 @@ function sendViewItemEvent(product) {
   if (hasGA4()) {
     gtag('event', 'view_item', {
       items: convertProductsToGa4Format(new Array(product)),
-      send_to: LittledataLayer.measurementId
+      send_to: LittledataLayer.measurementID
     });
   }
 
@@ -317,7 +317,7 @@ function sendSelectContentEvent(product, self) {
   if (hasGA4()) {
     gtag('event', 'select_item', {
       items: convertProductsToGa4Format(new Array(product)),
-      send_to: LittledataLayer.measurementId,
+      send_to: LittledataLayer.measurementID,
       event_callback: function event_callback() {
         window.clearTimeout(self.timeout);
         document.location.href = self.href;
@@ -340,7 +340,7 @@ function sendSelectContentEvent(product, self) {
 }
 
 function hasGA4() {
-  return LittledataLayer.measurementId !== undefined;
+  return LittledataLayer.measurementID !== undefined;
 }
 
 function hasGA3() {
@@ -650,7 +650,7 @@ exports.trackSocialShares = function (clickTag) {
 };
 
 exports.validateLittledataLayer = function () {
-  window.LittledataScriptVersion = '9.5';
+  window.LittledataScriptVersion = '10.0';
 
   if (!window.LittledataLayer) {
     throw new Error('Aborting Littledata tracking as LittledataLayer was not found');
