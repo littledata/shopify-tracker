@@ -231,7 +231,7 @@ function sendViewItemListEvent(products: Impression[]): void {
 		const listName = (products && products.length && products[0].list_name) || '';
 		gtag('event', 'view_item_list', {
 			items: convertProductsToGa4Format(products),
-			item_list_name: listName,
+			page_title: listName,
 			item_list_id: listName,
 			send_to: LittledataLayer.measurementId,
 		});
@@ -258,7 +258,7 @@ function sendViewItemListEvent(products: Impression[]): void {
 function sendViewItemEvent(product: Detail): void {
 	if (hasGA4()) {
 		gtag('event', 'view_item', {
-			items: [convertProductsToGa4Format(new Array(product))],
+			items: convertProductsToGa4Format(new Array(product)),
 			send_to: LittledataLayer.measurementId,
 		});
 	}
@@ -295,7 +295,7 @@ function sendSelectContentEvent(product: Detail, self: TimeBombHTMLAnchor): void
 
 	if (hasGA4()) {
 		gtag('event', 'select_item', {
-			items: [convertProductsToGa4Format(new Array(product))],
+			items: convertProductsToGa4Format(new Array(product)),
 			send_to: LittledataLayer.measurementId,
 			event_callback() {
 				window.clearTimeout(self.timeout);
