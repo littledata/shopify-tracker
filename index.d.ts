@@ -117,7 +117,7 @@ declare global {
 		hideBranding?: boolean;
 		writeKey?: string;
 		webPropertyID?: string;
-		measurementId?: string;
+		measurementID?: string;
 		referralExclusion?: RegExp;
 		enhancePrivacy?: boolean;
 		productClicks?: boolean;
