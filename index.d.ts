@@ -17,6 +17,17 @@ export interface Detail {
 	image_url?: string;
 }
 
+export interface GA4Product {
+	currency: string;
+	item_id: string;
+	item_name: string;
+	item_brand: string;
+	item_category: string;
+	item_variant: string;
+	price: string;
+	index: number;
+}
+
 declare global {
 	interface LooseObject {
 		[index: string]: any;

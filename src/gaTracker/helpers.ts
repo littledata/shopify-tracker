@@ -1,6 +1,7 @@
 /* global LittledataLayer */
 declare let window: CustomWindow;
 
+import { Detail, GA4Product } from '../..';
 import { getCookie, getValidGAClientId } from '../common/getCookie';
 import {
 	productListClicks,
@@ -10,7 +11,6 @@ import {
 	trackSocialShares,
 } from '../common/helpers';
 
-import { Detail } from '../..';
 import getProductDetail from '../common/getProductDetail';
 import productListViews from '../common/productListViews';
 
@@ -229,9 +229,10 @@ const addUTMMediumIfMissing = (url: string) => {
 function sendViewItemListEvent(products: Impression[]): void {
 	if (hasGA4()) {
 		const listName = (products && products.length && products[0].list_name) || '';
+		const page_title = removePii(document.title);
 		gtag('event', 'view_item_list', {
 			items: convertProductsToGa4Format(products),
-			page_title: listName,
+			item_list_name: page_title,
 			item_list_id: listName,
 			send_to: LittledataLayer.measurementID,
 		});
@@ -325,7 +326,7 @@ function hasGA3(): boolean {
 	return LittledataLayer.webPropertyID !== undefined;
 }
 
-function convertProductsToGa4Format(products: Detail[]): LooseObject {
+function convertProductsToGa4Format(products: Detail[]): GA4Product[] {
 	return products.map(product => {
 		return {
 			currency: (LittledataLayer.ecommerce && LittledataLayer.ecommerce.currencyCode) || '',
