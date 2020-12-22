@@ -266,9 +266,10 @@ var addUTMMediumIfMissing = function addUTMMediumIfMissing(url) {
 function sendViewItemListEvent(products) {
   if (hasGA4()) {
     var listName = products && products.length && products[0].list_name || '';
+    var page_title = helpers_1.removePii(document.title);
     gtag('event', 'view_item_list', {
       items: convertProductsToGa4Format(products),
-      page_title: listName,
+      item_list_name: page_title,
       item_list_id: listName,
       send_to: LittledataLayer.measurementID
     });
@@ -673,7 +674,7 @@ exports.trackSocialShares = function (clickTag) {
 };
 
 exports.validateLittledataLayer = function () {
-  window.LittledataScriptVersion = '10.0';
+  window.LittledataScriptVersion = '10.0.1';
 
   if (!window.LittledataLayer) {
     throw new Error('Aborting Littledata tracking as LittledataLayer was not found');
