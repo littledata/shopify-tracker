@@ -21,7 +21,7 @@ import { initSegment } from '../segmentTracker/helpers';
 				brand: product.vendor,
 				category: product.category,
 				url: product.handle,
-				product_id: product.sku,
+				product_id: String(product.sku),
 				position: product.list_position,
 				name: product.title,
 				price: parseFloat(product.price),
@@ -39,7 +39,7 @@ import { initSegment } from '../segmentTracker/helpers';
 		const orderNumber = orderNumberHTML.substring(indexOfNumber).trim();
 
 		// @ts-ignore
-		analytics.track('Thank you page', {
+		analytics.track('Thankyou Page Viewed', {
 			properties: {
 				coupon: checkout.coupon,
 				currency: checkout.currency,
