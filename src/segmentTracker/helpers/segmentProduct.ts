@@ -6,7 +6,7 @@ export const segmentProduct = (dataLayerProduct: Detail) => {
 		brand: dataLayerProduct.brand,
 		category: dataLayerProduct.category,
 		url: `${window.document.location.origin}/products/${dataLayerProduct.handle}`,
-		product_id: dataLayerProduct.id,
+		product_id: String(dataLayerProduct.id),
 		sku: dataLayerProduct.id,
 		name: dataLayerProduct.name,
 		price: parseFloat(dataLayerProduct.price),
