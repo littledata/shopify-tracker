@@ -1042,7 +1042,6 @@ exports.initSegment = function () {
   analytics.SNIPPET_VERSION = '4.1.0';
   analytics.addSourceMiddleware(addEmailToEvents_1.addEmailToEvents);
   analytics.load(LittledataLayer.writeKey);
-  analytics.page();
   window.dataLayer = window.dataLayer || [];
 };
 
