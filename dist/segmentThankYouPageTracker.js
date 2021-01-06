@@ -290,7 +290,7 @@ exports.trackSocialShares = function (clickTag) {
 };
 
 exports.validateLittledataLayer = function () {
-  window.LittledataScriptVersion = '10.0.1';
+  window.LittledataScriptVersion = '10.0.2';
 
   if (!window.LittledataLayer) {
     throw new Error('Aborting Littledata tracking as LittledataLayer was not found');
