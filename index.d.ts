@@ -123,7 +123,6 @@ declare global {
 
 	interface OwnLayer extends Cart.Attributes {
 		version?: string;
-		persistentUserId?: string;
 		customer?: Customer;
 		hideBranding?: boolean;
 		writeKey?: string;
