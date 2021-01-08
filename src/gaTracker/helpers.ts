@@ -334,9 +334,9 @@ function convertProductsToGa4Format(products: Detail[]): GA4Product[] {
 			item_name: product.name,
 			item_brand: product.brand,
 			item_category: product.category,
-      item_variant: product.variant,
-      item_sku: product.id,
-      item_variant_id: product.shopify_variant_id,
+			item_variant: product.variant,
+			item_sku: product.id,
+			item_variant_id: product.shopify_variant_id,
 			price: product.price,
 			index: product.list_position,
 		};
