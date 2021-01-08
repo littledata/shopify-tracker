@@ -230,8 +230,6 @@ function sendViewItemListEvent(products: Impression[]): void {
 	if (hasGA4()) {
 		const listName = (products && products.length && products[0].list_name) || '';
 		const page_title = removePii(document.title);
-		console.log('ga4 sendViewItemListEvent', products);
-		console.log('ga4 sendViewItemListEvent convertProductsToGa4Format', convertProductsToGa4Format(products));
 		gtag('event', 'view_item_list', {
 			items: convertProductsToGa4Format(products),
 			item_list_name: page_title,
@@ -242,7 +240,6 @@ function sendViewItemListEvent(products: Impression[]): void {
 
 	if (hasGA3()) {
 		const gaProducts = products.map(product => filterGAProductFields(product));
-		console.log('ga3 gaProducts', gaProducts);
 		gtag('event', 'view_item_list', {
 			event_category,
 			items: gaProducts,
@@ -331,7 +328,6 @@ function hasGA3(): boolean {
 
 function convertProductsToGa4Format(products: Detail[]): GA4Product[] {
 	return products.map(product => {
-		console.log(product);
 		return {
 			currency: (LittledataLayer.ecommerce && LittledataLayer.ecommerce.currencyCode) || '',
 			item_id: product.id,
