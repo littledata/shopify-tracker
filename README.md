@@ -58,6 +58,12 @@ Default: `undefined` (boolean)
 
 ### Google Analytics configuration
 
+**referralExclusion**
+
+By default, a referral automatically triggers a new session in Google Analytics. When you exclude a referral source, traffic that arrives to your site from the excluded domain doesn’t trigger a new session. If a referring domain is matched by this regular expression the referring domain is ignored, and the pageview is counted as part of the same session. This is in addition to any referrers excluded in the [GA property settings](https://support.google.com/analytics/answer/2795830?hl=en)
+
+Example: `/paypal\.com/` (regex)
+
 **extraLinkerDomains**
 
 To enable [cross-domain tracking](https://support.google.com/analytics/answer/1033876?hl=en) on pages that your Shopify store **links to** (destination domains) you can add an extra array of domains to the data layer. You **do not** need to add domains here which only send traffic to your Shopify store (source domains) - by default this script will look for the linker URL parameters.
