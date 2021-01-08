@@ -40,23 +40,21 @@ import { initSegment } from '../segmentTracker/helpers';
 
 		// @ts-ignore
 		analytics.track('Thankyou Page Viewed', {
-			properties: {
-				coupon: checkout.coupon,
-				currency: checkout.currency,
-				discount: checkout.discount,
-				email: checkout.email,
-				order_id: orderNumber,
-				presentment_currency: checkout.presentment_currency,
-				presentment_total:
-					checkout.total_price_set &&
-					checkout.total_price_set.presentment_money &&
-					checkout.total_price_set.presentment_money.amount,
-				products: products,
-				sent_from: 'Littledata app',
-				shipping: checkout.shipping_rate && checkout.shipping_rate.price,
-				tax: checkout.total_tax,
-				total: checkout.total_price,
-			},
+			coupon: checkout.coupon,
+			currency: checkout.currency,
+			discount: checkout.discount,
+			email: checkout.email,
+			order_id: orderNumber,
+			presentment_currency: checkout.presentment_currency,
+			presentment_total:
+				checkout.total_price_set &&
+				checkout.total_price_set.presentment_money &&
+				checkout.total_price_set.presentment_money.amount,
+			products: products,
+			sent_from: 'Littledata app',
+			shipping: checkout.shipping_rate && checkout.shipping_rate.price,
+			tax: checkout.total_tax,
+			total: checkout.total_price,
 		});
 	}
 })();
