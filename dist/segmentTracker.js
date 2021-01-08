@@ -290,7 +290,7 @@ exports.trackSocialShares = function (clickTag) {
 };
 
 exports.validateLittledataLayer = function () {
-  window.LittledataScriptVersion = '10.0.2';
+  window.LittledataScriptVersion = '10.0.3';
 
   if (!window.LittledataLayer) {
     throw new Error('Aborting Littledata tracking as LittledataLayer was not found');
@@ -308,7 +308,7 @@ function retrieveAndStoreClientId() {
   var withCustomTask = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
   var clientIdPromise = new Promise(function (resolve) {
     // @ts-ignore
-    gtag('get', LittledataLayer.webPropertyID, 'client_id', resolve);
+    gtag('get', LittledataLayer.webPropertyID || LittledataLayer.measurementID, 'client_id', resolve);
   });
   return clientIdPromise.then(function (clientId) {
     if (withCustomTask) {
@@ -352,6 +352,7 @@ function waitForGaToLoad(postClientIdTimeout, nextTimeout) {
   var trackers = window.ga && window.ga.getAll && window.ga.getAll();
 
   if (trackers && trackers.length) {
+    console.log('getGAClientId', getGAClientId(trackers[0]));
     exports.setCustomTask();
     return setClientID(getGAClientId(trackers[0]), 'google');
   }

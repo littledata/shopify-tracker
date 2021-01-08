@@ -267,8 +267,6 @@ function sendViewItemListEvent(products) {
   if (hasGA4()) {
     var listName = products && products.length && products[0].list_name || '';
     var page_title = helpers_1.removePii(document.title);
-    console.log('ga4 sendViewItemListEvent', products);
-    console.log('ga4 sendViewItemListEvent convertProductsToGa4Format', convertProductsToGa4Format(products));
     gtag('event', 'view_item_list', {
       items: convertProductsToGa4Format(products),
       item_list_name: page_title,
@@ -281,7 +279,6 @@ function sendViewItemListEvent(products) {
     var gaProducts = products.map(function (product) {
       return exports.filterGAProductFields(product);
     });
-    console.log('ga3 gaProducts', gaProducts);
     gtag('event', 'view_item_list', {
       event_category: event_category,
       items: gaProducts,
@@ -376,7 +373,6 @@ function hasGA3() {
 
 function convertProductsToGa4Format(products) {
   return products.map(function (product) {
-    console.log(product);
     return {
       currency: LittledataLayer.ecommerce && LittledataLayer.ecommerce.currencyCode || '',
       item_id: product.id,
@@ -678,7 +674,7 @@ exports.trackSocialShares = function (clickTag) {
 };
 
 exports.validateLittledataLayer = function () {
-  window.LittledataScriptVersion = '10.0.2';
+  window.LittledataScriptVersion = '10.0.3';
 
   if (!window.LittledataLayer) {
     throw new Error('Aborting Littledata tracking as LittledataLayer was not found');
@@ -696,7 +692,7 @@ function retrieveAndStoreClientId() {
   var withCustomTask = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
   var clientIdPromise = new Promise(function (resolve) {
     // @ts-ignore
-    gtag('get', LittledataLayer.webPropertyID, 'client_id', resolve);
+    gtag('get', LittledataLayer.webPropertyID || LittledataLayer.measurementID, 'client_id', resolve);
   });
   return clientIdPromise.then(function (clientId) {
     if (withCustomTask) {
@@ -740,6 +736,7 @@ function waitForGaToLoad(postClientIdTimeout, nextTimeout) {
   var trackers = window.ga && window.ga.getAll && window.ga.getAll();
 
   if (trackers && trackers.length) {
+    console.log('getGAClientId', getGAClientId(trackers[0]));
     exports.setCustomTask();
     return setClientID(getGAClientId(trackers[0]), 'google');
   }
