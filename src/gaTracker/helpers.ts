@@ -231,7 +231,7 @@ function sendViewItemListEvent(products: Impression[]): void {
 		const listName = (products && products.length && products[0].list_name) || '';
 		const page_title = removePii(document.title);
 		gtag('event', 'view_item_list', {
-			items: convertProductsToGa4Format(products),
+			items: convertProductsToGa4Format(products, true),
 			item_list_name: page_title,
 			item_list_id: listName,
 			send_to: LittledataLayer.measurementID,
@@ -259,7 +259,7 @@ function sendViewItemListEvent(products: Impression[]): void {
 function sendViewItemEvent(product: Detail): void {
 	if (hasGA4()) {
 		gtag('event', 'view_item', {
-			items: convertProductsToGa4Format(new Array(product)),
+			items: convertProductsToGa4Format(new Array(product), false),
 			send_to: LittledataLayer.measurementID,
 		});
 	}
@@ -296,7 +296,7 @@ function sendSelectContentEvent(product: Detail, self: TimeBombHTMLAnchor): void
 
 	if (hasGA4()) {
 		gtag('event', 'select_item', {
-			items: convertProductsToGa4Format(new Array(product)),
+			items: convertProductsToGa4Format(new Array(product), true),
 			send_to: LittledataLayer.measurementID,
 			event_callback() {
 				window.clearTimeout(self.timeout);
@@ -326,11 +326,11 @@ function hasGA3(): boolean {
 	return LittledataLayer.webPropertyID !== undefined;
 }
 
-function convertProductsToGa4Format(products: Detail[]): GA4Product[] {
+function convertProductsToGa4Format(products: Detail[], sendIndex: boolean): GA4Product[] {
 	return products.map(product => {
-		return {
+		const converted = {
 			currency: (LittledataLayer.ecommerce && LittledataLayer.ecommerce.currencyCode) || '',
-			item_id: product.id,
+			item_id: product.shopify_product_id,
 			item_name: product.name,
 			item_brand: product.brand,
 			item_category: product.category,
@@ -339,6 +339,10 @@ function convertProductsToGa4Format(products: Detail[]): GA4Product[] {
 			item_variant_id: product.shopify_variant_id,
 			price: product.price,
 			index: product.list_position,
-		};
+		}
+		if(!sendIndex) {
+			delete converted.index;
+		}
+		return converted;
 	});
 }
