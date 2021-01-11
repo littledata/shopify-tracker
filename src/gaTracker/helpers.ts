@@ -339,8 +339,8 @@ function convertProductsToGa4Format(products: Detail[], sendIndex: boolean): GA4
 			item_variant_id: product.shopify_variant_id,
 			price: product.price,
 			index: product.list_position,
-		}
-		if(!sendIndex) {
+		};
+		if (!sendIndex) {
 			delete converted.index;
 		}
 		return converted;
