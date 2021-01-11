@@ -148,7 +148,9 @@ exports.trackEvents = function () {
       if (hasGA4()) {
         gtag('event', 'select_content', {
           content_type: 'product',
-          item_id: product.id,
+          item_id: product.shopify_product_id,
+          item_sku: product.id,
+          item_variant_id: product.shopify_variant_id,
           image_url: image.src,
           send_to: LittledataLayer.measurementID
         });
@@ -268,7 +270,7 @@ function sendViewItemListEvent(products) {
     var listName = products && products.length && products[0].list_name || '';
     var page_title = helpers_1.removePii(document.title);
     gtag('event', 'view_item_list', {
-      items: convertProductsToGa4Format(products),
+      items: convertProductsToGa4Format(products, true),
       item_list_name: page_title,
       item_list_id: listName,
       send_to: LittledataLayer.measurementID
@@ -298,7 +300,7 @@ function sendViewItemListEvent(products) {
 function sendViewItemEvent(product) {
   if (hasGA4()) {
     gtag('event', 'view_item', {
-      items: convertProductsToGa4Format(new Array(product)),
+      items: convertProductsToGa4Format(new Array(product), false),
       send_to: LittledataLayer.measurementID
     });
   }
@@ -340,7 +342,7 @@ function sendSelectContentEvent(product, self) {
 
   if (hasGA4()) {
     gtag('event', 'select_item', {
-      items: convertProductsToGa4Format(new Array(product)),
+      items: convertProductsToGa4Format(new Array(product), true),
       send_to: LittledataLayer.measurementID,
       event_callback: function event_callback() {
         window.clearTimeout(self.timeout);
@@ -371,18 +373,26 @@ function hasGA3() {
   return LittledataLayer.webPropertyID !== undefined;
 }
 
-function convertProductsToGa4Format(products) {
+function convertProductsToGa4Format(products, sendIndex) {
   return products.map(function (product) {
-    return {
+    var converted = {
       currency: LittledataLayer.ecommerce && LittledataLayer.ecommerce.currencyCode || '',
-      item_id: product.id,
+      item_id: product.shopify_product_id,
       item_name: product.name,
       item_brand: product.brand,
       item_category: product.category,
       item_variant: product.variant,
+      item_sku: product.id,
+      item_variant_id: product.shopify_variant_id,
       price: product.price,
       index: product.list_position
     };
+
+    if (!sendIndex) {
+      delete converted.index;
+    }
+
+    return converted;
   });
 }
 
