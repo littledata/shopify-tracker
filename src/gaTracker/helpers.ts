@@ -101,7 +101,9 @@ export const trackEvents = () => {
 			if (hasGA4()) {
 				gtag('event', 'select_content', {
 					content_type: 'product',
-					item_id: product.id,
+					item_id: product.shopify_product_id,
+					item_sku: product.id,
+					item_variant_id: product.shopify_variant_id,
 					image_url: image.src,
 					send_to: LittledataLayer.measurementID,
 				});
