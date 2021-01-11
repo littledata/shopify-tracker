@@ -24,8 +24,10 @@ export interface GA4Product {
 	item_brand: string;
 	item_category: string;
 	item_variant: string;
+	item_sku: string;
+	item_variant_id: string;
 	price: string;
-	index: number;
+	index?: number;
 }
 
 declare global {
