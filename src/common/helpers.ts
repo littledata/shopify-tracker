@@ -226,7 +226,7 @@ export const trackSocialShares = (clickTag: (name?: string) => void) => {
 };
 
 export const validateLittledataLayer = () => {
-	window.LittledataScriptVersion = '9.4';
+	window.LittledataScriptVersion = '10.0.3';
 	if (!window.LittledataLayer) {
 		throw new Error('Aborting Littledata tracking as LittledataLayer was not found');
 	}
@@ -245,7 +245,7 @@ export const advertiseLD = (app: string) => {
 export function retrieveAndStoreClientId(withCustomTask: boolean = false) {
 	const clientIdPromise = new Promise(resolve => {
 		// @ts-ignore
-		gtag('get', LittledataLayer.webPropertyID, 'client_id', resolve);
+		gtag('get', LittledataLayer.webPropertyID || LittledataLayer.measurementID, 'client_id', resolve);
 	});
 
 	return clientIdPromise
@@ -289,6 +289,7 @@ function waitForGaToLoad(postClientIdTimeout: any, nextTimeout: number) {
 	// until after ga.getAll is available but before hit is sent
 	const trackers = window.ga && window.ga.getAll && window.ga.getAll();
 	if (trackers && trackers.length) {
+		console.log('getGAClientId', getGAClientId(trackers[0]));
 		setCustomTask();
 		return setClientID(getGAClientId(trackers[0]), 'google');
 	}
