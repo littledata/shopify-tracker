@@ -156,13 +156,22 @@ declare global {
 	var dataLayer: any[];
 
 	interface CustomWindow extends Window {
+		console: { (...data: any[]): void; (message?: any, ...optionalParams: any[]): void };
 		ga: any;
 		LittledataLayer: OwnLayer;
 		analytics: AnalyticsJS;
 		gtag: Gtag.Gtag;
 		dataLayer: any[];
 		LittledataScriptVersion: string;
-		Shopify: LooseObject;
+		Shopify?: LooseObject;
+		_ga_originalSendHitTask: any;
+	}
+
+	interface CartHookWindow extends Window {
+		gtag: Gtag.Gtag;
+		dataLayer: any[];
+		CH?: LooseObject;
+		chData: LooseObject;
 		_ga_originalSendHitTask: any;
 		console: LooseObject;
 	}
