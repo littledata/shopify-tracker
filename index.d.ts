@@ -14,6 +14,20 @@ export interface Detail {
 	shopify_product_id?: string;
 	shopify_variant_id?: string;
 	compare_at_price?: string;
+	image_url?: string;
+}
+
+export interface GA4Product {
+	currency: string;
+	item_id: string;
+	item_name: string;
+	item_brand: string;
+	item_category: string;
+	item_variant: string;
+	item_sku: string;
+	item_variant_id: string;
+	price: string;
+	index?: number;
 }
 
 declare global {
@@ -111,11 +125,11 @@ declare global {
 
 	interface OwnLayer extends Cart.Attributes {
 		version?: string;
-		persistentUserId?: string;
 		customer?: Customer;
 		hideBranding?: boolean;
 		writeKey?: string;
 		webPropertyID?: string;
+		measurementID?: string;
 		referralExclusion?: RegExp;
 		enhancePrivacy?: boolean;
 		productClicks?: boolean;

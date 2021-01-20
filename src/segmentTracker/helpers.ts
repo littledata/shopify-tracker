@@ -170,7 +170,6 @@ export const initSegment = () => {
 
 	analytics.addSourceMiddleware(addEmailToEvents);
 	analytics.load(LittledataLayer.writeKey);
-	analytics.page();
 	window.dataLayer = window.dataLayer || [];
 };
 
