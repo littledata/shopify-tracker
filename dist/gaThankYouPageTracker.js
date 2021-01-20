@@ -1212,9 +1212,7 @@ var chunk = function chunk(arr, size) {
 /* 11 */,
 /* 12 */,
 /* 13 */,
-/* 14 */,
-/* 15 */,
-/* 16 */
+/* 14 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -1223,21 +1221,21 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 
-exports.getProperties = function (scriptSrc) {
-  var startIndexGa = scriptSrc.indexOf('webPropertyId=');
-  var endIndexGa = scriptSrc.indexOf('&', startIndexGa);
-  var webPropertyId = startIndexGa && scriptSrc.substring(startIndexGa + 14, endIndexGa > -1 ? endIndexGa : scriptSrc.length);
-  var startIndexSegment = scriptSrc.indexOf('segmentProperty=');
-  var endIndexSegment = scriptSrc.indexOf('&', startIndexSegment);
-  var segmentProperty = startIndexSegment && scriptSrc.substring(startIndexSegment + 16, endIndexSegment ? endIndexSegment : scriptSrc.length);
-  return {
-    webPropertyId: webPropertyId,
-    segmentProperty: segmentProperty
-  };
+exports.getQueryStringParam = function (url, param) {
+  if (!url) return '';
+  var matches = url.match("".concat(param, "=([a-z,A-Z,0-9,-]+)"));
+  if (!matches || !matches.length || !matches[1]) return '';
+  return matches[1];
 };
 
 /***/ }),
-/* 17 */
+/* 15 */,
+/* 16 */,
+/* 17 */,
+/* 18 */,
+/* 19 */,
+/* 20 */,
+/* 21 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -1246,18 +1244,16 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 
-var helpers_1 = __webpack_require__(16);
+var getQueryStringParam_1 = __webpack_require__(14);
 
-var helpers_2 = __webpack_require__(1);
+var helpers_1 = __webpack_require__(1);
 
 (function () {
   // @ts-ignore
   if (window.Shopify.Checkout && window.Shopify.Checkout.page === 'thank_you') {
     // @ts-ignore
     var scriptSrc = document.currentScript.src;
-
-    var _helpers_1$getPropert = helpers_1.getProperties(scriptSrc),
-        webPropertyId = _helpers_1$getPropert.webPropertyId;
+    var webPropertyId = getQueryStringParam_1.getQueryStringParam(scriptSrc, 'webPropertyId');
 
     if (!webPropertyId) {
       throw new Error('Could not add ga thank you page script beacuse of missing webPropertyId');
@@ -1278,7 +1274,7 @@ var helpers_2 = __webpack_require__(1);
     window.gtag = window.gtag || stubFunction; // @ts-ignore
 
     gtag('js', new Date());
-    gtag('config', webPropertyId, helpers_2.getConfig());
+    gtag('config', webPropertyId, helpers_1.getConfig());
     var total = window.Shopify.checkout && window.Shopify.checkout.total_price;
     var value = parseInt(total);
     gtag('event', 'Checkout', {
@@ -1347,7 +1343,7 @@ var helpers_2 = __webpack_require__(1);
 /************************************************************************/
 /******/ 	// startup
 /******/ 	// Load entry module
-/******/ 	__webpack_require__(17);
+/******/ 	__webpack_require__(21);
 /******/ 	// This entry module used 'exports' so it can't be inlined
 /******/ })()
 ;

@@ -1115,8 +1115,29 @@ exports.segmentProduct = function (dataLayerProduct) {
 
 /***/ }),
 /* 13 */,
-/* 14 */,
-/* 15 */
+/* 14 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+
+exports.getQueryStringParam = function (url, param) {
+  if (!url) return '';
+  var matches = url.match("".concat(param, "=([a-z,A-Z,0-9,-]+)"));
+  if (!matches || !matches.length || !matches[1]) return '';
+  return matches[1];
+};
+
+/***/ }),
+/* 15 */,
+/* 16 */,
+/* 17 */,
+/* 18 */,
+/* 19 */,
+/* 20 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -1125,24 +1146,22 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 
-var helpers_1 = __webpack_require__(16);
+var getQueryStringParam_1 = __webpack_require__(14);
 
-var helpers_2 = __webpack_require__(10);
+var helpers_1 = __webpack_require__(10);
 
 (function () {
   // @ts-ignore
   if (window.Shopify.Checkout && window.Shopify.Checkout.page === 'thank_you') {
     // @ts-ignore
     var scriptSrc = document.currentScript.src;
-
-    var _helpers_1$getPropert = helpers_1.getProperties(scriptSrc),
-        segmentProperty = _helpers_1$getPropert.segmentProperty;
+    var segmentProperty = getQueryStringParam_1.getQueryStringParam(scriptSrc, 'segmentProperty');
 
     if (!segmentProperty) {
       throw new Error('Could not add segment thank you page script beacuse of missing segmentProperty');
     }
 
-    helpers_2.initSegment(); // @ts-ignore
+    helpers_1.initSegment(); // @ts-ignore
 
     var checkout = window.Shopify.checkout; // @ts-ignore
 
@@ -1185,29 +1204,6 @@ var helpers_2 = __webpack_require__(10);
     });
   }
 })();
-
-/***/ }),
-/* 16 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-
-exports.getProperties = function (scriptSrc) {
-  var startIndexGa = scriptSrc.indexOf('webPropertyId=');
-  var endIndexGa = scriptSrc.indexOf('&', startIndexGa);
-  var webPropertyId = startIndexGa && scriptSrc.substring(startIndexGa + 14, endIndexGa > -1 ? endIndexGa : scriptSrc.length);
-  var startIndexSegment = scriptSrc.indexOf('segmentProperty=');
-  var endIndexSegment = scriptSrc.indexOf('&', startIndexSegment);
-  var segmentProperty = startIndexSegment && scriptSrc.substring(startIndexSegment + 16, endIndexSegment ? endIndexSegment : scriptSrc.length);
-  return {
-    webPropertyId: webPropertyId,
-    segmentProperty: segmentProperty
-  };
-};
 
 /***/ })
 /******/ 	]);
@@ -1267,7 +1263,7 @@ exports.getProperties = function (scriptSrc) {
 /************************************************************************/
 /******/ 	// startup
 /******/ 	// Load entry module
-/******/ 	__webpack_require__(15);
+/******/ 	__webpack_require__(20);
 /******/ 	// This entry module used 'exports' so it can't be inlined
 /******/ })()
 ;
