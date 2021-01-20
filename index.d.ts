@@ -156,6 +156,7 @@ declare global {
 	var dataLayer: any[];
 
 	interface CustomWindow extends Window {
+		console: { (...data: any[]): void; (message?: any, ...optionalParams: any[]): void };
 		ga: any;
 		LittledataLayer: OwnLayer;
 		analytics: AnalyticsJS;

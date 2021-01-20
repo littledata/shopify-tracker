@@ -15,9 +15,9 @@ declare let window: CartHookWindow;
 		initGtag(webPropertyID);
 		sendCartId();
 	});
-	const uniqueIdentifierForOrders = // @ts-ignore
-		getQueryStringParam(document.currentScript.src, 'uniqueIdentifierForOrders')
-	const orderId = uniqueIdentifierForOrders === 'orderName' ? 'order_name' || 'order_number';
+	// @ts-ignore
+	const uniqueIdentifierForOrders = getQueryStringParam(document.currentScript.src, 'uniqueIdentifierForOrders');
+	const orderId = uniqueIdentifierForOrders === 'orderName' ? 'order_name' : 'order_number';
 
 	window.CH.event(function(EVENT: string, data: LooseObject) {
 		if (EVENT == 'INITIATED_PAGE') {
