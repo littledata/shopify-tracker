@@ -1,5 +1,7 @@
 import { getCookie, getValidGAClientId } from './getCookie';
 
+declare let window: CustomWindow;
+
 export default (): Gtag.CustomParams => {
 	const settings: LooseObject = window.LittledataLayer || {};
 	const { anonymizeIp, googleSignals, ecommerce, optimizeId, referralExclusion } = settings;
