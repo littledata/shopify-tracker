@@ -998,7 +998,7 @@ exports.initSegment = function () {
 
 
   analytics.SNIPPET_VERSION = '4.1.0';
-  analytics.addSourceMiddleware(addEmailToEvents_1.addEmailToEvents);
+  analytics.addSourceMiddleware(addEmailToEvents_1.addEmailToTrackEvents);
   analytics.load(LittledataLayer.writeKey);
   window.dataLayer = window.dataLayer || [];
 };
@@ -1055,9 +1055,10 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 
-exports.addEmailToEvents = function (_ref) {
+exports.addEmailToTrackEvents = function (_ref) {
   var payload = _ref.payload,
       next = _ref.next;
+  if (payload.action() !== 'track') return next(payload);
   payload.obj = _objectSpread({}, payload.obj, {
     properties: addEmailToProperties(payload.obj.properties)
   });
