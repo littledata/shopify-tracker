@@ -1,7 +1,9 @@
 import { MiddlewareOptions } from '../../../segmentInterface';
 declare let window: CustomWindow;
 
-export const addEmailToEvents = ({ payload, next }: MiddlewareOptions) => {
+export const addEmailToTrackEvents = ({ payload, next }: MiddlewareOptions) => {
+	if (payload.action() !== 'track') return next(payload);
+
 	payload.obj = {
 		...payload.obj,
 		properties: addEmailToProperties(payload.obj.properties),
