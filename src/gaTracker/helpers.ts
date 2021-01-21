@@ -12,7 +12,7 @@ import {
 
 import getProductDetail from '../common/getProductDetail';
 import productListViews from '../common/productListViews';
-import getConfig from '../common/getConfig'
+import getConfig from '../common/getConfig';
 
 const event_category = 'Shopify (Littledata)';
 
