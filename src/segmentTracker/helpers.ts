@@ -6,7 +6,7 @@ import {
 	trackSocialShares,
 	setCartOnlyAttributes,
 } from '../common/helpers';
-import { addEmailToEvents } from './helpers/addEmailToEvents';
+import { addEmailToTrackEvents } from './helpers/addEmailToEvents';
 import { segmentProduct } from './helpers/segmentProduct';
 
 import { getCookie } from '../common/getCookie';
@@ -168,7 +168,7 @@ export const initSegment = () => {
 	// Add a version to keep track of what's in the wild.
 	analytics.SNIPPET_VERSION = '4.1.0';
 
-	analytics.addSourceMiddleware(addEmailToEvents);
+	analytics.addSourceMiddleware(addEmailToTrackEvents);
 	analytics.load(LittledataLayer.writeKey);
 	window.dataLayer = window.dataLayer || [];
 };
