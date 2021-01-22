@@ -1,5 +1,4 @@
 /* eslint-env browser */
-/* global LittledataLayer */
 declare let window: CustomWindow;
 
 import {
