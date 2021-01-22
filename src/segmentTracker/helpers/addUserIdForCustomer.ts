@@ -1,4 +1,4 @@
-import MD5 from 'crypto-js/md5';
+import { MD5 } from '../../common/cryptoMD5';
 
 const hash = (string: string) => MD5(string).toString();
 

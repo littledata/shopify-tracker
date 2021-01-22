@@ -47,8 +47,5 @@
 		"url": "https://github.com/littledata/shopify-tracker/issues"
 	},
 	"homepage": "https://github.com/littledata/shopify-tracker#readme",
-	"dependencies": {
-		"@types/crypto-js": "^4.0.1",
-		"crypto-js": "^4.0.0"
-	}
+	"dependencies": {}
 }
