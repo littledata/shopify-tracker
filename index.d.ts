@@ -150,6 +150,7 @@ declare global {
 		doNotTrackReplaceState?: boolean;
 		MPEndpoint?: string;
 		CDNForAnalyticsJS?: string;
+		segmentUserId?: string;
 	}
 
 	var LittledataLayer: OwnLayer;
@@ -183,11 +184,11 @@ declare global {
 	type ListClickCallback = (foundProduct: Impression, self: TimeBombHTMLAnchor) => void;
 
 	interface Customer {
-		accepts_narketing: boolean;
+		accepts_marketing: boolean;
 		display_name: string;
 		email: string;
 		first_name: string;
-		id: string;
+		id: number;
 		last_name: string;
 		name: string;
 		phone: string;
@@ -195,16 +196,13 @@ declare global {
 			address1: string;
 			address2: string;
 			city: string;
-			company: string;
+			company?: string;
 			country: string;
 			country_code: string;
-			first_name: string;
-			id: string;
-			last_name: string;
 			phone: string;
 			province: string;
 			province_code: string;
-			street: string;
+			street?: string;
 			zip: string;
 		};
 		generatedClientID?: string;

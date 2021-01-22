@@ -16,7 +16,7 @@ import { callSegmentPage, identifyCustomer, initSegment, trackEvents } from './h
 	validateLittledataLayer();
 	initSegment();
 	advertiseLD('Segment');
-	identifyCustomer(LittledataLayer.customer);
+	identifyCustomer();
 	documentReady(trackEvents);
 	pageView(function() {
 		callSegmentPage({});
