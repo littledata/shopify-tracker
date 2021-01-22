@@ -4,11 +4,9 @@ const hash = (string: string) => MD5(string).toString();
 
 export const addUserIdForCustomer = (LittledataLayer: OwnLayer) => {
 	const { customer, segmentUserId } = LittledataLayer;
-	if (!customer || !segmentUserId) return {};
+	if (!customer) return {};
 
 	switch (segmentUserId) {
-		case 'shopifyCustomerId':
-			return { userId: String(customer.id) };
 		case 'email':
 			if (!customer.email) return {};
 			return { userId: customer.email };
@@ -18,6 +16,7 @@ export const addUserIdForCustomer = (LittledataLayer: OwnLayer) => {
 		case 'none':
 			return {};
 		default:
-			return {};
+			//before segmentUserId field was added
+			return { userId: String(customer.id) };
 	}
 };

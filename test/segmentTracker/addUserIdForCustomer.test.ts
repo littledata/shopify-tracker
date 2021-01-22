@@ -47,4 +47,13 @@ describe('addUserIdForCustomer', () => {
 			userId: '969daf6e3a99f7c72fd330af0b432435',
 		});
 	});
+
+	it('returns Shopify customer ID if not specified', () => {
+		LittledataLayer.segmentUserId = undefined;
+		LittledataLayer.customer = customer;
+		const userId = addUserIdForCustomer(LittledataLayer);
+		userId.should.deep.equal({
+			userId: String(customer.id),
+		});
+	});
 });
