@@ -1245,7 +1245,8 @@ var sendUpsellEvents_1 = __webpack_require__(19);
     if (EVENT == 'INITIATED_PAGE') {
       var pageType = helpers_1.getPageType();
       if (pageType === 'checkout') sendCheckoutEvents_1.sendCheckoutEvents(data);
-      if (pageType === 'upsell') sendUpsellEvents_1.sendUpsellEvents();
+      if (pageType === 'upsell') sendUpsellEvents_1.sendUpsellDownsellEvents(); //also for downsell
+
       if (pageType === 'thankyou') sendThankYouEvents_1.sendThankYouEvents(orderId);
     }
   });
@@ -1572,7 +1573,16 @@ var constants_1 = __webpack_require__(17);
 
 var helpers_1 = __webpack_require__(15);
 
-exports.sendUpsellEvents = function () {
+exports.sendUpsellDownsellEvents = function () {
+  var transactionEventName = 'transactionBeforeUpsell';
+  var viewEventName = 'View upsell offer';
+  var pageType = window.CHDataObject.partial_type;
+
+  if (pageType === 'Downsell_page') {
+    transactionEventName = 'transactionBeforeDownsell';
+    viewEventName = 'View downsell offer';
+  }
+
   var acceptButton = document.querySelector('.ch-accept-button'); // HTML selector for Accept button
 
   var rejectButton = document.querySelector('.ch-decline-button'); // HTML selector for Decline button
@@ -1596,7 +1606,7 @@ exports.sendUpsellEvents = function () {
 
   if (items.length > 0) {
     window.dataLayer.push({
-      event: 'transactionBeforeUpsell',
+      event: transactionEventName,
       orderId: orderId,
       value: value,
       items: items,
@@ -1613,7 +1623,7 @@ exports.sendUpsellEvents = function () {
     event_label: event_label
   }; // GA event for Upsell step, triggered at the page load
 
-  gtag('event', 'View upsell offer', params); // GA event for Upsell Accepted step, triggered at the click of Accept button
+  gtag('event', viewEventName, params); // GA event for Upsell Accepted step, triggered at the click of Accept button
 
   acceptButton.addEventListener('click', function () {
     gtag('event', 'Accept offer', params);
