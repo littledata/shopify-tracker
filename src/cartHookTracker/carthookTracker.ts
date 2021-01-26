@@ -3,7 +3,7 @@ import { getQueryStringParam } from '../common/getQueryStringParam';
 import { getWebPropertyIdPromise, sendCartId, initGtag, loadGtagScript, getPageType } from './helpers';
 import { sendCheckoutEvents } from './sendCheckoutEvents';
 import { sendThankYouEvents } from './sendThankYouEvents';
-import { sendUpsellEvents } from './sendUpsellEvents';
+import { sendUpsellDownsellEvents } from './sendUpsellEvents';
 
 declare let window: CartHookWindow;
 
@@ -23,7 +23,7 @@ declare let window: CartHookWindow;
 		if (EVENT == 'INITIATED_PAGE') {
 			const pageType = getPageType();
 			if (pageType === 'checkout') sendCheckoutEvents(data);
-			if (pageType === 'upsell') sendUpsellEvents();
+			if (pageType === 'upsell') sendUpsellDownsellEvents(); //also for downsell
 			if (pageType === 'thankyou') sendThankYouEvents(orderId);
 		}
 	});

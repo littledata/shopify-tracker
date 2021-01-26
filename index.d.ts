@@ -174,6 +174,7 @@ declare global {
 		chData: LooseObject;
 		_ga_originalSendHitTask: any;
 		console: LooseObject;
+		CHDataObject: LooseObject;
 	}
 
 	interface TimeBombHTMLAnchor extends HTMLAnchorElement {
