@@ -1,5 +1,5 @@
 import { getQueryStringParam } from '../common/getQueryStringParam';
-import { getConfig } from '../gaTracker/helpers';
+import getConfig from '../common/getConfig';
 
 declare let window: CustomWindow;
 (function() {
