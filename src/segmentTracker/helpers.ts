@@ -7,6 +7,7 @@ import {
 	setCartOnlyAttributes,
 } from '../common/helpers';
 import { addEmailToTrackEvents } from './helpers/addEmailToEvents';
+import { addGAClientIdToEvents } from './helpers/addGAClientIdToEvents';
 import { segmentProduct } from './helpers/segmentProduct';
 
 import { getCookie } from '../common/getCookie';
@@ -169,6 +170,7 @@ export const initSegment = () => {
 	analytics.SNIPPET_VERSION = '4.1.0';
 
 	analytics.addSourceMiddleware(addEmailToTrackEvents);
+	analytics.addSourceMiddleware(addGAClientIdToEvents);
 	analytics.load(LittledataLayer.writeKey);
 	window.dataLayer = window.dataLayer || [];
 };
