@@ -492,7 +492,7 @@ exports.sendUpsellDownsellEvents = function () {
   var viewEventName = 'View upsell offer';
   var pageType = window.CHDataObject.partial_type;
 
-  if (pageType === 'Downsell_page') {
+  if (pageType === 'downsell_page') {
     transactionEventName = 'transactionBeforeDownsell';
     viewEventName = 'View downsell offer';
   }
