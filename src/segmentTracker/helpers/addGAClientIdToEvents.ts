@@ -1,5 +1,4 @@
 import { MiddlewareOptions } from '../../../segmentInterface';
-import { getCookie, getValidGAClientId } from '../../common/getCookie';
 
 // Segment only adds GA ClientID for the GA destination by default
 // Adding it here sends it to Segment's servers, regardless of whether GA desintation is enabled
@@ -13,8 +12,7 @@ export const addGAClientIdToEvents = ({ payload, next }: MiddlewareOptions) => {
 };
 
 const addGACientId = (integrations: LooseObject) => {
-	const gaCookie = getCookie('_ga');
-	const clientId = getValidGAClientId(gaCookie);
+	const clientId = LittledataLayer['google-clientID'];
 	if (clientId) {
 		integrations['Google Analytics'] = {};
 		integrations['Google Analytics'].clientId = clientId;
