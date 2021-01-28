@@ -4,42 +4,6 @@
 /* 0 */,
 /* 1 */,
 /* 2 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-
-exports.getCookie = function (name) {
-  if (document.cookie.length > 0) {
-    var cookieStart = document.cookie.indexOf("".concat(name, "="));
-
-    if (cookieStart !== -1) {
-      var valueStart = cookieStart + name.length + 1;
-      var cookieEnd = document.cookie.indexOf(';', valueStart);
-
-      if (cookieEnd === -1) {
-        cookieEnd = document.cookie.length;
-      }
-
-      var cookie = unescape(document.cookie.substring(valueStart, cookieEnd));
-      return cookie;
-    }
-  }
-
-  return '';
-};
-
-exports.getValidGAClientId = function () {
-  var cookie = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-  var match = cookie.match(/(\d{2,11})\.(\d{2,11})/g);
-  return match && match[0];
-};
-
-/***/ }),
-/* 3 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -60,11 +24,11 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 
-var UrlChangeTracker_1 = __importDefault(__webpack_require__(4));
+var UrlChangeTracker_1 = __importDefault(__webpack_require__(3));
 
-var customTask_1 = __webpack_require__(6);
+var customTask_1 = __webpack_require__(5);
 
-var getCookie_1 = __webpack_require__(2);
+var getCookie_1 = __webpack_require__(6);
 
 var maximumTimeout = 524288000; // about 6 hours in seconds
 
@@ -372,14 +336,14 @@ function getGAClientId(tracker) {
 }
 
 /***/ }),
-/* 4 */
+/* 3 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => /* binding */ UrlChangeTracker
 /* harmony export */ });
-/* harmony import */ var _MethodChain__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5);
+/* harmony import */ var _MethodChain__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
 
 
 /**
@@ -508,7 +472,7 @@ function getPath() {
 
 
 /***/ }),
-/* 5 */
+/* 4 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -688,7 +652,7 @@ function getOrCreateMethodChain(context, methodName) {
 
 
 /***/ }),
-/* 6 */
+/* 5 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -716,6 +680,42 @@ exports.customTask = function (endpoint) {
       }
     });
   };
+};
+
+/***/ }),
+/* 6 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+
+exports.getCookie = function (name) {
+  if (document.cookie.length > 0) {
+    var cookieStart = document.cookie.indexOf("".concat(name, "="));
+
+    if (cookieStart !== -1) {
+      var valueStart = cookieStart + name.length + 1;
+      var cookieEnd = document.cookie.indexOf(';', valueStart);
+
+      if (cookieEnd === -1) {
+        cookieEnd = document.cookie.length;
+      }
+
+      var cookie = unescape(document.cookie.substring(valueStart, cookieEnd));
+      return cookie;
+    }
+  }
+
+  return '';
+};
+
+exports.getValidGAClientId = function () {
+  var cookie = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+  var match = cookie.match(/(\d{2,11})\.(\d{2,11})/g);
+  return match && match[0];
 };
 
 /***/ }),
@@ -761,7 +761,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 
-var helpers_1 = __webpack_require__(3);
+var helpers_1 = __webpack_require__(2);
 
 exports.default = function (impressionTag) {
   var waitForScroll = 0;
@@ -836,7 +836,8 @@ var chunk = function chunk(arr, size) {
 };
 
 /***/ }),
-/* 9 */
+/* 9 */,
+/* 10 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -845,9 +846,9 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 
-var helpers_1 = __webpack_require__(3);
+var helpers_1 = __webpack_require__(2);
 
-var helpers_2 = __webpack_require__(10);
+var helpers_2 = __webpack_require__(11);
 
 (function () {
   helpers_1.validateLittledataLayer();
@@ -880,7 +881,7 @@ var helpers_2 = __webpack_require__(10);
 })();
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -901,13 +902,13 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 
-var helpers_1 = __webpack_require__(3);
+var helpers_1 = __webpack_require__(2);
 
-var addEmailToEvents_1 = __webpack_require__(11);
+var addEmailToEvents_1 = __webpack_require__(12);
 
-var segmentProduct_1 = __webpack_require__(12);
+var segmentProduct_1 = __webpack_require__(13);
 
-var getCookie_1 = __webpack_require__(2);
+var getCookie_1 = __webpack_require__(6);
 
 var productListViews_1 = __importDefault(__webpack_require__(8));
 
@@ -1083,7 +1084,7 @@ exports.callSegmentPage = function (integrations) {
 };
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -1119,7 +1120,7 @@ var addEmailToProperties = function addEmailToProperties(properties) {
 };
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -1215,7 +1216,7 @@ exports.segmentProduct = function (dataLayerProduct) {
 /************************************************************************/
 /******/ 	// startup
 /******/ 	// Load entry module
-/******/ 	__webpack_require__(9);
+/******/ 	__webpack_require__(10);
 /******/ 	// This entry module used 'exports' so it can't be inlined
 /******/ })()
 ;
