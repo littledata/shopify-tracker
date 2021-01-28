@@ -1,3 +1,5 @@
+import LooseObject from '../../index';
+
 export const sampleCartHookLineItems = [
 	{
 		product_id: {},

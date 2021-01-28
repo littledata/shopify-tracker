@@ -1,6 +1,6 @@
 /* eslint-env browser */
 import { getCookie, getValidGAClientId } from '../common/getCookie';
-import { getConfig } from '../gaTracker/helpers';
+import getConfig from '../common/getConfig';
 
 declare let window: CustomWindow;
 
