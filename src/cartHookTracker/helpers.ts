@@ -1,5 +1,6 @@
 /* eslint-env browser */
 import { getCookie, getValidGAClientId } from '../common/getCookie';
+import getConfig from '../common/getConfig';
 
 declare let window: CustomWindow;
 
@@ -79,23 +80,6 @@ export function initGtag(webPropertyId: string): void {
 	gtag('config', webPropertyId, getConfig());
 }
 
-const getConfig = (): Gtag.CustomParams => {
-	const config: Gtag.CustomParams = {
-		linker: {
-			domains: [
-				'shopify.com',
-				'rechargeapps.com',
-				'recurringcheckout.com',
-				'carthook.com',
-				'checkout.com',
-				'shop.app',
-			],
-		},
-	};
-
-	return config;
-};
-
 export const sendCartId = () => {
 	const baseUrl = getMonitorBaseUrl();
 	const apiUrl = `${baseUrl}/clientID`;
@@ -124,3 +108,37 @@ function buildPostRequestParams(data: object): object {
 	};
 	return params;
 }
+
+export const getPageType = () => {
+	const { href } = document.location;
+	if (href.includes('/checkout')) return 'checkout';
+	if (href.includes('/oto')) return 'upsell';
+	if (href.includes('/thank-you')) return 'thankyou';
+};
+
+export const convertToGtagProducts = (lineItems: LooseObject) => {
+	return lineItems.map((item: LooseObject) => ({
+		id: item.sku || String(item.foreign_product_id), //sku or Shopify product ID
+		quantity: Number(item.quantity),
+		price: Number(item.line_price || item.price || 0).toFixed(2),
+		name: item.title,
+		variant: item.variant_title,
+		brand: item.vendor,
+	}));
+};
+
+export const sumProductTax = (lineItems: LooseObject) => {
+	return lineItems.reduce((sum: number, item: LooseObject) => sum + item.tax_amount || 0, 0);
+};
+
+export const sumProductSubtotal = (lineItems: LooseObject) => {
+	return lineItems.reduce((sum: number, item: LooseObject) => {
+		return sum + (item.price || 0) * (item.quantity || 0);
+	}, 0);
+};
+
+export const sumShipping = (shippingLines: LooseObject) => {
+	return shippingLines.reduce((sum: number, item: LooseObject) => {
+		return sum + (item.price || 0);
+	}, 0);
+};
