@@ -1,4 +1,4 @@
-import { getProperties } from './helpers';
+import { getQueryStringParam } from '../common/getQueryStringParam';
 import { initSegment } from '../segmentTracker/helpers';
 
 (function() {
@@ -6,7 +6,7 @@ import { initSegment } from '../segmentTracker/helpers';
 	if (window.Shopify.Checkout && window.Shopify.Checkout.page === 'thank_you') {
 		// @ts-ignore
 		const scriptSrc = document.currentScript.src;
-		const { segmentProperty } = getProperties(scriptSrc);
+		const segmentProperty = getQueryStringParam(scriptSrc, 'segmentProperty');
 
 		if (!segmentProperty) {
 			throw new Error('Could not add segment thank you page script beacuse of missing segmentProperty');

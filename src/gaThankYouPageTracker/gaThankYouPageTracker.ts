@@ -1,5 +1,5 @@
-import { getProperties } from '../segmentThankYouPageTracker/helpers';
-import { getConfig } from '../gaTracker/helpers';
+import { getQueryStringParam } from '../common/getQueryStringParam';
+import getConfig from '../common/getConfig';
 
 declare let window: CustomWindow;
 (function() {
@@ -7,7 +7,7 @@ declare let window: CustomWindow;
 	if (window.Shopify.Checkout && window.Shopify.Checkout.page === 'thank_you') {
 		// @ts-ignore
 		const scriptSrc = document.currentScript.src;
-		const { webPropertyId } = getProperties(scriptSrc);
+		const webPropertyId = getQueryStringParam(scriptSrc, 'webPropertyId');
 
 		if (!webPropertyId) {
 			throw new Error('Could not add ga thank you page script beacuse of missing webPropertyId');
