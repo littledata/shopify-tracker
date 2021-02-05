@@ -254,7 +254,7 @@ exports.trackSocialShares = function (clickTag) {
 };
 
 exports.validateLittledataLayer = function () {
-  window.LittledataScriptVersion = '10.0.4';
+  window.LittledataScriptVersion = '10.0.5';
 
   if (!window.LittledataLayer) {
     throw new Error('Aborting Littledata tracking as LittledataLayer was not found');
@@ -316,7 +316,6 @@ function waitForGaToLoad(postClientIdTimeout, nextTimeout) {
   var trackers = window.ga && window.ga.getAll && window.ga.getAll();
 
   if (trackers && trackers.length) {
-    console.log('getGAClientId', getGAClientId(trackers[0]));
     exports.setCustomTask();
     return setClientID(getGAClientId(trackers[0]), 'google');
   }
@@ -719,7 +718,8 @@ exports.getValidGAClientId = function () {
 };
 
 /***/ }),
-/* 7 */
+/* 7 */,
+/* 8 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -752,7 +752,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -836,7 +836,6 @@ var chunk = function chunk(arr, size) {
 };
 
 /***/ }),
-/* 9 */,
 /* 10 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
@@ -910,9 +909,9 @@ var segmentProduct_1 = __webpack_require__(13);
 
 var getCookie_1 = __webpack_require__(6);
 
-var productListViews_1 = __importDefault(__webpack_require__(8));
+var productListViews_1 = __importDefault(__webpack_require__(9));
 
-var getProductDetail_1 = __importDefault(__webpack_require__(7));
+var getProductDetail_1 = __importDefault(__webpack_require__(8));
 
 var getContext = function getContext() {
   return {

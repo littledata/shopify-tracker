@@ -50,11 +50,11 @@ Object.defineProperty(exports, "__esModule", ({
 
 var helpers_1 = __webpack_require__(2);
 
-var getProductDetail_1 = __importDefault(__webpack_require__(7));
+var getConfig_1 = __importDefault(__webpack_require__(7));
 
-var productListViews_1 = __importDefault(__webpack_require__(8));
+var getProductDetail_1 = __importDefault(__webpack_require__(8));
 
-var getConfig_1 = __importDefault(__webpack_require__(9));
+var productListViews_1 = __importDefault(__webpack_require__(9));
 
 var event_category = 'Shopify (Littledata)';
 
@@ -140,7 +140,7 @@ exports.trackEvents = function () {
       if (hasGA4()) {
         gtag('event', 'select_content', {
           content_type: 'product',
-          item_id: product.shopify_product_id,
+          item_product_id: product.shopify_product_id,
           item_sku: product.id,
           item_variant_id: product.shopify_variant_id,
           image_url: image.src,
@@ -319,7 +319,7 @@ function convertProductsToGa4Format(products, sendIndex) {
   return products.map(function (product) {
     var converted = {
       currency: LittledataLayer.ecommerce && LittledataLayer.ecommerce.currencyCode || '',
-      item_id: product.shopify_product_id,
+      item_product_id: product.shopify_product_id,
       item_name: product.name,
       item_brand: product.brand,
       item_category: product.category,
@@ -590,7 +590,7 @@ exports.trackSocialShares = function (clickTag) {
 };
 
 exports.validateLittledataLayer = function () {
-  window.LittledataScriptVersion = '10.0.4';
+  window.LittledataScriptVersion = '10.0.5';
 
   if (!window.LittledataLayer) {
     throw new Error('Aborting Littledata tracking as LittledataLayer was not found');
@@ -652,7 +652,6 @@ function waitForGaToLoad(postClientIdTimeout, nextTimeout) {
   var trackers = window.ga && window.ga.getAll && window.ga.getAll();
 
   if (trackers && trackers.length) {
-    console.log('getGAClientId', getGAClientId(trackers[0]));
     exports.setCustomTask();
     return setClientID(getGAClientId(trackers[0]), 'google');
   }
@@ -1056,6 +1055,76 @@ exports.getValidGAClientId = function () {
 
 /***/ }),
 /* 7 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+
+var getCookie_1 = __webpack_require__(6);
+
+exports.default = function () {
+  var settings = window.LittledataLayer || {};
+  var anonymizeIp = settings.anonymizeIp,
+      googleSignals = settings.googleSignals,
+      ecommerce = settings.ecommerce,
+      optimizeId = settings.optimizeId,
+      referralExclusion = settings.referralExclusion;
+  var DEFAULT_LINKER_DOMAINS = ['^(?!cdn.)(.*)shopify.com', 'rechargeapps.com', 'recurringcheckout.com', 'carthook.com', 'checkout.com', 'shop.app'];
+  var extraLinkerDomains = settings.extraLinkerDomains || [];
+  var excludeReferral = referralExclusion && referralExclusion.test(document.referrer);
+  var extraExcludedReferrers = ['shop.app'];
+
+  if (extraExcludedReferrers.includes(document.referrer)) {
+    excludeReferral = true;
+  }
+
+  if (document.referrer.includes("".concat(location.protocol, "//").concat(location.host))) {
+    //valid referrer may have host within the url, like https://newsite.com/about/shopify.com
+    //but less likely to have protocol as well, unless the same domain - self-referral
+    excludeReferral = true;
+  }
+
+  var config = {
+    linker: {
+      domains: [].concat(DEFAULT_LINKER_DOMAINS, _toConsumableArray(extraLinkerDomains))
+    },
+    anonymize_ip: anonymizeIp === false ? false : true,
+    allow_ad_personalization_signals: googleSignals === true ? true : false,
+    currency: ecommerce && ecommerce.currencyCode || 'USD',
+    link_attribution: true,
+    optimize_id: optimizeId,
+    page_referrer: excludeReferral ? null : document.referrer
+  };
+  var userId = settings.customer && settings.customer.id;
+
+  if (userId) {
+    config.user_id = userId;
+  }
+
+  var cookie = getCookie_1.getCookie('_ga');
+
+  if (cookie && !getCookie_1.getValidGAClientId(cookie)) {
+    //expiring the cookie after this session ensures invalid clientID
+    //is not propagated to future sessions
+    config.cookie_expires = 0;
+  }
+
+  return config;
+};
+
+/***/ }),
+/* 8 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -1088,7 +1157,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -1169,76 +1238,6 @@ var chunk = function chunk(arr, size) {
   }, function (v, i) {
     return arr.slice(i * size, i * size + size);
   });
-};
-
-/***/ }),
-/* 9 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
-
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
-
-function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
-
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-
-var getCookie_1 = __webpack_require__(6);
-
-exports.default = function () {
-  var settings = window.LittledataLayer || {};
-  var anonymizeIp = settings.anonymizeIp,
-      googleSignals = settings.googleSignals,
-      ecommerce = settings.ecommerce,
-      optimizeId = settings.optimizeId,
-      referralExclusion = settings.referralExclusion;
-  var DEFAULT_LINKER_DOMAINS = ['^(?!cdn.)(.*)shopify.com', 'rechargeapps.com', 'recurringcheckout.com', 'carthook.com', 'checkout.com', 'shop.app'];
-  var extraLinkerDomains = settings.extraLinkerDomains || [];
-  var excludeReferral = referralExclusion && referralExclusion.test(document.referrer);
-  var extraExcludedReferrers = ['shop.app'];
-
-  if (extraExcludedReferrers.includes(document.referrer)) {
-    excludeReferral = true;
-  }
-
-  if (document.referrer.includes("".concat(location.protocol, "//").concat(location.host))) {
-    //valid referrer may have host within the url, like https://newsite.com/about/shopify.com
-    //but less likely to have protocol as well, unless the same domain - self-referral
-    excludeReferral = true;
-  }
-
-  var config = {
-    linker: {
-      domains: [].concat(DEFAULT_LINKER_DOMAINS, _toConsumableArray(extraLinkerDomains))
-    },
-    anonymize_ip: anonymizeIp === false ? false : true,
-    allow_ad_personalization_signals: googleSignals === true ? true : false,
-    currency: ecommerce && ecommerce.currencyCode || 'USD',
-    link_attribution: true,
-    optimize_id: optimizeId,
-    page_referrer: excludeReferral ? null : document.referrer
-  };
-  var userId = settings.customer && settings.customer.id;
-
-  if (userId) {
-    config.user_id = userId;
-  }
-
-  var cookie = getCookie_1.getCookie('_ga');
-
-  if (cookie && !getCookie_1.getValidGAClientId(cookie)) {
-    //expiring the cookie after this session ensures invalid clientID
-    //is not propagated to future sessions
-    config.cookie_expires = 0;
-  }
-
-  return config;
 };
 
 /***/ })
