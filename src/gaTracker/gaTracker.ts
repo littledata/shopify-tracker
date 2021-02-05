@@ -1,4 +1,5 @@
 /* eslint-env browser */
+import { CustomWindow } from '../..';
 declare let window: CustomWindow;
 import { initGtag, trackEvents, sendPageview } from './helpers';
 import { pageView, validateLittledataLayer, advertiseLD, documentReady } from '../common/helpers';

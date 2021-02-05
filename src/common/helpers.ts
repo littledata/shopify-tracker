@@ -1,10 +1,8 @@
-/* global LittledataLayer */
-declare let window: CustomWindow;
-
 import UrlChangeTracker from './UrlChangeTracker';
-import { clientID } from '../../index';
+import { clientID, CustomWindow } from '../../index';
 import { customTask } from '../gaTracker/customTask';
 import { getValidGAClientId } from '../common/getCookie';
+declare let window: CustomWindow;
 
 const maximumTimeout = 524288000; // about 6 hours in seconds
 /**

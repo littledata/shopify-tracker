@@ -1,4 +1,5 @@
 /* global LittledataLayer */
+import { CustomWindow } from '../..';
 declare let window: CustomWindow;
 import {
 	productListClicks,

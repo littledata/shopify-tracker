@@ -1,5 +1,6 @@
 import { getQueryStringParam } from '../common/getQueryStringParam';
 import getConfig from '../common/getConfig';
+import { CustomWindow } from '../..';
 
 declare let window: CustomWindow;
 (function() {

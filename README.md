@@ -102,6 +102,12 @@ If you wish to duplicate the Measurement Protocol hits sent to Google Analytics 
 
 Example: `https://collector.littledata.io/collect` (string)
 
+**cookieUpdate**
+
+This passes on the [cookie_update field](https://developers.google.com/analytics/devguides/collection/gtagjs/cookies-user-id#cookie_update) to gtag. A common use is when the \_ga cookie was overwritten as server-side cookie to preserve it.
+
+Default: `true` (boolean)
+
 ### Segment configuration
 
 **cookiesToTrack**
