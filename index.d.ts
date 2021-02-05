@@ -19,7 +19,7 @@ export interface Detail {
 
 export interface GA4Product {
 	currency: string;
-	item_id: string;
+	item_product_id: string;
 	item_name: string;
 	item_brand: string;
 	item_category: string;
