@@ -30,6 +30,18 @@ export interface GA4Product {
 	index?: number;
 }
 
+export interface CustomWindow extends Window {
+	console: { (...data: any[]): void; (message?: any, ...optionalParams: any[]): void };
+	ga: any;
+	LittledataLayer: OwnLayer;
+	analytics: AnalyticsJS;
+	gtag: Gtag.Gtag;
+	dataLayer: any[];
+	LittledataScriptVersion: string;
+	Shopify?: LooseObject;
+	_ga_originalSendHitTask: any;
+}
+
 declare global {
 	interface LooseObject {
 		[index: string]: any;
@@ -150,22 +162,11 @@ declare global {
 		doNotTrackReplaceState?: boolean;
 		MPEndpoint?: string;
 		CDNForAnalyticsJS?: string;
+		cookieUpdate?: boolean;
 	}
 
 	var LittledataLayer: OwnLayer;
 	var dataLayer: any[];
-
-	interface CustomWindow extends Window {
-		console: { (...data: any[]): void; (message?: any, ...optionalParams: any[]): void };
-		ga: any;
-		LittledataLayer: OwnLayer;
-		analytics: AnalyticsJS;
-		gtag: Gtag.Gtag;
-		dataLayer: any[];
-		LittledataScriptVersion: string;
-		Shopify?: LooseObject;
-		_ga_originalSendHitTask: any;
-	}
 
 	interface CartHookWindow extends Window {
 		gtag: Gtag.Gtag;
@@ -184,15 +185,15 @@ declare global {
 	type ListClickCallback = (foundProduct: Impression, self: TimeBombHTMLAnchor) => void;
 
 	interface Customer {
-		accepts_narketing: boolean;
-		display_name: string;
+		accepts_marketing?: boolean;
+		display_name?: string;
 		email: string;
-		first_name: string;
+		first_name?: string;
 		id: string;
-		last_name: string;
-		name: string;
-		phone: string;
-		address: {
+		last_name?: string;
+		name?: string;
+		phone?: string;
+		address?: {
 			address1: string;
 			address2: string;
 			city: string;

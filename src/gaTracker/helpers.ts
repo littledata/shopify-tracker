@@ -1,7 +1,4 @@
-/* global LittledataLayer */
-declare let window: CustomWindow;
-
-import { Detail, GA4Product } from '../..';
+import { Detail, GA4Product, CustomWindow } from '../..';
 import {
 	productListClicks,
 	removePii,
@@ -9,10 +6,10 @@ import {
 	trackProductImageClicks,
 	trackSocialShares,
 } from '../common/helpers';
-
-import getConfig from '../common/getConfig';
 import getProductDetail from '../common/getProductDetail';
 import productListViews from '../common/productListViews';
+import getConfig from '../common/getConfig';
+declare let window: CustomWindow;
 
 const event_category = 'Shopify (Littledata)';
 

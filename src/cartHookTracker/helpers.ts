@@ -2,7 +2,7 @@
 import { getCookie, getValidGAClientId } from '../common/getCookie';
 import getConfig from '../common/getConfig';
 
-declare let window: CustomWindow;
+declare let window: CartHookWindow;
 
 export const getWebPropertyIdPromise = (): Promise<string> => {
 	const baseUrl = getMonitorBaseUrl();

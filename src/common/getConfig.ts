@@ -1,29 +1,33 @@
 import { getCookie, getValidGAClientId } from './getCookie';
+import { CustomWindow } from '../..';
 
 declare let window: CustomWindow;
 
+export const DEFAULT_LINKER_DOMAINS = [
+	'^(?!cdn.)(.*)shopify.com',
+	'rechargeapps.com',
+	'recurringcheckout.com',
+	'carthook.com',
+	'checkout.com',
+	'shop.app',
+];
+
+export const extraExcludedReferrers = ['shop.app'];
+
 export default (): Gtag.CustomParams => {
-	const settings: LooseObject = window.LittledataLayer || {};
+	const settings: LooseObject = (window && window.LittledataLayer) || {};
 	const { anonymizeIp, googleSignals, ecommerce, optimizeId, referralExclusion } = settings;
 
-	const DEFAULT_LINKER_DOMAINS = [
-		'^(?!cdn.)(.*)shopify.com',
-		'rechargeapps.com',
-		'recurringcheckout.com',
-		'carthook.com',
-		'checkout.com',
-		'shop.app',
-	];
 	const extraLinkerDomains = settings.extraLinkerDomains || [];
 
 	let excludeReferral = referralExclusion && referralExclusion.test(document.referrer);
-	const extraExcludedReferrers = ['shop.app'];
+
 	if (extraExcludedReferrers.includes(document.referrer)) {
 		excludeReferral = true;
 	}
 	if (document.referrer.includes(`${location.protocol}//${location.host}`)) {
-		//valid referrer may have host within the url, like https://newsite.com/about/shopify.com
-		//but less likely to have protocol as well, unless the same domain - self-referral
+		// valid referrer may have host within the url, like https://newsite.com/about/shopify.com
+		// but less likely to have protocol as well, unless the same domain - self-referral
 		excludeReferral = true;
 	}
 	const config: Gtag.CustomParams = {
@@ -48,6 +52,12 @@ export default (): Gtag.CustomParams => {
 		//expiring the cookie after this session ensures invalid clientID
 		//is not propagated to future sessions
 		config.cookie_expires = 0;
+	}
+
+	if (settings.cookieUpdate === false) {
+		// If the cookie is being overwritten by a server-side cookie to avoid ITP
+		// this should be false
+		config.cookie_update = false;
 	}
 
 	return config;

@@ -5,7 +5,8 @@
 		"start": "node ./node_modules/webpack/bin/webpack.js --watch",
 		"lint": "node ./node_modules/eslint/bin/eslint.js --ext .ts ./src",
 		"prettier": "prettier --write \"**/*.{[tj]s,html}\"",
-		"test": "env TEST=true mocha -r esm -r ts-node/register --recursive  ./test/**/**/**/**/*.ts"
+		"test": "env TEST=true mocha -r esm -r ts-node/register --recursive  ./test/**/**/**/**/*.ts",
+		"test-watch": "env TEST=true mocha -w -r esm -r ts-node/register --recursive  ./test/**/**/**/**/*.ts"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.5.5",
@@ -24,8 +25,8 @@
 		"eslint-plugin-import": "^2.22.1",
 		"eslint-plugin-prettier": "^3.1.0",
 		"esm": "^3.2.25",
-		"jsdom": "^16.4.0",
-		"jsdom-global": "^3.0.2",
+		"jsdom": "16.4.0",
+		"jsdom-global": "3.0.2",
 		"mocha": "^8.2.1",
 		"prettier": "^1.18.2",
 		"sinon": "^2.4.1",
