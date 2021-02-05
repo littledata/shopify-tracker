@@ -15,7 +15,7 @@ export const DEFAULT_LINKER_DOMAINS = [
 export const extraExcludedReferrers = ['shop.app'];
 
 export default (): Gtag.CustomParams => {
-	const settings: LooseObject = (window && window.LittledataLayer) || {};
+	const settings: LooseObject = window.LittledataLayer || {};
 	const { anonymizeIp, googleSignals, ecommerce, optimizeId, referralExclusion } = settings;
 
 	const extraLinkerDomains = settings.extraLinkerDomains || [];
