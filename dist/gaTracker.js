@@ -50,11 +50,11 @@ Object.defineProperty(exports, "__esModule", ({
 
 var helpers_1 = __webpack_require__(2);
 
-var getConfig_1 = __importDefault(__webpack_require__(7));
+var getProductDetail_1 = __importDefault(__webpack_require__(7));
 
-var getProductDetail_1 = __importDefault(__webpack_require__(8));
+var productListViews_1 = __importDefault(__webpack_require__(8));
 
-var productListViews_1 = __importDefault(__webpack_require__(9));
+var getConfig_1 = __importDefault(__webpack_require__(9));
 
 var event_category = 'Shopify (Littledata)';
 
@@ -1055,76 +1055,6 @@ exports.getValidGAClientId = function () {
 
 /***/ }),
 /* 7 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
-
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
-
-function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
-
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-
-var getCookie_1 = __webpack_require__(6);
-
-exports.default = function () {
-  var settings = window.LittledataLayer || {};
-  var anonymizeIp = settings.anonymizeIp,
-      googleSignals = settings.googleSignals,
-      ecommerce = settings.ecommerce,
-      optimizeId = settings.optimizeId,
-      referralExclusion = settings.referralExclusion;
-  var DEFAULT_LINKER_DOMAINS = ['^(?!cdn.)(.*)shopify.com', 'rechargeapps.com', 'recurringcheckout.com', 'carthook.com', 'checkout.com', 'shop.app'];
-  var extraLinkerDomains = settings.extraLinkerDomains || [];
-  var excludeReferral = referralExclusion && referralExclusion.test(document.referrer);
-  var extraExcludedReferrers = ['shop.app'];
-
-  if (extraExcludedReferrers.includes(document.referrer)) {
-    excludeReferral = true;
-  }
-
-  if (document.referrer.includes("".concat(location.protocol, "//").concat(location.host))) {
-    //valid referrer may have host within the url, like https://newsite.com/about/shopify.com
-    //but less likely to have protocol as well, unless the same domain - self-referral
-    excludeReferral = true;
-  }
-
-  var config = {
-    linker: {
-      domains: [].concat(DEFAULT_LINKER_DOMAINS, _toConsumableArray(extraLinkerDomains))
-    },
-    anonymize_ip: anonymizeIp === false ? false : true,
-    allow_ad_personalization_signals: googleSignals === true ? true : false,
-    currency: ecommerce && ecommerce.currencyCode || 'USD',
-    link_attribution: true,
-    optimize_id: optimizeId,
-    page_referrer: excludeReferral ? null : document.referrer
-  };
-  var userId = settings.customer && settings.customer.id;
-
-  if (userId) {
-    config.user_id = userId;
-  }
-
-  var cookie = getCookie_1.getCookie('_ga');
-
-  if (cookie && !getCookie_1.getValidGAClientId(cookie)) {
-    //expiring the cookie after this session ensures invalid clientID
-    //is not propagated to future sessions
-    config.cookie_expires = 0;
-  }
-
-  return config;
-};
-
-/***/ }),
-/* 8 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -1157,7 +1087,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 /***/ }),
-/* 9 */
+/* 8 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -1238,6 +1168,83 @@ var chunk = function chunk(arr, size) {
   }, function (v, i) {
     return arr.slice(i * size, i * size + size);
   });
+};
+
+/***/ }),
+/* 9 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+
+var getCookie_1 = __webpack_require__(6);
+
+exports.DEFAULT_LINKER_DOMAINS = ['^(?!cdn.)(.*)shopify.com', 'rechargeapps.com', 'recurringcheckout.com', 'carthook.com', 'checkout.com', 'shop.app'];
+exports.extraExcludedReferrers = ['shop.app'];
+
+exports.default = function () {
+  var settings = window.LittledataLayer || {};
+  var anonymizeIp = settings.anonymizeIp,
+      googleSignals = settings.googleSignals,
+      ecommerce = settings.ecommerce,
+      optimizeId = settings.optimizeId,
+      referralExclusion = settings.referralExclusion;
+  var extraLinkerDomains = settings.extraLinkerDomains || [];
+  var excludeReferral = referralExclusion && referralExclusion.test(document.referrer);
+
+  if (exports.extraExcludedReferrers.includes(document.referrer)) {
+    excludeReferral = true;
+  }
+
+  if (document.referrer.includes("".concat(location.protocol, "//").concat(location.host))) {
+    // valid referrer may have host within the url, like https://newsite.com/about/shopify.com
+    // but less likely to have protocol as well, unless the same domain - self-referral
+    excludeReferral = true;
+  }
+
+  var config = {
+    linker: {
+      domains: [].concat(_toConsumableArray(exports.DEFAULT_LINKER_DOMAINS), _toConsumableArray(extraLinkerDomains))
+    },
+    anonymize_ip: anonymizeIp === false ? false : true,
+    allow_ad_personalization_signals: googleSignals === true ? true : false,
+    currency: ecommerce && ecommerce.currencyCode || 'USD',
+    link_attribution: true,
+    optimize_id: optimizeId,
+    page_referrer: excludeReferral ? null : document.referrer
+  };
+  var userId = settings.customer && settings.customer.id;
+
+  if (userId) {
+    config.user_id = userId;
+  }
+
+  var cookie = getCookie_1.getCookie('_ga');
+
+  if (cookie && !getCookie_1.getValidGAClientId(cookie)) {
+    //expiring the cookie after this session ensures invalid clientID
+    //is not propagated to future sessions
+    config.cookie_expires = 0;
+  }
+
+  if (settings.cookieUpdate === false) {
+    // If the cookie is being overwritten by a server-side cookie to avoid ITP
+    // this should be false
+    config.cookie_update = false;
+  }
+
+  return config;
 };
 
 /***/ })

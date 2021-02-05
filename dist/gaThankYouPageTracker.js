@@ -2,7 +2,7 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 7:
+/***/ 9:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -21,6 +21,9 @@ Object.defineProperty(exports, "__esModule", ({
 
 var getCookie_1 = __webpack_require__(6);
 
+exports.DEFAULT_LINKER_DOMAINS = ['^(?!cdn.)(.*)shopify.com', 'rechargeapps.com', 'recurringcheckout.com', 'carthook.com', 'checkout.com', 'shop.app'];
+exports.extraExcludedReferrers = ['shop.app'];
+
 exports.default = function () {
   var settings = window.LittledataLayer || {};
   var anonymizeIp = settings.anonymizeIp,
@@ -28,24 +31,22 @@ exports.default = function () {
       ecommerce = settings.ecommerce,
       optimizeId = settings.optimizeId,
       referralExclusion = settings.referralExclusion;
-  var DEFAULT_LINKER_DOMAINS = ['^(?!cdn.)(.*)shopify.com', 'rechargeapps.com', 'recurringcheckout.com', 'carthook.com', 'checkout.com', 'shop.app'];
   var extraLinkerDomains = settings.extraLinkerDomains || [];
   var excludeReferral = referralExclusion && referralExclusion.test(document.referrer);
-  var extraExcludedReferrers = ['shop.app'];
 
-  if (extraExcludedReferrers.includes(document.referrer)) {
+  if (exports.extraExcludedReferrers.includes(document.referrer)) {
     excludeReferral = true;
   }
 
   if (document.referrer.includes("".concat(location.protocol, "//").concat(location.host))) {
-    //valid referrer may have host within the url, like https://newsite.com/about/shopify.com
-    //but less likely to have protocol as well, unless the same domain - self-referral
+    // valid referrer may have host within the url, like https://newsite.com/about/shopify.com
+    // but less likely to have protocol as well, unless the same domain - self-referral
     excludeReferral = true;
   }
 
   var config = {
     linker: {
-      domains: [].concat(DEFAULT_LINKER_DOMAINS, _toConsumableArray(extraLinkerDomains))
+      domains: [].concat(_toConsumableArray(exports.DEFAULT_LINKER_DOMAINS), _toConsumableArray(extraLinkerDomains))
     },
     anonymize_ip: anonymizeIp === false ? false : true,
     allow_ad_personalization_signals: googleSignals === true ? true : false,
@@ -66,6 +67,12 @@ exports.default = function () {
     //expiring the cookie after this session ensures invalid clientID
     //is not propagated to future sessions
     config.cookie_expires = 0;
+  }
+
+  if (settings.cookieUpdate === false) {
+    // If the cookie is being overwritten by a server-side cookie to avoid ITP
+    // this should be false
+    config.cookie_update = false;
   }
 
   return config;
@@ -145,7 +152,7 @@ Object.defineProperty(exports, "__esModule", ({
 
 var getQueryStringParam_1 = __webpack_require__(15);
 
-var getConfig_1 = __importDefault(__webpack_require__(7));
+var getConfig_1 = __importDefault(__webpack_require__(9));
 
 (function () {
   // @ts-ignore
