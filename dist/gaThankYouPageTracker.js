@@ -150,9 +150,9 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 
-var getQueryStringParam_1 = __webpack_require__(15);
-
 var getConfig_1 = __importDefault(__webpack_require__(9));
+
+var getQueryStringParam_1 = __webpack_require__(15);
 
 (function () {
   // @ts-ignore
@@ -186,7 +186,8 @@ var getConfig_1 = __importDefault(__webpack_require__(9));
     gtag('event', 'Checkout', {
       event_category: 'Shopify (Littledata)',
       event_label: 'Thank you page',
-      value: value
+      value: value,
+      send_to: webPropertyId
     });
   }
 })();
