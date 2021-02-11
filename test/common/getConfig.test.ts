@@ -15,7 +15,7 @@ describe('getConfig', () => {
 		getConfig().should.deep.equal({
 			anonymize_ip: true,
 			allow_ad_personalization_signals: false,
-			linker: { domains: DEFAULT_LINKER_DOMAINS },
+			linker: { domains: DEFAULT_LINKER_DOMAINS, accept_incoming: true },
 			currency: 'USD',
 			link_attribution: true,
 			optimize_id: undefined,
