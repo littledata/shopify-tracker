@@ -1,7 +1,7 @@
-import 'whatwg-fetch';
 import { getElementsByHref } from './helpers';
 import { getQueryStringParam } from './getQueryStringParam';
 import { convertShopifyProductToVariant } from './convertShopifyProductToVariant';
+import { request } from './request';
 
 type impressionCallback = (impressionTag: Impression[]) => void;
 
@@ -82,7 +82,7 @@ export const getHandleAndVariant = (link: string) => {
 export const getVariantsFromShopify = async (impressions: ImpressionToSend[]) => {
 	//TO DO - only fetch one product for multiple variants
 	const promises = impressions.map(impression =>
-		fetch(`/products/${impression.handle}.json`).then(async response => await response.json()),
+		request(`/products/${impression.handle}.json`).then(async (response: any) => await response.json()),
 	);
 	const responses = await Promise.all(promises);
 	return impressions.map((impression, index) =>
