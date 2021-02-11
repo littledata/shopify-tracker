@@ -122,7 +122,7 @@ declare global {
 	}
 
 	interface Impression extends Detail {
-		list_position: number;
+		list_position?: number;
 	}
 
 	interface DiscountApplication {
@@ -150,6 +150,7 @@ declare global {
 			currencyCode?: string;
 			impressions?: Impression[];
 			detail?: Detail;
+			impressionsToSend?: ImpressionToSend[];
 		};
 		transactionWatcherURL?: string;
 		cart?: Cart.RootObject;
@@ -163,6 +164,11 @@ declare global {
 		MPEndpoint?: string;
 		CDNForAnalyticsJS?: string;
 		cookieUpdate?: boolean;
+	}
+
+	interface ImpressionToSend {
+		handle: string;
+		shopify_variant_id: string;
 	}
 
 	var LittledataLayer: OwnLayer;

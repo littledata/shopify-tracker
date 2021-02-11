@@ -47,5 +47,8 @@
 	"bugs": {
 		"url": "https://github.com/littledata/shopify-tracker/issues"
 	},
-	"homepage": "https://github.com/littledata/shopify-tracker#readme"
+	"homepage": "https://github.com/littledata/shopify-tracker#readme",
+	"dependencies": {
+		"whatwg-fetch": "^3.5.0"
+	}
 }
