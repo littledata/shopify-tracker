@@ -1,5 +1,6 @@
+import { CustomWindow, clientID } from '../../index';
+
 import UrlChangeTracker from './UrlChangeTracker';
-import { clientID, CustomWindow } from '../../index';
 import { customTask } from '../gaTracker/customTask';
 import { getValidGAClientId } from '../common/getCookie';
 declare let window: CustomWindow;
@@ -224,7 +225,7 @@ export const trackSocialShares = (clickTag: (name?: string) => void) => {
 };
 
 export const validateLittledataLayer = () => {
-	window.LittledataScriptVersion = '10.0.5';
+	window.LittledataScriptVersion = '10.0.6';
 	if (!window.LittledataLayer) {
 		throw new Error('Aborting Littledata tracking as LittledataLayer was not found');
 	}
