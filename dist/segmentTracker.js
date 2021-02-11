@@ -849,6 +849,8 @@ var helpers_1 = __webpack_require__(2);
 
 var helpers_2 = __webpack_require__(11);
 
+var sendEventsWithPageview_1 = __webpack_require__(14);
+
 (function () {
   helpers_1.validateLittledataLayer();
   helpers_2.initSegment();
@@ -857,6 +859,7 @@ var helpers_2 = __webpack_require__(11);
   helpers_1.documentReady(helpers_2.trackEvents);
   helpers_1.pageView(function () {
     helpers_2.callSegmentPage({});
+    sendEventsWithPageview_1.sendEventsWithPageview(document.location.pathname);
     window.analytics.ready(function () {
       // @ts-ignore 'Integrations' property does, in fact exist
       if (window.analytics.Integrations['Google Analytics']) {
@@ -922,7 +925,7 @@ var getContext = function getContext() {
   };
 };
 
-var trackEvent = function trackEvent(eventName, params) {
+exports.trackEvent = function (eventName, params) {
   // @ts-ignore
   window.analytics.track(eventName, params, {
     context: getContext()
@@ -961,7 +964,7 @@ exports.trackEvents = function () {
         });
         var pos = productFromImpressions && productFromImpressions.list_position;
         window.localStorage.setItem('position', String(pos));
-        trackEvent('Product Clicked', _objectSpread({}, segmentProduct_1.segmentProduct(product), {
+        exports.trackEvent('Product Clicked', _objectSpread({}, segmentProduct_1.segmentProduct(product), {
           currency: LittledataLayer.ecommerce.currencyCode,
           list_id: product.list
         }));
@@ -969,7 +972,7 @@ exports.trackEvents = function () {
       productListViews_1["default"](function (products) {
         var listId = products && products[0].list;
         var segmentProducts = products.map(segmentProduct_1.segmentProduct);
-        trackEvent('Product List Viewed', {
+        exports.trackEvent('Product List Viewed', {
           list_id: listId,
           products: segmentProducts
         });
@@ -983,10 +986,10 @@ exports.trackEvents = function () {
 
       helpers_1.trackProductImageClicks(function (image) {
         product.image_url = image.src;
-        trackEvent('Product Image Clicked', product);
+        exports.trackEvent('Product Image Clicked', product);
       });
       helpers_1.trackSocialShares(function (network) {
-        trackEvent('Product Shared', _objectSpread({}, product, {
+        exports.trackEvent('Product Shared', _objectSpread({}, product, {
           share_via: network
         }));
       });
@@ -1077,7 +1080,7 @@ exports.callSegmentPage = function (integrations) {
     properties.position = parseInt(window.localStorage.getItem('position')) || 1;
     window.analytics.ready(function () {
       //need to wait for anonymousId to be available
-      trackEvent('Product Viewed', properties);
+      exports.trackEvent('Product Viewed', properties);
     });
   }
 };
@@ -1155,6 +1158,34 @@ exports.segmentProduct = function (dataLayerProduct) {
   }
 
   return output;
+};
+
+/***/ }),
+/* 14 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+
+var helpers_1 = __webpack_require__(11);
+
+exports.sendEventsWithPageview = function (pathname) {
+  if (pathname === '/cart') {
+    helpers_1.trackEvent('Cart Viewed', {});
+  }
+
+  if (pathname === '/account/register') {
+    helpers_1.trackEvent('Registration Viewed', {});
+  }
+
+  if (pathname === '/search') {
+    helpers_1.trackEvent('Products Searched', {
+      query: document.location.search.replace('?q=', '').replace('+', ' ')
+    });
+  }
 };
 
 /***/ })

@@ -879,7 +879,7 @@ var getContext = function getContext() {
   };
 };
 
-var trackEvent = function trackEvent(eventName, params) {
+exports.trackEvent = function (eventName, params) {
   // @ts-ignore
   window.analytics.track(eventName, params, {
     context: getContext()
@@ -918,7 +918,7 @@ exports.trackEvents = function () {
         });
         var pos = productFromImpressions && productFromImpressions.list_position;
         window.localStorage.setItem('position', String(pos));
-        trackEvent('Product Clicked', _objectSpread({}, segmentProduct_1.segmentProduct(product), {
+        exports.trackEvent('Product Clicked', _objectSpread({}, segmentProduct_1.segmentProduct(product), {
           currency: LittledataLayer.ecommerce.currencyCode,
           list_id: product.list
         }));
@@ -926,7 +926,7 @@ exports.trackEvents = function () {
       productListViews_1["default"](function (products) {
         var listId = products && products[0].list;
         var segmentProducts = products.map(segmentProduct_1.segmentProduct);
-        trackEvent('Product List Viewed', {
+        exports.trackEvent('Product List Viewed', {
           list_id: listId,
           products: segmentProducts
         });
@@ -940,10 +940,10 @@ exports.trackEvents = function () {
 
       helpers_1.trackProductImageClicks(function (image) {
         product.image_url = image.src;
-        trackEvent('Product Image Clicked', product);
+        exports.trackEvent('Product Image Clicked', product);
       });
       helpers_1.trackSocialShares(function (network) {
-        trackEvent('Product Shared', _objectSpread({}, product, {
+        exports.trackEvent('Product Shared', _objectSpread({}, product, {
           share_via: network
         }));
       });
@@ -1034,7 +1034,7 @@ exports.callSegmentPage = function (integrations) {
     properties.position = parseInt(window.localStorage.getItem('position')) || 1;
     window.analytics.ready(function () {
       //need to wait for anonymousId to be available
-      trackEvent('Product Viewed', properties);
+      exports.trackEvent('Product Viewed', properties);
     });
   }
 };
@@ -1116,7 +1116,8 @@ exports.segmentProduct = function (dataLayerProduct) {
 
 /***/ }),
 /* 14 */,
-/* 15 */
+/* 15 */,
+/* 16 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -1133,12 +1134,12 @@ exports.getQueryStringParam = function (url, param) {
 };
 
 /***/ }),
-/* 16 */,
 /* 17 */,
 /* 18 */,
 /* 19 */,
 /* 20 */,
-/* 21 */
+/* 21 */,
+/* 22 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -1147,7 +1148,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 
-var getQueryStringParam_1 = __webpack_require__(15);
+var getQueryStringParam_1 = __webpack_require__(16);
 
 var helpers_1 = __webpack_require__(11);
 
@@ -1264,7 +1265,7 @@ var helpers_1 = __webpack_require__(11);
 /************************************************************************/
 /******/ 	// startup
 /******/ 	// Load entry module
-/******/ 	__webpack_require__(21);
+/******/ 	__webpack_require__(22);
 /******/ 	// This entry module used 'exports' so it can't be inlined
 /******/ })()
 ;
