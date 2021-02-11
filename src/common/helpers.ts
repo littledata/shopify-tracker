@@ -241,25 +241,12 @@ export const advertiseLD = (app: string) => {
 	}
 };
 
-export function retrieveAndStoreClientId(withCustomTask: boolean = false) {
-	const clientIdPromise = new Promise(resolve => {
-		// @ts-ignore
-		gtag('get', LittledataLayer.webPropertyID || LittledataLayer.measurementID, 'client_id', resolve);
-	});
-
-	return clientIdPromise
-		.then((clientId: string) => {
-			if (withCustomTask) {
-				setCustomTask();
-			}
-
-			return setClientID(clientId, 'google');
-		})
-		.catch(() => {
-			let postClientIdTimeout: any;
-			let nextTimeout = 10;
-			waitForGaToLoad(postClientIdTimeout, nextTimeout);
-		});
+export function retrieveAndStoreClientId() {
+	let postClientIdTimeout: any;
+	//when GA first loads it may not have changed the cookie to accept _ga query param
+	//so we should wait 50ms after this
+	let nextTimeout = 50;
+	waitForGaToLoad(postClientIdTimeout, nextTimeout);
 }
 
 export const setCustomTask = () => {
