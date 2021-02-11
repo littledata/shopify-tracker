@@ -68,22 +68,20 @@ export const sendPageview = () => {
 
 export const trackEvents = () => {
 	/* run list, product, and clientID scripts everywhere */
-	if (LittledataLayer.ecommerce.impressions.length) {
-		productListClicks((product, self) => {
-			const productFromImpressions = LittledataLayer.ecommerce.impressions.find(
-				prod => prod.name === product.name && prod.handle === product.handle,
-			);
+	productListClicks((product, self) => {
+		const productFromImpressions = LittledataLayer.ecommerce.impressions.find(
+			prod => prod.name === product.name && prod.handle === product.handle,
+		);
 
-			const pos = productFromImpressions && productFromImpressions.list_position;
-			window.localStorage.setItem('position', String(pos));
+		const pos = productFromImpressions && productFromImpressions.list_position;
+		window.localStorage.setItem('position', String(pos));
 
-			sendSelectContentEvent(product, self);
-		});
+		sendSelectContentEvent(product, self);
+	});
 
-		productListViews((products: Impression[]) => {
-			sendViewItemListEvent(products);
-		});
-	}
+	productListViews((products: Impression[]) => {
+		sendViewItemListEvent(products);
+	});
 
 	const product = getProductDetail();
 	if (product) {

@@ -16,7 +16,7 @@ export default (impressionTag: impressionCallback) => {
 		const viewportHeight = window.innerHeight;
 		const viewportBottom = viewportTop + viewportHeight;
 		const products = getElementsByHref('/products/');
-		products.forEach(element => {
+		products.forEach((element, index) => {
 			if (!element) return;
 			const { handle, shopify_variant_id } = getHandleAndVariant(element.href);
 			if (productAlreadyViewed(handle)) return;
@@ -33,7 +33,7 @@ export default (impressionTag: impressionCallback) => {
 				const percentVisible = pixelsVisible / elementHeight;
 				if (percentVisible > 0.8) {
 					//prevent product from triggering again
-					impressionsToSend.push({ handle, shopify_variant_id });
+					impressionsToSend.push({ handle, shopify_variant_id, list_position: index + 1 });
 				}
 			}
 		});
@@ -51,9 +51,12 @@ export default (impressionTag: impressionCallback) => {
 					if (!previouslyFetched) {
 						impressionsSent.push(impression);
 					}
-					return previouslyFetched;
+					return {
+						...previouslyFetched,
+						list_position: impression.list_position,
+					};
 				})
-				.filter((variant: Impression) => variant);
+				.filter((variant: Impression) => variant && variant.id);
 			//maximum batch size is 20
 			chunk(variantsPreviouslyFetched, 20).forEach((batch: Impression[]) => impressionTag(batch));
 
@@ -95,7 +98,7 @@ export const getVariantsFromShopify = (impressions: ImpressionToSend[], impressi
 	Object.keys(handleGroups).forEach(handle =>
 		requestJSON(`/products/${handle}.json`).then((json: any) => {
 			const variantsToSend = handleGroups[handle].map((impression: ImpressionToSend) =>
-				convertShopifyProductToVariant(json.product, impression.shopify_variant_id),
+				convertShopifyProductToVariant(json.product, impression.shopify_variant_id, impression.list_position),
 			);
 			impressionTag(variantsToSend);
 			const { impressions } = LittledataLayer.ecommerce;

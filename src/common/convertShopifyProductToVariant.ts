@@ -1,11 +1,15 @@
 import { ShopifyProduct } from '../../shopifyProductInterface';
 
-export const convertShopifyProductToVariant = (product: ShopifyProduct, shopify_variant_id: null | string) => {
+export const convertShopifyProductToVariant = (
+	product: ShopifyProduct,
+	shopify_variant_id: null | string,
+	list_position?: number,
+) => {
 	const variant = shopify_variant_id
 		? product.variants.find(v => String(v.id) === shopify_variant_id)
 		: product.variants[0];
 
-	return {
+	const output: Impression = {
 		id: variant.sku || String(product.id),
 		name: product.title,
 		price: variant.price,
@@ -19,4 +23,10 @@ export const convertShopifyProductToVariant = (product: ShopifyProduct, shopify_
 		shopify_variant_id: String(variant.id),
 		compare_at_price: variant.compare_at_price,
 	};
+
+	if (list_position) {
+		output.list_position = list_position;
+	}
+
+	return output;
 };

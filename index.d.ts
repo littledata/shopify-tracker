@@ -10,7 +10,6 @@ export interface Detail {
 	list_name: string;
 	list: string; // duplicate property for GTM
 	handle: string;
-	list_position?: number;
 	shopify_product_id?: string;
 	shopify_variant_id?: string;
 	compare_at_price?: string;
@@ -169,6 +168,7 @@ declare global {
 	interface ImpressionToSend {
 		handle: string;
 		shopify_variant_id: string;
+		list_position: number;
 	}
 
 	var LittledataLayer: OwnLayer;
