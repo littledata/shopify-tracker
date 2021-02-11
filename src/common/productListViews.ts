@@ -1,7 +1,7 @@
 import { getElementsByHref } from './helpers';
 import { getQueryStringParam } from './getQueryStringParam';
 import { convertShopifyProductToVariant } from './convertShopifyProductToVariant';
-import { request } from './request';
+import { requestJSON } from './request';
 
 type impressionCallback = (impressionTag: Impression[]) => void;
 
@@ -93,21 +93,19 @@ export const getHandleAndVariant = (link: string) => {
 export const getVariantsFromShopify = (impressions: ImpressionToSend[], impressionTag: any) => {
 	const handleGroups = groupBy(impressions, 'handle');
 	Object.keys(handleGroups).forEach(handle =>
-		request(`/products/${handle}.json`)
-			.then((response: any) => response.json())
-			.then((json: any) => {
-				const variantsToSend = handleGroups[handle].map((impression: ImpressionToSend) =>
-					convertShopifyProductToVariant(json.product, impression.shopify_variant_id),
-				);
-				impressionTag(variantsToSend);
-				const { impressions } = LittledataLayer.ecommerce;
-				json.product.variants.forEach((variant: LooseObject) => {
-					const shopify_variant_id = String(variant.id);
-					if (!impressions.find(impression => impression.shopify_variant_id === shopify_variant_id)) {
-						impressions.push(convertShopifyProductToVariant(json.product, shopify_variant_id));
-					}
-				});
-			}),
+		requestJSON(`/products/${handle}.json`).then((json: any) => {
+			const variantsToSend = handleGroups[handle].map((impression: ImpressionToSend) =>
+				convertShopifyProductToVariant(json.product, impression.shopify_variant_id),
+			);
+			impressionTag(variantsToSend);
+			const { impressions } = LittledataLayer.ecommerce;
+			json.product.variants.forEach((variant: LooseObject) => {
+				const shopify_variant_id = String(variant.id);
+				if (!impressions.find(impression => impression.shopify_variant_id === shopify_variant_id)) {
+					impressions.push(convertShopifyProductToVariant(json.product, shopify_variant_id));
+				}
+			});
+		}),
 	);
 };
 

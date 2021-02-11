@@ -51,31 +51,29 @@ export const identifyCustomer = (customer: Customer) => {
 export const trackEvents = () => {
 	if (LittledataLayer) {
 		/* run list, product, and clientID scripts everywhere */
-		if (LittledataLayer.ecommerce.impressions.length) {
-			productListClicks(product => {
-				const productFromImpressions = LittledataLayer.ecommerce.impressions.find(
-					prod => prod.name === product.name && prod.handle === product.handle,
-				);
-				const pos = productFromImpressions && productFromImpressions.list_position;
-				window.localStorage.setItem('position', String(pos));
+		productListClicks(product => {
+			const productFromImpressions = LittledataLayer.ecommerce.impressions.find(
+				prod => prod.name === product.name && prod.handle === product.handle,
+			);
+			const pos = productFromImpressions && productFromImpressions.list_position;
+			window.localStorage.setItem('position', String(pos));
 
-				trackEvent('Product Clicked', {
-					...segmentProduct(product),
-					currency: LittledataLayer.ecommerce.currencyCode,
-					list_id: product.list,
-				});
+			trackEvent('Product Clicked', {
+				...segmentProduct(product),
+				currency: LittledataLayer.ecommerce.currencyCode,
+				list_id: product.list,
 			});
+		});
 
-			productListViews(products => {
-				const listId = products && products[0].list;
-				const segmentProducts = products.map(segmentProduct);
+		productListViews(products => {
+			const listId = products && products[0].list;
+			const segmentProducts = products.map(segmentProduct);
 
-				trackEvent('Product List Viewed', {
-					list_id: listId,
-					products: segmentProducts,
-				});
+			trackEvent('Product List Viewed', {
+				list_id: listId,
+				products: segmentProducts,
 			});
-		}
+		});
 
 		const productDetail = getProductDetail();
 		if (productDetail) {
