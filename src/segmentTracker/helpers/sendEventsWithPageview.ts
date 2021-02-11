@@ -1,4 +1,4 @@
-import { trackEvent } from '../combinedHelpers';
+import { trackEvent } from '../helpers';
 
 export const sendEventsWithPageview = (pathname: string) => {
 	if (pathname === '/cart') {
