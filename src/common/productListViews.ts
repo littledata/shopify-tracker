@@ -39,15 +39,26 @@ export default (impressionTag: impressionCallback) => {
 		});
 
 		if (impressionsToSend.length > 0) {
-			const impressionsSent = [...impressionsToSend];
-			//TO DO - if we fetched them previously, just send them now
+			const impressionsSent = [] as ImpressionToSend[];
+			//if we fetched them previously, just send them now
+			const variantsPreviouslyFetched = impressionsToSend
+				.map(impression => {
+					const previouslyFetched = impressions.find(
+						variant =>
+							variant.handle === impression.handle &&
+							variant.shopify_variant_id === impression.shopify_variant_id,
+					);
+					if (!previouslyFetched) {
+						impressionsSent.push(impression);
+					}
+					return previouslyFetched;
+				})
+				.filter((variant: Impression) => variant);
+			//maximum batch size is 20
+			chunk(variantsPreviouslyFetched, 20).forEach((batch: Impression[]) => impressionTag(batch));
+
 			impressionsToSend = [];
-			getVariantsFromShopify(impressionsSent).then(newVariants => {
-				impressions = [...newVariants, ...impressions];
-				//now send impressions to GA and dataLayer
-				//maximum batch size is 20
-				chunk(impressions, 20).forEach((batch: Impression[]) => impressionTag(batch));
-			});
+			getVariantsFromShopify(impressionsSent, impressionTag);
 		}
 	}
 
@@ -79,16 +90,33 @@ export const getHandleAndVariant = (link: string) => {
 	return { handle, shopify_variant_id };
 };
 
-export const getVariantsFromShopify = async (impressions: ImpressionToSend[]) => {
-	//TO DO - only fetch one product for multiple variants
-	const promises = impressions.map(impression =>
-		request(`/products/${impression.handle}.json`).then(async (response: any) => await response.json()),
-	);
-	const responses = await Promise.all(promises);
-	return impressions.map((impression, index) =>
-		convertShopifyProductToVariant(responses[index].product, impression.shopify_variant_id),
+export const getVariantsFromShopify = (impressions: ImpressionToSend[], impressionTag: any) => {
+	const handleGroups = groupBy(impressions, 'handle');
+	Object.keys(handleGroups).forEach(handle =>
+		request(`/products/${handle}.json`)
+			.then((response: any) => response.json())
+			.then((json: any) => {
+				const variantsToSend = handleGroups[handle].map((impression: ImpressionToSend) =>
+					convertShopifyProductToVariant(json.product, impression.shopify_variant_id),
+				);
+				impressionTag(variantsToSend);
+				const { impressions } = LittledataLayer.ecommerce;
+				json.product.variants.forEach((variant: LooseObject) => {
+					const shopify_variant_id = String(variant.id);
+					if (!impressions.find(impression => impression.shopify_variant_id === shopify_variant_id)) {
+						impressions.push(convertShopifyProductToVariant(json.product, shopify_variant_id));
+					}
+				});
+			}),
 	);
 };
 
 export const productAlreadyViewed = (handle: string) =>
 	LittledataLayer.ecommerce.impressions.find(product => product.handle == handle);
+
+const groupBy = (givenArray: any[], key: string) => {
+	return givenArray.reduce(function(rv, x) {
+		(rv[x[key]] = rv[x[key]] || []).push(x);
+		return rv;
+	}, {});
+};
