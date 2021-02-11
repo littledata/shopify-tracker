@@ -53,10 +53,12 @@ export const findDataLayerProduct = (link: string): Impression =>
 		return productLink ? productLink === p.handle : productLinkWithParams === p.handle;
 	});
 
+export const productUrlRegex = `^https?://${location.host}.*/products/`;
+
 export const productListClicks = (clickTag: ListClickCallback): void => {
 	/* product list clicks */
 	if (!LittledataLayer.productClicks) return;
-	getElementsByHref('/products/').forEach((element: TimeBombHTMLAnchor) => {
+	getElementsByHref(productUrlRegex).forEach((element: TimeBombHTMLAnchor) => {
 		element.addEventListener('click', function(ev) {
 			// only add event to products
 			const product = findDataLayerProduct(this.href);
@@ -224,7 +226,7 @@ export const trackSocialShares = (clickTag: (name?: string) => void) => {
 };
 
 export const validateLittledataLayer = () => {
-	window.LittledataScriptVersion = '10.0.5';
+	window.LittledataScriptVersion = '10.1';
 	if (!window.LittledataLayer) {
 		throw new Error('Aborting Littledata tracking as LittledataLayer was not found');
 	}

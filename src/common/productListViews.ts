@@ -1,4 +1,4 @@
-import { getElementsByHref } from './helpers';
+import { getElementsByHref, productUrlRegex } from './helpers';
 import { getQueryStringParam } from './getQueryStringParam';
 import { convertShopifyProductToVariant } from './convertShopifyProductToVariant';
 import { requestJSON } from './request';
@@ -7,6 +7,7 @@ type impressionCallback = (impressionTag: Impression[]) => void;
 
 export default (impressionTag: impressionCallback) => {
 	let waitForScroll = 0;
+	const allVariants = [] as Impression[];
 	LittledataLayer.ecommerce.impressionsToSend = LittledataLayer.ecommerce.impressionsToSend || [];
 	LittledataLayer.ecommerce.impressions = LittledataLayer.ecommerce.impressions || [];
 	let { impressionsToSend, impressions } = LittledataLayer.ecommerce;
@@ -15,7 +16,8 @@ export default (impressionTag: impressionCallback) => {
 		const viewportTop = document.documentElement.scrollTop;
 		const viewportHeight = window.innerHeight;
 		const viewportBottom = viewportTop + viewportHeight;
-		const products = getElementsByHref('/products/');
+		//prouduct links are always on the same domain
+		const products = getElementsByHref(productUrlRegex);
 		products.forEach((element, index) => {
 			if (!element) return;
 			const { handle, shopify_variant_id } = getHandleAndVariant(element.href);
@@ -57,11 +59,15 @@ export default (impressionTag: impressionCallback) => {
 					};
 				})
 				.filter((variant: Impression) => variant && variant.id);
+			LittledataLayer.ecommerce.impressions = [
+				...LittledataLayer.ecommerce.impressions,
+				...variantsPreviouslyFetched,
+			];
 			//maximum batch size is 20
 			chunk(variantsPreviouslyFetched, 20).forEach((batch: Impression[]) => impressionTag(batch));
 
 			impressionsToSend = [];
-			getVariantsFromShopify(impressionsSent, impressionTag);
+			getVariantsFromShopify(impressionsSent, impressionTag, allVariants);
 		}
 	}
 
@@ -93,22 +99,34 @@ export const getHandleAndVariant = (link: string) => {
 	return { handle, shopify_variant_id };
 };
 
-export const getVariantsFromShopify = (impressions: ImpressionToSend[], impressionTag: any) => {
+export const getVariantsFromShopify = (
+	impressions: ImpressionToSend[],
+	impressionTag: any,
+	allVariants: Impression[],
+) => {
 	const handleGroups = groupBy(impressions, 'handle');
 	Object.keys(handleGroups).forEach(handle =>
-		requestJSON(`/products/${handle}.json`).then((json: any) => {
-			const variantsToSend = handleGroups[handle].map((impression: ImpressionToSend) =>
-				convertShopifyProductToVariant(json.product, impression.shopify_variant_id, impression.list_position),
-			);
-			impressionTag(variantsToSend);
-			const { impressions } = LittledataLayer.ecommerce;
-			json.product.variants.forEach((variant: LooseObject) => {
-				const shopify_variant_id = String(variant.id);
-				if (!impressions.find(impression => impression.shopify_variant_id === shopify_variant_id)) {
-					impressions.push(convertShopifyProductToVariant(json.product, shopify_variant_id));
-				}
-			});
-		}),
+		requestJSON(`/products/${handle}.json`)
+			.then((json: any) => {
+				const variantsToSend = handleGroups[handle].map((impression: ImpressionToSend) =>
+					convertShopifyProductToVariant(
+						json.product,
+						impression.shopify_variant_id,
+						impression.list_position,
+					),
+				);
+				LittledataLayer.ecommerce.impressions = [...LittledataLayer.ecommerce.impressions, ...variantsToSend];
+				impressionTag(variantsToSend);
+				json.product.variants.forEach((variant: LooseObject) => {
+					const shopify_variant_id = String(variant.id);
+					if (!allVariants.find(impression => impression.shopify_variant_id === shopify_variant_id)) {
+						allVariants.push(convertShopifyProductToVariant(json.product, shopify_variant_id));
+					}
+				});
+			})
+			.catch(ex => {
+				console.debug('Littledata unable to fetch', handle, ex);
+			}),
 	);
 };
 
