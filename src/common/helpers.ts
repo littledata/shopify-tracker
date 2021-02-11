@@ -249,13 +249,10 @@ export function retrieveAndStoreClientId() {
 	waitForGaToLoad(postClientIdTimeout, nextTimeout);
 }
 
-export const setCustomTask = () => {
-	const trackers = window.ga && window.ga.getAll && window.ga.getAll();
-	if (!trackers || !trackers.length) return;
-
+export const setCustomTask = (tracker: any) => {
 	const MPEndpointLength = LittledataLayer.MPEndpoint && LittledataLayer.MPEndpoint.length;
 	if (MPEndpointLength) {
-		trackers[0].set('customTask', customTask(LittledataLayer.MPEndpoint));
+		tracker.set('customTask', customTask(LittledataLayer.MPEndpoint));
 	}
 };
 
@@ -275,7 +272,7 @@ function waitForGaToLoad(postClientIdTimeout: any, nextTimeout: number) {
 	// until after ga.getAll is available but before hit is sent
 	const trackers = window.ga && window.ga.getAll && window.ga.getAll();
 	if (trackers && trackers.length) {
-		setCustomTask();
+		setCustomTask(trackers[0]);
 		return setClientID(getGAClientId(trackers[0]), 'google');
 	}
 

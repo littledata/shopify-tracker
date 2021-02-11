@@ -27,14 +27,13 @@ export const initGtag = () => {
 		};
 	window.ga.l = +new Date();
 
-	retrieveAndStoreClientId(true);
-
 	// @ts-ignore
 	gtag('js', new Date());
 	gtag('config', LittledataLayer.webPropertyID, {
 		...getConfig(),
 		send_page_view: false,
 	});
+	retrieveAndStoreClientId();
 };
 
 export const sendPageview = () => {
