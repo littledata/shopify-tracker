@@ -2,6 +2,8 @@ import UrlChangeTracker from './UrlChangeTracker';
 import { clientID, CustomWindow } from '../../index';
 import { customTask } from '../gaTracker/customTask';
 import { getValidGAClientId } from '../common/getCookie';
+import { getHandleAndVariantFromProductLink } from './getHandleAndVariantFromProductLink';
+
 declare let window: CustomWindow;
 
 const maximumTimeout = 524288000; // about 6 hours in seconds
@@ -44,13 +46,11 @@ export const getElementsByHref = (regex: RegExp | string): HTMLAnchorElement[] =
 		.filter((element: HTMLAnchorElement) => element.href && r.test(element.href));
 };
 
-export const findDataLayerProduct = (link: string): Impression =>
+export const findDataLayerProduct = (handle: string, shopify_variant_id: string): Impression =>
 	LittledataLayer.ecommerce.impressions.find(p => {
-		const linkSplit = link.split('/products/');
-		const productLinkWithParams = linkSplit && linkSplit[1];
-		const productLinkWithParamsArray = productLinkWithParams.split('?');
-		const productLink = productLinkWithParamsArray && productLinkWithParamsArray[0];
-		return productLink ? productLink === p.handle : productLinkWithParams === p.handle;
+		return shopify_variant_id
+			? handle === p.handle && p.shopify_variant_id === shopify_variant_id
+			: handle === p.handle;
 	});
 
 export const productUrlRegex = `^https?://${location.host}.*/products/`;
@@ -60,8 +60,8 @@ export const productListClicks = (clickTag: ListClickCallback): void => {
 	if (!LittledataLayer.productClicks) return;
 	getElementsByHref(productUrlRegex).forEach((element: TimeBombHTMLAnchor) => {
 		element.addEventListener('click', function(ev) {
-			// only add event to products
-			const product = findDataLayerProduct(this.href);
+			const { handle, shopify_variant_id } = getHandleAndVariantFromProductLink(element.href);
+			const product = findDataLayerProduct(handle, shopify_variant_id);
 
 			if (product) {
 				ev.preventDefault();

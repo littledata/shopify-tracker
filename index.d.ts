@@ -164,6 +164,7 @@ declare global {
 		MPEndpoint?: string;
 		CDNForAnalyticsJS?: string;
 		cookieUpdate?: boolean;
+		debugMode?: boolean;
 	}
 
 	interface ImpressionToSend {

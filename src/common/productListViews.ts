@@ -1,6 +1,6 @@
 import { getElementsByHref, productUrlRegex } from './helpers';
-import { getQueryStringParam } from './getQueryStringParam';
 import { convertShopifyProductToVariant } from './convertShopifyProductToVariant';
+import { getHandleAndVariantFromProductLink } from './getHandleAndVariantFromProductLink';
 import { requestJSON } from './request';
 
 type impressionCallback = (impressionTag: Impression[]) => void;
@@ -10,7 +10,7 @@ export default (impressionTag: impressionCallback) => {
 	const allVariants = [] as Impression[];
 	LittledataLayer.ecommerce.impressionsToSend = LittledataLayer.ecommerce.impressionsToSend || [];
 	LittledataLayer.ecommerce.impressions = LittledataLayer.ecommerce.impressions || [];
-	let { impressionsToSend, impressions } = LittledataLayer.ecommerce;
+	let { impressionsToSend } = LittledataLayer.ecommerce;
 
 	function trackImpressions() {
 		const viewportTop = document.documentElement.scrollTop;
@@ -20,7 +20,7 @@ export default (impressionTag: impressionCallback) => {
 		const products = getElementsByHref(productUrlRegex);
 		products.forEach((element, index) => {
 			if (!element) return;
-			const { handle, shopify_variant_id } = getHandleAndVariant(element.href);
+			const { handle, shopify_variant_id } = getHandleAndVariantFromProductLink(element.href);
 			if (productAlreadyViewed(handle)) return;
 			const elementTop = window.pageYOffset + element.getBoundingClientRect().top;
 			const elementHeight = element.offsetHeight;
@@ -42,10 +42,10 @@ export default (impressionTag: impressionCallback) => {
 
 		if (impressionsToSend.length > 0) {
 			const impressionsSent = [] as ImpressionToSend[];
-			//if we fetched them previously, just send them now
+			// if we fetched them previously, just send them now
 			const variantsPreviouslyFetched = impressionsToSend
 				.map(impression => {
-					const previouslyFetched = impressions.find(
+					const previouslyFetched = allVariants.find(
 						variant =>
 							variant.handle === impression.handle &&
 							variant.shopify_variant_id === impression.shopify_variant_id,
@@ -59,10 +59,12 @@ export default (impressionTag: impressionCallback) => {
 					};
 				})
 				.filter((variant: Impression) => variant && variant.id);
+
 			LittledataLayer.ecommerce.impressions = [
 				...LittledataLayer.ecommerce.impressions,
 				...variantsPreviouslyFetched,
 			];
+			debugModeLog(variantsPreviouslyFetched);
 			//maximum batch size is 20
 			chunk(variantsPreviouslyFetched, 20).forEach((batch: Impression[]) => impressionTag(batch));
 
@@ -88,17 +90,6 @@ export default (impressionTag: impressionCallback) => {
 const chunk = (arr: Impression[], size: number) =>
 	Array.from({ length: Math.ceil(arr.length / size) }, (v, i) => arr.slice(i * size, i * size + size));
 
-export const getHandleAndVariant = (link: string) => {
-	let handle, shopify_variant_id;
-	const linkSplit = link.split('/products/');
-	const productLinkWithParams = linkSplit && linkSplit[1];
-	const productLinkWithParamsArray = productLinkWithParams.split('?');
-	if (!productLinkWithParamsArray) return { handle, shopify_variant_id };
-	shopify_variant_id = getQueryStringParam(productLinkWithParamsArray[1], 'variant');
-	handle = productLinkWithParamsArray[0];
-	return { handle, shopify_variant_id };
-};
-
 export const getVariantsFromShopify = (
 	impressions: ImpressionToSend[],
 	impressionTag: any,
@@ -116,6 +107,7 @@ export const getVariantsFromShopify = (
 					),
 				);
 				LittledataLayer.ecommerce.impressions = [...LittledataLayer.ecommerce.impressions, ...variantsToSend];
+				debugModeLog(variantsToSend);
 				impressionTag(variantsToSend);
 				json.product.variants.forEach((variant: LooseObject) => {
 					const shopify_variant_id = String(variant.id);
@@ -138,4 +130,11 @@ const groupBy = (givenArray: any[], key: string) => {
 		(rv[x[key]] = rv[x[key]] || []).push(x);
 		return rv;
 	}, {});
+};
+
+const debugModeLog = (variants: Impression[]) => {
+	if (LittledataLayer.debugMode === true) {
+		const handleArray = variants.map(v => `${v.handle} (${v.shopify_variant_id})`);
+		console.debug('Product list views tracked:', handleArray);
+	}
 };
