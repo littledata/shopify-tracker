@@ -9,6 +9,7 @@ import {
 } from '../common/helpers';
 import { addEmailToTrackEvents } from './helpers/addEmailToEvents';
 import { segmentProduct } from './helpers/segmentProduct';
+import { addTraitsToTrackEvents } from './helpers/addTraitsToEvents';
 
 import { getCookie } from '../common/getCookie';
 import productListViews from '../common/productListViews';
@@ -170,6 +171,7 @@ export const initSegment = () => {
 	analytics.SNIPPET_VERSION = '4.1.0';
 
 	analytics.addSourceMiddleware(addEmailToTrackEvents);
+	analytics.addSourceMiddleware(addTraitsToTrackEvents);
 	analytics.load(LittledataLayer.writeKey);
 	window.dataLayer = window.dataLayer || [];
 };
