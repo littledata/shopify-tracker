@@ -80,19 +80,20 @@ export const productListClicks = (clickTag: ListClickCallback): void => {
 
 let postCartTimeout: any;
 
+const attributes: Cart.Attributes = {}; //persist any previous attributes sent from this page
 const cartOnlyAttributes: LooseObject = {};
 export const setCartOnlyAttributes = (setAttributes: LooseObject) => {
 	const toSet = Object.keys(setAttributes);
+	let needsToSend = false;
 	toSet.forEach((name: string) => {
 		const fieldName = `littledata_${name}`;
 		if (cartOnlyAttributes[fieldName] !== setAttributes[name]) {
 			cartOnlyAttributes[fieldName] = setAttributes[name];
-			postCartToShopify(cartOnlyAttributes);
+			needsToSend = true;
 		}
 	});
+	if (needsToSend) postCartToShopify({ ...attributes, ...cartOnlyAttributes });
 };
-
-const attributes: Cart.Attributes = {}; //persist any previous attributes sent from this page
 
 function postClientID(clientId: string, platform: string, sendCartToLittledata: boolean) {
 	const attribute = `${platform}-clientID`;
