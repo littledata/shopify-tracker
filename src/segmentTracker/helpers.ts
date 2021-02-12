@@ -24,7 +24,7 @@ const getContext = () => {
 	};
 };
 
-const trackEvent = (eventName: string, params: object) => {
+export const trackEvent = (eventName: string, params: object) => {
 	// @ts-ignore
 	window.analytics.track(eventName, params, { context: getContext() });
 };
