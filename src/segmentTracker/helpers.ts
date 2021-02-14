@@ -1,18 +1,14 @@
 /* global LittledataLayer */
 import { CustomWindow } from '../..';
 declare let window: CustomWindow;
-import {
-	productListClicks,
-	trackProductImageClicks,
-	trackSocialShares,
-	setCartOnlyAttributes,
-} from '../common/helpers';
+import { trackProductImageClicks, trackSocialShares, setCartOnlyAttributes } from '../common/helpers';
 import { addEmailToTrackEvents } from './helpers/addEmailToEvents';
 import { segmentProduct } from './helpers/segmentProduct';
 
 import { getCookie } from '../common/getCookie';
 import productListViews from '../common/productListViews';
 import getProductDetail from '../common/getProductDetail';
+import { listClickCallback } from '../common/addClickListener';
 
 const getContext = () => {
 	return {
@@ -23,9 +19,9 @@ const getContext = () => {
 	};
 };
 
-const trackEvent = (eventName: string, params: object) => {
+const trackEvent = (eventName: string, params: object, callback?: any) => {
 	// @ts-ignore
-	window.analytics.track(eventName, params, { context: getContext() });
+	window.analytics.track(eventName, params, { context: getContext() }, callback);
 };
 
 export const identifyCustomer = (customer: Customer) => {
@@ -51,21 +47,25 @@ export const identifyCustomer = (customer: Customer) => {
 export const trackEvents = () => {
 	if (LittledataLayer) {
 		/* run list, product, and clientID scripts everywhere */
-		productListClicks(product => {
+		const clickTag = (product: Impression, element: TimeBombHTMLAnchor, openInNewTab: boolean) => {
 			const productFromImpressions = LittledataLayer.ecommerce.impressions.find(
 				prod => prod.name === product.name && prod.handle === product.handle,
 			);
 			const pos = productFromImpressions && productFromImpressions.list_position;
 			window.localStorage.setItem('position', String(pos));
 
-			trackEvent('Product Clicked', {
-				...segmentProduct(product),
-				currency: LittledataLayer.ecommerce.currencyCode,
-				list_id: product.list,
-			});
-		});
+			trackEvent(
+				'Product Clicked',
+				{
+					...segmentProduct(product),
+					currency: LittledataLayer.ecommerce.currencyCode,
+					list_id: product.list,
+				},
+				listClickCallback(element, openInNewTab),
+			);
+		};
 
-		productListViews(products => {
+		const impressionTag = (products: Impression[]) => {
 			const listId = products && products[0].list;
 			const segmentProducts = products.map(segmentProduct);
 
@@ -73,7 +73,9 @@ export const trackEvents = () => {
 				list_id: listId,
 				products: segmentProducts,
 			});
-		});
+		};
+
+		productListViews(impressionTag, clickTag);
 
 		const productDetail = getProductDetail();
 		if (productDetail) {

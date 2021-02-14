@@ -2,7 +2,6 @@ import UrlChangeTracker from './UrlChangeTracker';
 import { clientID, CustomWindow } from '../../index';
 import { customTask } from '../gaTracker/customTask';
 import { getValidGAClientId } from '../common/getCookie';
-import { getHandleAndVariantFromProductLink } from './getHandleAndVariantFromProductLink';
 
 declare let window: CustomWindow;
 
@@ -38,45 +37,20 @@ export const pageView = (fireTag: () => void): void => {
 	}
 };
 
-export const getElementsByHref = (regex: RegExp | string): HTMLAnchorElement[] => {
+export const getElementsByHref = (regex: RegExp | string): TimeBombHTMLAnchor[] => {
 	const htmlCollection = document.getElementsByTagName('a');
 	const r = new RegExp(regex);
 	return Array.prototype.slice
 		.call(htmlCollection)
-		.filter((element: HTMLAnchorElement) => element.href && r.test(element.href));
+		.filter(
+			(element: HTMLAnchorElement) =>
+				element.href && !element.className.includes('visually-hidden') && r.test(element.href),
+		);
 };
 
-export const findDataLayerProduct = (handle: string, shopify_variant_id: string): Impression =>
-	LittledataLayer.ecommerce.impressions.find(p => {
-		return shopify_variant_id
-			? handle === p.handle && p.shopify_variant_id === shopify_variant_id
-			: handle === p.handle;
-	});
-
-export const productUrlRegex = `^https?://${location.host}.*/products/`;
-
-export const productListClicks = (clickTag: ListClickCallback): void => {
-	/* product list clicks */
-	if (!LittledataLayer.productClicks) return;
-	getElementsByHref(productUrlRegex).forEach((element: TimeBombHTMLAnchor) => {
-		element.addEventListener('click', function(ev) {
-			const { handle, shopify_variant_id } = getHandleAndVariantFromProductLink(element.href);
-			const product = findDataLayerProduct(handle, shopify_variant_id);
-
-			if (product) {
-				ev.preventDefault();
-				/* only wait 1 second before redirecting */
-				element.timeout = window.setTimeout(function() {
-					document.location.href = element.href;
-				}, 1000);
-
-				clickTag(product, element);
-			} else {
-				document.location.href = element.href;
-			}
-		});
-	});
-};
+// look for /products/ in absolute or relative URLs
+// but not when the URL starts with cdn, or is in query param
+export const productUrlRegex = `^(?!\/\/cdn)[-\.:\/,a-z,A-Z]*\/products\/`;
 
 let postCartTimeout: any;
 

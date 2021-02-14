@@ -1,27 +1,27 @@
 import { getElementsByHref, productUrlRegex } from './helpers';
 import { convertShopifyProductToVariant } from './convertShopifyProductToVariant';
 import { getHandleAndVariantFromProductLink } from './getHandleAndVariantFromProductLink';
+import { addClickListener, findProductInArray } from './addClickListener';
 import { requestJSON } from './request';
 
 type impressionCallback = (impressionTag: Impression[]) => void;
 
-export default (impressionTag: impressionCallback) => {
+export default (impressionTag: impressionCallback, clickTag: ListClickCallback) => {
 	let waitForScroll = 0;
 	const allVariants = [] as Impression[];
 	LittledataLayer.ecommerce.impressionsToSend = LittledataLayer.ecommerce.impressionsToSend || [];
 	LittledataLayer.ecommerce.impressions = LittledataLayer.ecommerce.impressions || [];
-	let { impressionsToSend } = LittledataLayer.ecommerce;
+	let { impressionsToSend, impressions } = LittledataLayer.ecommerce;
 
 	function trackImpressions() {
 		const viewportTop = document.documentElement.scrollTop;
 		const viewportHeight = window.innerHeight;
 		const viewportBottom = viewportTop + viewportHeight;
-		//prouduct links are always on the same domain
 		const products = getElementsByHref(productUrlRegex);
 		products.forEach((element, index) => {
 			if (!element) return;
 			const { handle, shopify_variant_id } = getHandleAndVariantFromProductLink(element.href);
-			if (productAlreadyViewed(handle)) return;
+			if (productAlreadyViewed(handle, shopify_variant_id)) return;
 			const elementTop = window.pageYOffset + element.getBoundingClientRect().top;
 			const elementHeight = element.offsetHeight;
 			const elementBottom = elementTop + elementHeight;
@@ -34,8 +34,9 @@ export default (impressionTag: impressionCallback) => {
 				}
 				const percentVisible = pixelsVisible / elementHeight;
 				if (percentVisible > 0.8) {
-					//prevent product from triggering again
+					//prevent product view from triggering again, even before view is tracked
 					impressionsToSend.push({ handle, shopify_variant_id, list_position: index + 1 });
+					addClickListener(element, clickTag);
 				}
 			}
 		});
@@ -60,11 +61,8 @@ export default (impressionTag: impressionCallback) => {
 				})
 				.filter((variant: Impression) => variant && variant.id);
 
-			LittledataLayer.ecommerce.impressions = [
-				...LittledataLayer.ecommerce.impressions,
-				...variantsPreviouslyFetched,
-			];
-			debugModeLog(variantsPreviouslyFetched);
+			impressions = [...impressions, ...variantsPreviouslyFetched];
+			debugModeLog('from previous fetch', variantsPreviouslyFetched);
 			//maximum batch size is 20
 			chunk(variantsPreviouslyFetched, 20).forEach((batch: Impression[]) => impressionTag(batch));
 
@@ -107,7 +105,7 @@ export const getVariantsFromShopify = (
 					),
 				);
 				LittledataLayer.ecommerce.impressions = [...LittledataLayer.ecommerce.impressions, ...variantsToSend];
-				debugModeLog(variantsToSend);
+				debugModeLog('from product API', variantsToSend);
 				impressionTag(variantsToSend);
 				json.product.variants.forEach((variant: LooseObject) => {
 					const shopify_variant_id = String(variant.id);
@@ -122,8 +120,9 @@ export const getVariantsFromShopify = (
 	);
 };
 
-export const productAlreadyViewed = (handle: string) =>
-	LittledataLayer.ecommerce.impressions.find(product => product.handle == handle);
+export const productAlreadyViewed = (handle: string, shopify_variant_id: string) =>
+	findProductInArray(LittledataLayer.ecommerce.impressions, handle, shopify_variant_id) ||
+	findProductInArray(LittledataLayer.ecommerce.impressionsToSend, handle, shopify_variant_id);
 
 const groupBy = (givenArray: any[], key: string) => {
 	return givenArray.reduce(function(rv, x) {
@@ -132,9 +131,9 @@ const groupBy = (givenArray: any[], key: string) => {
 	}, {});
 };
 
-const debugModeLog = (variants: Impression[]) => {
-	if (LittledataLayer.debugMode === true) {
+const debugModeLog = (message: string, variants: Impression[]) => {
+	if (LittledataLayer.debug === true && variants.length) {
 		const handleArray = variants.map(v => `${v.handle} (${v.shopify_variant_id})`);
-		console.debug('Product list views tracked:', handleArray);
+		console.log(`Littledata product list views ${message}:`, handleArray);
 	}
 };

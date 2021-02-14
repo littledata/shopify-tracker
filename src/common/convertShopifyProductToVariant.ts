@@ -9,15 +9,16 @@ export const convertShopifyProductToVariant = (
 		? product.variants.find(v => String(v.id) === shopify_variant_id)
 		: product.variants[0];
 
+	const { pageType } = LittledataLayer;
+
 	const output: Impression = {
 		id: variant.sku || String(product.id),
 		name: product.title,
 		price: variant.price,
 		brand: product.vendor,
-		category: product.type,
+		category: product.type || 'all',
 		variant: variant.title,
-		list_name: document.location.pathname,
-		list: document.location.pathname, // duplicate property for GTM
+		list_name: pageType || document.location.pathname,
 		handle: product.handle,
 		shopify_product_id: String(product.id),
 		shopify_variant_id: String(variant.id),

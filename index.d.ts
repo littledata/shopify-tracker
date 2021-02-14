@@ -8,7 +8,7 @@ export interface Detail {
 	category: string;
 	variant: string;
 	list_name: string;
-	list: string; // duplicate property for GTM
+	list?: string; // duplicate property for GTM
 	handle: string;
 	list_position?: number;
 	shopify_product_id?: string;
@@ -164,7 +164,8 @@ declare global {
 		MPEndpoint?: string;
 		CDNForAnalyticsJS?: string;
 		cookieUpdate?: boolean;
-		debugMode?: boolean;
+		debug?: boolean;
+		pageType?: string;
 	}
 
 	interface ImpressionToSend {
@@ -190,7 +191,7 @@ declare global {
 		timeout: number;
 	}
 
-	type ListClickCallback = (foundProduct: Impression, self: TimeBombHTMLAnchor) => void;
+	type ListClickCallback = (foundProduct: Impression, element: TimeBombHTMLAnchor, openInNewTab: boolean) => void;
 
 	interface Customer {
 		accepts_marketing?: boolean;

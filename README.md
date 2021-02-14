@@ -30,24 +30,29 @@ The Google Analytics script iniatialises Google's [gtag library](https://develop
 
 The Segment script iniatialises Segment's [Analytics.js library](https://segment.com/docs/connections/sources/catalog/libraries/website/javascript/) on the page, so `analytics.track('Event action')` commands will queue for sending.
 
-
 ## Configuration
 
 The following fields of the `LittledataLayer` object allow for configuration of tracking features:
 
 ### For both Segment and Google Analytics
 
+**debug**
+
+Debug mode adds extra console logs to track how the script is performing.
+
+Deafult: `null` (boolean)
+
 **productClicks**
 
 By default our tracking code briefly interrupts a click on a product in a product list, in order to send the tracking event before the page reloads. If this is interfering with other apps or scripts you can turn off product list click tracking.
 
-Default: `true`
+Default: `true` (boolean)
 
 **productPageClicks**
 
 By default we track clicks on product images and social share buttons on the product details page. If this doesn't work with your theme you can opt out by setting this field to `false`.
 
-Default: `null`
+Default: `null` (boolean)
 
 **hideBranding**
 

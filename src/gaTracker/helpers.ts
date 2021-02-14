@@ -1,13 +1,8 @@
 import { Detail, GA4Product, CustomWindow } from '../..';
-import {
-	productListClicks,
-	removePii,
-	retrieveAndStoreClientId,
-	trackProductImageClicks,
-	trackSocialShares,
-} from '../common/helpers';
+import { removePii, retrieveAndStoreClientId, trackProductImageClicks, trackSocialShares } from '../common/helpers';
 import getProductDetail from '../common/getProductDetail';
 import productListViews from '../common/productListViews';
+import { listClickCallback } from '../common/addClickListener';
 import getConfig from '../common/getConfig';
 declare let window: CustomWindow;
 
@@ -68,7 +63,7 @@ export const sendPageview = () => {
 
 export const trackEvents = () => {
 	/* run list, product, and clientID scripts everywhere */
-	productListClicks((product, self) => {
+	const clickTag = (product: Impression, element: TimeBombHTMLAnchor, openInNewTab: boolean) => {
 		const productFromImpressions = LittledataLayer.ecommerce.impressions.find(
 			prod => prod.name === product.name && prod.handle === product.handle,
 		);
@@ -76,12 +71,12 @@ export const trackEvents = () => {
 		const pos = productFromImpressions && productFromImpressions.list_position;
 		window.localStorage.setItem('position', String(pos));
 
-		sendSelectContentEvent(product, self);
-	});
+		sendSelectContentEvent(product, element, openInNewTab);
+	};
 
 	productListViews((products: Impression[]) => {
 		sendViewItemListEvent(products);
-	});
+	}, clickTag);
 
 	const product = getProductDetail();
 	if (product) {
@@ -229,7 +224,7 @@ function sendViewItemEvent(product: Detail): void {
 	});
 }
 
-function sendSelectContentEvent(product: Detail, self: TimeBombHTMLAnchor): void {
+function sendSelectContentEvent(product: Detail, self: TimeBombHTMLAnchor, openInNewTab: boolean): void {
 	dataLayer.push({
 		event: 'select_content',
 		ecommerce: {
@@ -244,10 +239,7 @@ function sendSelectContentEvent(product: Detail, self: TimeBombHTMLAnchor): void
 		gtag('event', 'select_item', {
 			items: convertProductsToGa4Format(new Array(product), true),
 			send_to: LittledataLayer.measurementID,
-			event_callback() {
-				window.clearTimeout(self.timeout);
-				document.location.href = self.href;
-			},
+			event_callback: listClickCallback(self, openInNewTab),
 		});
 	}
 	if (hasGA3()) {
@@ -256,10 +248,7 @@ function sendSelectContentEvent(product: Detail, self: TimeBombHTMLAnchor): void
 			content_type: 'product',
 			items: [filterGAProductFields(product)],
 			send_to: LittledataLayer.webPropertyID,
-			event_callback() {
-				window.clearTimeout(self.timeout);
-				document.location.href = self.href;
-			},
+			event_callback: listClickCallback(self, openInNewTab),
 		});
 	}
 }
