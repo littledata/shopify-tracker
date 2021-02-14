@@ -4,6 +4,7 @@ declare let window: CustomWindow;
 import { trackProductImageClicks, trackSocialShares, setCartOnlyAttributes } from '../common/helpers';
 import { addEmailToTrackEvents } from './helpers/addEmailToEvents';
 import { segmentProduct } from './helpers/segmentProduct';
+import { addTraitsToTrackEvents } from './helpers/addTraitsToEvents';
 
 import { getCookie } from '../common/getCookie';
 import productListViews from '../common/productListViews';
@@ -19,8 +20,7 @@ const getContext = () => {
 	};
 };
 
-const trackEvent = (eventName: string, params: object, callback?: any) => {
-	// @ts-ignore
+export const trackEvent = (eventName: string, params: object, callback?: any) => {
 	window.analytics.track(eventName, params, { context: getContext() }, callback);
 };
 
@@ -170,6 +170,7 @@ export const initSegment = () => {
 	analytics.SNIPPET_VERSION = '4.1.0';
 
 	analytics.addSourceMiddleware(addEmailToTrackEvents);
+	analytics.addSourceMiddleware(addTraitsToTrackEvents);
 	analytics.load(LittledataLayer.writeKey);
 	window.dataLayer = window.dataLayer || [];
 };
