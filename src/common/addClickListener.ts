@@ -31,6 +31,13 @@ export const findProductInArray = (array: any[], handle: string, shopify_variant
 			: handle === p.handle;
 	});
 
+export const findProductIndexInArray = (array: any[], handle: string, shopify_variant_id: string): number =>
+	array.findIndex(p => {
+		return shopify_variant_id
+			? handle === p.handle && p.shopify_variant_id === shopify_variant_id
+			: handle === p.handle;
+	});
+
 const debugModeLog = (product: Impression) => {
 	if (LittledataLayer.debug === true) {
 		console.log(`Littledata tracking click on product ${product.handle} (${product.shopify_variant_id})`);

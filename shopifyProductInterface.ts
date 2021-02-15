@@ -1,43 +1,49 @@
 export interface ShopifyProduct {
-	body_html: string;
+	body_html?: string;
 	created_at: string;
 	handle: string;
-	id: string;
-	image: LooseObject;
-	images: LooseObject[];
+	id: number;
+	featured_image?: string;
+	images?: string[];
 	options: LooseObject[];
-	product_type: string;
+	product_type?: string;
 	published_at: string;
-	published_scope: string;
-	tags: string;
-	template_suffix: string;
+	published_scope?: string;
+	tags: string[];
+	template_suffix?: string;
 	title: string;
-	updated_at: string;
+	description: string;
+	updated_at?: string;
 	vendor?: string;
 	type?: string;
 	variants: ShopifyVariant[];
+	price_min: string;
+	price_max: string;
+	available: boolean;
+	compare_at_price?: string;
 }
 
 interface ShopifyVariant {
 	barcode: null | string;
-	compare_at_price: string;
-	created_at: string;
-	fulfillment_service: string;
+	compare_at_price: null | string;
+	created_at?: string;
+	fulfillment_service?: string;
 	grams: number;
 	id: number;
-	image_id: null | string;
+	image_id?: null | string;
 	inventory_management: string;
+	options: string[];
 	option1: string;
 	option2: string;
 	option3: null | string;
-	position: number;
+	position?: number;
 	price: string;
-	product_id: number;
+	product_id?: number;
 	requires_shipping: boolean;
-	sku: string;
+	sku: null | string;
 	taxable: boolean;
 	title: string;
-	updated_at: string;
+	updated_at?: string;
 	weight: number;
 	weight_unit: string;
 }

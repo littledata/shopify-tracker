@@ -9,7 +9,7 @@ export const convertShopifyProductToVariant = (
 		? product.variants.find(v => String(v.id) === shopify_variant_id)
 		: product.variants[0];
 
-	const { pageType } = LittledataLayer;
+	const { pageType } = window.LittledataLayer;
 
 	const output: Impression = {
 		id: variant.sku || String(product.id),

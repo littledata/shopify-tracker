@@ -1,7 +1,7 @@
 import { getElementsByHref, productUrlRegex } from './helpers';
 import { convertShopifyProductToVariant } from './convertShopifyProductToVariant';
 import { getHandleAndVariantFromProductLink } from './getHandleAndVariantFromProductLink';
-import { addClickListener, findProductInArray } from './addClickListener';
+import { addClickListener, findProductInArray, findProductIndexInArray } from './addClickListener';
 import { requestJSON } from './request';
 
 type impressionCallback = (impressionTag: Impression[]) => void;
@@ -9,65 +9,44 @@ type impressionCallback = (impressionTag: Impression[]) => void;
 export default (impressionTag: impressionCallback, clickTag: ListClickCallback) => {
 	let waitForScroll = 0;
 	const allVariants = [] as Impression[];
-	LittledataLayer.ecommerce.impressionsToSend = LittledataLayer.ecommerce.impressionsToSend || [];
-	LittledataLayer.ecommerce.impressions = LittledataLayer.ecommerce.impressions || [];
-	let { impressionsToSend, impressions } = LittledataLayer.ecommerce;
+	LittledataLayer.ecommerce.impressionsToSend = [];
+	// previous data layer versions pre-populated impressions, so wipe those
+	LittledataLayer.ecommerce.impressions = [];
+	let { impressionsToSend } = LittledataLayer.ecommerce;
 
 	function trackImpressions() {
-		const viewportTop = document.documentElement.scrollTop;
-		const viewportHeight = window.innerHeight;
-		const viewportBottom = viewportTop + viewportHeight;
 		const products = getElementsByHref(productUrlRegex);
 		products.forEach((element, index) => {
-			if (!element) return;
 			const { handle, shopify_variant_id } = getHandleAndVariantFromProductLink(element.href);
 			if (productAlreadyViewed(handle, shopify_variant_id)) return;
-			const elementTop = window.pageYOffset + element.getBoundingClientRect().top;
-			const elementHeight = element.offsetHeight;
-			const elementBottom = elementTop + elementHeight;
-			if (elementBottom >= viewportTop && elementTop < viewportBottom) {
-				let pixelsVisible = elementHeight;
-				if (elementTop - viewportTop < 0) {
-					pixelsVisible += elementTop - viewportTop;
-				} else if (viewportBottom - elementBottom < 0) {
-					pixelsVisible += viewportBottom - elementBottom;
-				}
-				const percentVisible = pixelsVisible / elementHeight;
-				if (percentVisible > 0.8) {
-					//prevent product view from triggering again, even before view is tracked
-					impressionsToSend.push({ handle, shopify_variant_id, list_position: index + 1 });
-					addClickListener(element, clickTag);
-				}
+			if (productIsVisible(element)) {
+				//prevent product view from triggering again, even before view is tracked
+				impressionsToSend.push({
+					handle,
+					shopify_variant_id,
+					list_position: index + 1,
+				});
+				addClickListener(element, clickTag);
 			}
 		});
 
 		if (impressionsToSend.length > 0) {
-			const impressionsSent = [] as ImpressionToSend[];
 			// if we fetched them previously, just send them now
 			const variantsPreviouslyFetched = impressionsToSend
 				.map(impression => {
-					const previouslyFetched = allVariants.find(
-						variant =>
-							variant.handle === impression.handle &&
-							variant.shopify_variant_id === impression.shopify_variant_id,
+					const previouslyFetched = findProductInArray(
+						allVariants,
+						impression.handle,
+						impression.shopify_variant_id,
 					);
-					if (!previouslyFetched) {
-						impressionsSent.push(impression);
-					}
 					return {
 						...previouslyFetched,
 						list_position: impression.list_position,
 					};
 				})
-				.filter((variant: Impression) => variant && variant.id);
-
-			impressions = [...impressions, ...variantsPreviouslyFetched];
-			debugModeLog('from previous fetch', variantsPreviouslyFetched);
-			//maximum batch size is 20
-			chunk(variantsPreviouslyFetched, 20).forEach((batch: Impression[]) => impressionTag(batch));
-
-			impressionsToSend = [];
-			getVariantsFromShopify(impressionsSent, impressionTag, allVariants);
+				.filter((impression: Impression) => impression && impression.id);
+			fireImpressionTag(variantsPreviouslyFetched, impressionTag);
+			getVariantsFromShopify(impressionsToSend, impressionTag, allVariants);
 		}
 	}
 
@@ -77,17 +56,48 @@ export default (impressionTag: impressionCallback, clickTag: ListClickCallback) 
 	}, 500); /* wait for user to see the products above the fold */
 
 	document.addEventListener('scroll', () => {
-		//assumes that people need 300ms after scrolling to register an impression
+		//assumes that people need 200ms after scrolling stops to register an impression
 		clearTimeout(waitForScroll);
 		waitForScroll = window.setTimeout(function() {
 			trackImpressions();
-		}, 300);
+		}, 200);
 	});
 };
 
-const chunk = (arr: Impression[], size: number) =>
-	Array.from({ length: Math.ceil(arr.length / size) }, (v, i) => arr.slice(i * size, i * size + size));
+const productIsVisible = (element: TimeBombHTMLAnchor) => {
+	const viewportTop = document.documentElement.scrollTop;
+	const viewportHeight = window.innerHeight;
+	const viewportBottom = viewportTop + viewportHeight;
+	const elementTop = window.pageYOffset + element.getBoundingClientRect().top;
+	const elementHeight = element.offsetHeight;
+	const elementBottom = elementTop + elementHeight;
+	if (elementBottom >= viewportTop && elementTop < viewportBottom) {
+		let pixelsVisible = elementHeight;
+		if (elementTop - viewportTop < 0) {
+			pixelsVisible += elementTop - viewportTop;
+		} else if (viewportBottom - elementBottom < 0) {
+			pixelsVisible += viewportBottom - elementBottom;
+		}
+		const percentVisible = pixelsVisible / elementHeight;
+		if (percentVisible > 0.8) {
+			return true;
+		}
+	}
+	return false;
+};
 
+const fireImpressionTag = (newImpressions: Impression[], impressionTag: impressionCallback) => {
+	if (!newImpressions.length) return;
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	let { impressionsToSend } = LittledataLayer.ecommerce;
+	LittledataLayer.ecommerce.impressions = [...LittledataLayer.ecommerce.impressions, ...newImpressions];
+	debugModeLog('from previous fetch', newImpressions);
+	newImpressions.forEach(v => {
+		const index = findProductIndexInArray(impressionsToSend, v.handle, v.shopify_variant_id);
+		impressionsToSend.splice(index, 1);
+	});
+	impressionTag(newImpressions);
+};
 export const getVariantsFromShopify = (
 	impressions: ImpressionToSend[],
 	impressionTag: any,
@@ -104,14 +114,11 @@ export const getVariantsFromShopify = (
 						impression.list_position,
 					),
 				);
-				LittledataLayer.ecommerce.impressions = [...LittledataLayer.ecommerce.impressions, ...variantsToSend];
-				debugModeLog('from product API', variantsToSend);
-				impressionTag(variantsToSend);
+				fireImpressionTag(variantsToSend, impressionTag);
 				json.product.variants.forEach((variant: LooseObject) => {
 					const shopify_variant_id = String(variant.id);
-					if (!allVariants.find(impression => impression.shopify_variant_id === shopify_variant_id)) {
-						allVariants.push(convertShopifyProductToVariant(json.product, shopify_variant_id));
-					}
+					if (findProductInArray(allVariants, json.product.handle, shopify_variant_id)) return;
+					allVariants.push(convertShopifyProductToVariant(json.product, shopify_variant_id));
 				});
 			})
 			.catch(ex => {
