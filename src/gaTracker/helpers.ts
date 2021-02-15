@@ -84,7 +84,7 @@ export const trackEvents = () => {
 		trackProductImageClicks(image => {
 			dataLayer.push({
 				event: 'product_image_click',
-				name: image.name,
+				name: image.id,
 				image_url: image.src,
 			});
 
@@ -101,7 +101,7 @@ export const trackEvents = () => {
 			if (hasGA3()) {
 				gtag('event', 'Product image click', {
 					event_category,
-					event_label: image.name,
+					event_label: image.id,
 					send_to: LittledataLayer.webPropertyID,
 				});
 			}

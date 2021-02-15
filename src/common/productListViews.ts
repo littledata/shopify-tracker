@@ -45,7 +45,7 @@ export default (impressionTag: impressionCallback, clickTag: ListClickCallback) 
 					};
 				})
 				.filter((impression: Impression) => impression && impression.id);
-			fireImpressionTag(variantsPreviouslyFetched, impressionTag);
+			fireImpressionTag(variantsPreviouslyFetched, impressionTag, 'from previous fetch');
 			getVariantsFromShopify(impressionsToSend, impressionTag, allVariants);
 		}
 	}
@@ -86,12 +86,12 @@ const productIsVisible = (element: TimeBombHTMLAnchor) => {
 	return false;
 };
 
-const fireImpressionTag = (newImpressions: Impression[], impressionTag: impressionCallback) => {
+const fireImpressionTag = (newImpressions: Impression[], impressionTag: impressionCallback, logMessage: string) => {
 	if (!newImpressions.length) return;
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	let { impressionsToSend } = LittledataLayer.ecommerce;
 	LittledataLayer.ecommerce.impressions = [...LittledataLayer.ecommerce.impressions, ...newImpressions];
-	debugModeLog('from previous fetch', newImpressions);
+	debugModeLog(logMessage, newImpressions);
 	newImpressions.forEach(v => {
 		const index = findProductIndexInArray(impressionsToSend, v.handle, v.shopify_variant_id);
 		impressionsToSend.splice(index, 1);
@@ -114,7 +114,7 @@ export const getVariantsFromShopify = (
 						impression.list_position,
 					),
 				);
-				fireImpressionTag(variantsToSend, impressionTag);
+				fireImpressionTag(variantsToSend, impressionTag, 'from products API');
 				json.product.variants.forEach((variant: LooseObject) => {
 					const shopify_variant_id = String(variant.id);
 					if (findProductInArray(allVariants, json.product.handle, shopify_variant_id)) return;
