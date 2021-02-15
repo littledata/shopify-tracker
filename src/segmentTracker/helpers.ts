@@ -20,7 +20,7 @@ const getContext = () => {
 			name: 'shopify_littledata',
 			version: window.LittledataScriptVersion,
 		},
-		traits: window.analytics.user && window.analytics.user().traits
+		traits: window.analytics.user && window.analytics.user().traits,
 	};
 };
 
