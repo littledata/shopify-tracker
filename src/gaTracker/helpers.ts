@@ -46,6 +46,7 @@ export const sendPageview = () => {
 		...getConfig(),
 		page_title,
 		page_location,
+		send_page_view: true,
 	});
 
 	dataLayer.push({
