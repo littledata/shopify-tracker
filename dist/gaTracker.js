@@ -87,7 +87,8 @@ exports.sendPageview = function () {
   var page_location = helpers_1.removePii(locationWithMedium);
   gtag('config', LittledataLayer.webPropertyID, _objectSpread({}, getConfig_1["default"](), {
     page_title: page_title,
-    page_location: page_location
+    page_location: page_location,
+    send_page_view: true
   }));
   dataLayer.push({
     event: 'pageview',
