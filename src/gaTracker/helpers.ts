@@ -53,7 +53,6 @@ export const sendPageview = () => {
 	const locationWithMedium = addUTMMediumIfMissing(document.location.href);
 	const page_location = removePii(locationWithMedium);
 
-
 	if (hasGA4()) {
 		gtag('config', LittledataLayer.measurementID, {
 			...getConfig(),
@@ -70,8 +69,6 @@ export const sendPageview = () => {
 			send_page_view: true,
 		});
 	}
-
-
 
 	dataLayer.push({
 		event: 'pageview',
