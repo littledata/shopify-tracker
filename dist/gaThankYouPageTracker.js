@@ -2,7 +2,7 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 9:
+/***/ 7:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -150,7 +150,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 
-var getConfig_1 = __importDefault(__webpack_require__(9));
+var getConfig_1 = __importDefault(__webpack_require__(7));
 
 var getQueryStringParam_1 = __webpack_require__(16);
 

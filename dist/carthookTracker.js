@@ -43,9 +43,7 @@ exports.getValidGAClientId = function () {
 };
 
 /***/ }),
-/* 7 */,
-/* 8 */,
-/* 9 */
+/* 7 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -122,6 +120,8 @@ exports.default = function () {
 };
 
 /***/ }),
+/* 8 */,
+/* 9 */,
 /* 10 */,
 /* 11 */,
 /* 12 */,
@@ -204,7 +204,7 @@ Object.defineProperty(exports, "__esModule", ({
 
 var getCookie_1 = __webpack_require__(6);
 
-var getConfig_1 = __importDefault(__webpack_require__(9));
+var getConfig_1 = __importDefault(__webpack_require__(7));
 
 exports.getWebPropertyIdPromise = function () {
   var baseUrl = getMonitorBaseUrl();

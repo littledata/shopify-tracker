@@ -729,7 +729,8 @@ exports.getValidGAClientId = function () {
 };
 
 /***/ }),
-/* 7 */
+/* 7 */,
+/* 8 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -762,7 +763,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -846,7 +847,6 @@ var chunk = function chunk(arr, size) {
 };
 
 /***/ }),
-/* 9 */,
 /* 10 */,
 /* 11 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
@@ -877,9 +877,9 @@ var segmentProduct_1 = __webpack_require__(13);
 
 var getCookie_1 = __webpack_require__(6);
 
-var productListViews_1 = __importDefault(__webpack_require__(8));
+var productListViews_1 = __importDefault(__webpack_require__(9));
 
-var getProductDetail_1 = __importDefault(__webpack_require__(7));
+var getProductDetail_1 = __importDefault(__webpack_require__(8));
 
 var getContext = function getContext() {
   return {
