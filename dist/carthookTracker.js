@@ -127,8 +127,7 @@ exports.default = function () {
 /* 12 */,
 /* 13 */,
 /* 14 */,
-/* 15 */,
-/* 16 */
+/* 15 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -138,15 +137,15 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 /* eslint-env browser */
 
-var getQueryStringParam_1 = __webpack_require__(17);
+var getQueryStringParam_1 = __webpack_require__(16);
 
-var helpers_1 = __webpack_require__(18);
+var helpers_1 = __webpack_require__(17);
 
-var sendCheckoutEvents_1 = __webpack_require__(19);
+var sendCheckoutEvents_1 = __webpack_require__(18);
 
-var sendThankYouEvents_1 = __webpack_require__(21);
+var sendThankYouEvents_1 = __webpack_require__(20);
 
-var sendUpsellEvents_1 = __webpack_require__(22);
+var sendUpsellEvents_1 = __webpack_require__(21);
 
 (function () {
   var webPropertyPromise = helpers_1.getWebPropertyIdPromise();
@@ -170,7 +169,7 @@ var sendUpsellEvents_1 = __webpack_require__(22);
 })();
 
 /***/ }),
-/* 17 */
+/* 16 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -187,7 +186,7 @@ exports.getQueryStringParam = function (url, param) {
 };
 
 /***/ }),
-/* 18 */
+/* 17 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -354,7 +353,7 @@ exports.sumShipping = function (shippingLines) {
 };
 
 /***/ }),
-/* 19 */
+/* 18 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -369,9 +368,9 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 
-var constants_1 = __webpack_require__(20);
+var constants_1 = __webpack_require__(19);
 
-var helpers_1 = __webpack_require__(18);
+var helpers_1 = __webpack_require__(17);
 
 var action = 'Checkout';
 
@@ -418,7 +417,7 @@ exports.sendCheckoutEvents = function (data) {
 };
 
 /***/ }),
-/* 20 */
+/* 19 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -429,7 +428,7 @@ Object.defineProperty(exports, "__esModule", ({
 exports.event_category = 'CartHook (Littledata)';
 
 /***/ }),
-/* 21 */
+/* 20 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -438,7 +437,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 
-var helpers_1 = __webpack_require__(18);
+var helpers_1 = __webpack_require__(17);
 
 exports.sendThankYouEvents = function (orderId) {
   if (!window.chData) {
@@ -483,7 +482,7 @@ exports.sendThankYouEvents = function (orderId) {
 };
 
 /***/ }),
-/* 22 */
+/* 21 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -492,9 +491,9 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 
-var constants_1 = __webpack_require__(20);
+var constants_1 = __webpack_require__(19);
 
-var helpers_1 = __webpack_require__(18);
+var helpers_1 = __webpack_require__(17);
 
 exports.sendUpsellDownsellEvents = function () {
   var transactionEventName = 'transactionBeforeUpsell';
@@ -586,7 +585,7 @@ exports.sendUpsellDownsellEvents = function () {
 /************************************************************************/
 /******/ 	// startup
 /******/ 	// Load entry module
-/******/ 	__webpack_require__(16);
+/******/ 	__webpack_require__(15);
 /******/ 	// This entry module used 'exports' so it can't be inlined
 /******/ })()
 ;
