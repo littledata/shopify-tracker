@@ -442,17 +442,23 @@ exports.productListClicks = function (clickTag) {
 };
 
 var postCartTimeout;
+var attributes = {}; //persist any previous attributes sent from this page
+
 var cartOnlyAttributes = {};
 
 exports.setCartOnlyAttributes = function (setAttributes) {
   var toSet = Object.keys(setAttributes);
+  var needsToSend = false;
   toSet.forEach(function (name) {
     var fieldName = "littledata_".concat(name);
-    cartOnlyAttributes[fieldName] = setAttributes[name];
-  });
-};
 
-var attributes = {}; //persist any previous attributes sent from this page
+    if (cartOnlyAttributes[fieldName] !== setAttributes[name]) {
+      cartOnlyAttributes[fieldName] = setAttributes[name];
+      needsToSend = true;
+    }
+  });
+  if (needsToSend) postCartToShopify(_objectSpread({}, attributes, {}, cartOnlyAttributes));
+};
 
 function postClientID(clientId, platform, sendCartToLittledata) {
   var attribute = "".concat(platform, "-clientID");
@@ -463,12 +469,7 @@ function postClientID(clientId, platform, sendCartToLittledata) {
 
   postCartTimeout = setTimeout(function () {
     attributes.littledata_updatedAt = new Date().getTime();
-    var cartUpdateReq = new XMLHttpRequest(); // new HttpRequest instance
-
-    cartUpdateReq.onload = function () {
-      var updatedCart = JSON.parse(cartUpdateReq.response);
-      LittledataLayer.cart = updatedCart;
-
+    postCartToShopify(attributes, function (updatedCart) {
       if (sendCartToLittledata) {
         postCartToLittledata(updatedCart);
       }
@@ -479,18 +480,28 @@ function postClientID(clientId, platform, sendCartToLittledata) {
       clientIDReq.send(JSON.stringify(_objectSpread({}, attributes, {
         cartID: "".concat(updatedCart.token)
       })));
-    };
-
-    cartUpdateReq.open('POST', '/cart/update.json');
-    cartUpdateReq.setRequestHeader('Content-Type', 'application/json');
-
-    var cartAttributes = _objectSpread({}, attributes, {}, cartOnlyAttributes);
-
-    cartUpdateReq.send(JSON.stringify({
-      attributes: cartAttributes
-    }));
+    });
   }, 1000);
 }
+
+var postCartToShopify = function postCartToShopify(attributes, callback) {
+  var cartUpdateReq = new XMLHttpRequest();
+
+  cartUpdateReq.onload = function () {
+    var updatedCart = JSON.parse(cartUpdateReq.response);
+    LittledataLayer.cart = updatedCart;
+
+    if (callback) {
+      callback(updatedCart);
+    }
+  };
+
+  cartUpdateReq.open('POST', '/cart/update.json');
+  cartUpdateReq.setRequestHeader('Content-Type', 'application/json');
+  cartUpdateReq.send(JSON.stringify({
+    attributes: attributes
+  }));
+};
 
 function postCartToLittledata(cart) {
   var httpRequest = new XMLHttpRequest(); // new HttpRequest instance
