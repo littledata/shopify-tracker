@@ -76,18 +76,6 @@ exports.initGtag = function () {
   helpers_1.retrieveAndStoreClientId(true); // @ts-ignore
 
   gtag('js', new Date());
-
-  if (hasGA4()) {
-    gtag('config', LittledataLayer.measurementID, _objectSpread({}, getConfig_1["default"](), {
-      send_page_view: false
-    }));
-  }
-
-  if (hasGA3()) {
-    gtag('config', LittledataLayer.webPropertyID, _objectSpread({}, getConfig_1["default"](), {
-      send_page_view: false
-    }));
-  }
 };
 
 exports.sendPageview = function () {
@@ -623,7 +611,7 @@ exports.trackSocialShares = function (clickTag) {
 };
 
 exports.validateLittledataLayer = function () {
-  window.LittledataScriptVersion = '10.0.6';
+  window.LittledataScriptVersion = '10.0.7';
 
   if (!window.LittledataLayer) {
     throw new Error('Aborting Littledata tracking as LittledataLayer was not found');
