@@ -1,4 +1,4 @@
-import { Detail, GA4Product, CustomWindow } from '../..';
+import { CustomWindow, Detail, GA4Product } from '../..';
 import {
 	productListClicks,
 	removePii,
@@ -6,9 +6,11 @@ import {
 	trackProductImageClicks,
 	trackSocialShares,
 } from '../common/helpers';
+
+import getConfig from '../common/getConfig';
 import getProductDetail from '../common/getProductDetail';
 import productListViews from '../common/productListViews';
-import getConfig from '../common/getConfig';
+
 declare let window: CustomWindow;
 
 const event_category = 'Shopify (Littledata)';
@@ -29,10 +31,6 @@ export const initGtag = () => {
 
 	// @ts-ignore
 	gtag('js', new Date());
-	gtag('config', LittledataLayer.webPropertyID, {
-		...getConfig(),
-		send_page_view: false,
-	});
 	retrieveAndStoreClientId();
 };
 
@@ -41,11 +39,22 @@ export const sendPageview = () => {
 	const locationWithMedium = addUTMMediumIfMissing(document.location.href);
 	const page_location = removePii(locationWithMedium);
 
-	gtag('config', LittledataLayer.webPropertyID, {
-		...getConfig(),
-		page_title,
-		page_location,
-	});
+	if (hasGA4()) {
+		gtag('config', LittledataLayer.measurementID, {
+			...getConfig(),
+			page_title,
+			page_location,
+			send_page_view: true,
+		});
+	}
+	if (hasGA3()) {
+		gtag('config', LittledataLayer.webPropertyID, {
+			...getConfig(),
+			page_title,
+			page_location,
+			send_page_view: true,
+		});
+	}
 
 	dataLayer.push({
 		event: 'pageview',

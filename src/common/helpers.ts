@@ -3,6 +3,7 @@ import { CustomWindow, clientID } from '../../index';
 import UrlChangeTracker from './UrlChangeTracker';
 import { customTask } from '../gaTracker/customTask';
 import { getValidGAClientId } from '../common/getCookie';
+
 declare let window: CustomWindow;
 
 const maximumTimeout = 524288000; // about 6 hours in seconds
@@ -79,16 +80,20 @@ export const productListClicks = (clickTag: ListClickCallback): void => {
 
 let postCartTimeout: any;
 
+const attributes: Cart.Attributes = {}; //persist any previous attributes sent from this page
 const cartOnlyAttributes: LooseObject = {};
 export const setCartOnlyAttributes = (setAttributes: LooseObject) => {
 	const toSet = Object.keys(setAttributes);
+	let needsToSend = false;
 	toSet.forEach((name: string) => {
 		const fieldName = `littledata_${name}`;
-		cartOnlyAttributes[fieldName] = setAttributes[name];
+		if (cartOnlyAttributes[fieldName] !== setAttributes[name]) {
+			cartOnlyAttributes[fieldName] = setAttributes[name];
+			needsToSend = true;
+		}
 	});
+	if (needsToSend) postCartToShopify({ ...attributes, ...cartOnlyAttributes });
 };
-
-const attributes: Cart.Attributes = {}; //persist any previous attributes sent from this page
 
 function postClientID(clientId: string, platform: string, sendCartToLittledata: boolean) {
 	const attribute = `${platform}-clientID`;
@@ -100,10 +105,7 @@ function postClientID(clientId: string, platform: string, sendCartToLittledata: 
 	// to be included in the same cart update
 	postCartTimeout = setTimeout(function() {
 		attributes.littledata_updatedAt = new Date().getTime();
-		const cartUpdateReq = new XMLHttpRequest(); // new HttpRequest instance
-		cartUpdateReq.onload = function() {
-			const updatedCart = JSON.parse(cartUpdateReq.response);
-			LittledataLayer.cart = updatedCart;
+		postCartToShopify(attributes, function(updatedCart: Cart.RootObject) {
 			if (sendCartToLittledata) {
 				postCartToLittledata(updatedCart);
 			}
@@ -116,20 +118,27 @@ function postClientID(clientId: string, platform: string, sendCartToLittledata: 
 					cartID: `${updatedCart.token}`,
 				}),
 			);
-		};
-		cartUpdateReq.open('POST', '/cart/update.json');
-		cartUpdateReq.setRequestHeader('Content-Type', 'application/json');
-		const cartAttributes: object = {
-			...attributes,
-			...cartOnlyAttributes,
-		};
-		cartUpdateReq.send(
-			JSON.stringify({
-				attributes: cartAttributes,
-			}),
-		);
+		});
 	}, 1000);
 }
+
+const postCartToShopify = (attributes: object, callback?: any) => {
+	const cartUpdateReq = new XMLHttpRequest();
+	cartUpdateReq.onload = () => {
+		const updatedCart = JSON.parse(cartUpdateReq.response);
+		LittledataLayer.cart = updatedCart;
+		if (callback) {
+			callback(updatedCart);
+		}
+	};
+	cartUpdateReq.open('POST', '/cart/update.json');
+	cartUpdateReq.setRequestHeader('Content-Type', 'application/json');
+	cartUpdateReq.send(
+		JSON.stringify({
+			attributes,
+		}),
+	);
+};
 
 function postCartToLittledata(cart: Cart.RootObject) {
 	const httpRequest = new XMLHttpRequest(); // new HttpRequest instance
