@@ -280,33 +280,20 @@ exports.advertiseLD = function (app) {
 };
 
 function retrieveAndStoreClientId() {
-  var withCustomTask = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-  var clientIdPromise = new Promise(function (resolve) {
-    // @ts-ignore
-    gtag('get', LittledataLayer.webPropertyID || LittledataLayer.measurementID, 'client_id', resolve);
-  });
-  return clientIdPromise.then(function (clientId) {
-    if (withCustomTask) {
-      exports.setCustomTask();
-    }
+  var postClientIdTimeout; //when GA first loads it may not have changed the cookie to accept _ga query param
+  //so we should wait 50ms after this
 
-    return setClientID(clientId, 'google');
-  })["catch"](function () {
-    var postClientIdTimeout;
-    var nextTimeout = 10;
-    waitForGaToLoad(postClientIdTimeout, nextTimeout);
-  });
+  var nextTimeout = 50;
+  waitForGaToLoad(postClientIdTimeout, nextTimeout);
 }
 
 exports.retrieveAndStoreClientId = retrieveAndStoreClientId;
 
-exports.setCustomTask = function () {
-  var trackers = window.ga && window.ga.getAll && window.ga.getAll();
-  if (!trackers || !trackers.length) return;
+exports.setCustomTask = function (tracker) {
   var MPEndpointLength = LittledataLayer.MPEndpoint && LittledataLayer.MPEndpoint.length;
 
   if (MPEndpointLength) {
-    trackers[0].set('customTask', customTask_1.customTask(LittledataLayer.MPEndpoint));
+    tracker.set('customTask', customTask_1.customTask(LittledataLayer.MPEndpoint));
   }
 };
 
@@ -327,7 +314,7 @@ function waitForGaToLoad(postClientIdTimeout, nextTimeout) {
   var trackers = window.ga && window.ga.getAll && window.ga.getAll();
 
   if (trackers && trackers.length) {
-    exports.setCustomTask();
+    exports.setCustomTask(trackers[0]);
     return setClientID(getGAClientId(trackers[0]), 'google');
   }
 

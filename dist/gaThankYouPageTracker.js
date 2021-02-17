@@ -46,7 +46,8 @@ exports.default = function () {
 
   var config = {
     linker: {
-      domains: [].concat(_toConsumableArray(exports.DEFAULT_LINKER_DOMAINS), _toConsumableArray(extraLinkerDomains))
+      domains: [].concat(_toConsumableArray(exports.DEFAULT_LINKER_DOMAINS), _toConsumableArray(extraLinkerDomains)),
+      accept_incoming: true
     },
     anonymize_ip: anonymizeIp === false ? false : true,
     allow_ad_personalization_signals: googleSignals === true ? true : false,
