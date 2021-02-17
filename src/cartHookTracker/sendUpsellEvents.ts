@@ -5,11 +5,11 @@ declare let window: CartHookWindow;
 
 export const sendUpsellDownsellEvents = () => {
 	let eventType = 'upsell';
-	let transactionEventName = 'transactionBeforeUpsell';
+	let transactionEventName = 'Transaction step completed';
 
 	const pageType = window.CHDataObject.partial_type;
 	if (pageType === 'downsell_page') {
-		transactionEventName = 'transactionBeforeDownsell';
+		transactionEventName = 'Transaction step completed';
 		eventType = 'downsell';
 	}
 	const viewEventName = `View ${eventType} offer`;
@@ -58,6 +58,6 @@ export const sendUpsellDownsellEvents = () => {
 	});
 	// GA event for Upsell Rejected step, triggered at the click of Decline button
 	rejectButton.addEventListener('click', function() {
-		gtag('event', `Rejected  ${eventType} offer`, params);
+		gtag('event', `Rejected ${eventType} offer`, params);
 	});
 };
