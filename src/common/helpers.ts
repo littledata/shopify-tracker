@@ -120,28 +120,32 @@ function postClientID(clientId: string, platform: string) {
 
 const getCart = (callback: CartCallback) => {
 	let { cart } = LittledataLayer;
-	const cartToken = cart && cart.token;
+	let cartToken = cart && cart.token;
 	if (cartToken) return callback(cart);
 	requestJSON('/cart.json')
 		.then((cart: Cart.RootObject) => {
 			postCartToLittledata(cart);
-			const cartID = cart.token;
-			if (!cartID) {
+			cartToken = cart.token;
+			if (!cartToken) {
 				throw new Error('cart had no cart token');
 			}
-			const clientIDReq = new XMLHttpRequest();
-			clientIDReq.open('POST', `${LittledataLayer.transactionWatcherURL}/v2/clientID/store`);
-			clientIDReq.setRequestHeader('Content-Type', 'application/json');
-			clientIDReq.send(
-				JSON.stringify({
-					...attributes,
-					cartID,
-				}),
-			);
+			postCartTokenWithAttributesToLittledata(cartToken);
 		})
 		.catch(error => {
 			console.error('Littledata tracker unable to fetch cart token from Shopify', error);
 		});
+};
+
+const postCartTokenWithAttributesToLittledata = (cartID: string) => {
+	const clientIDReq = new XMLHttpRequest();
+	clientIDReq.open('POST', `${LittledataLayer.transactionWatcherURL}/v2/clientID/store`);
+	clientIDReq.setRequestHeader('Content-Type', 'application/json');
+	clientIDReq.send(
+		JSON.stringify({
+			...attributes,
+			cartID,
+		}),
+	);
 };
 
 const postCartToShopify = (attributes: object, callback?: any) => {
