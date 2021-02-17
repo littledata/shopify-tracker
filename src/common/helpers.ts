@@ -1,13 +1,12 @@
-import { CustomWindow, clientID } from '../../index';
+import { CustomWindow } from '../../index';
 
 import UrlChangeTracker from './UrlChangeTracker';
 import { customTask } from '../gaTracker/customTask';
 import { getValidGAClientId } from '../common/getCookie';
-import { requestJSON } from './request';
 
 declare let window: CustomWindow;
 interface CartCallback {
-	(cart: Cart.RootObject): void;
+	(): Cart.RootObject;
 }
 
 const maximumTimeout = 524288000; // about 6 hours in seconds
@@ -81,116 +80,6 @@ export const productListClicks = (clickTag: ListClickCallback): void => {
 		});
 	});
 };
-
-let postCartTimeout: any;
-
-const attributes: Cart.Attributes = {}; //persist any previous attributes sent from this page
-const cartOnlyAttributes: LooseObject = {};
-export const setCartOnlyAttributes = (setAttributes: LooseObject) => {
-	const toSet = Object.keys(setAttributes);
-	let needsToSend = false;
-	toSet.forEach((name: string) => {
-		const fieldName = `littledata_${name}`;
-		if (cartOnlyAttributes[fieldName] !== setAttributes[name]) {
-			cartOnlyAttributes[fieldName] = setAttributes[name];
-			needsToSend = true;
-		}
-	});
-	if (needsToSend) postCartToShopify({ ...attributes, ...cartOnlyAttributes });
-};
-
-function postClientID(clientId: string, platform: string) {
-	const attribute = `${platform}-clientID`;
-	if (typeof clientId !== 'string' || clientId.length === 0) return;
-	(attributes as any)[attribute] = clientId;
-
-	clearTimeout(postCartTimeout);
-	// timeout is to allow 2 client IDs posted within 1 second
-	// to be included in the same cart update
-	postCartTimeout = setTimeout(function() {
-		// first check if attributes are already stored on the cart
-		getCart((cart: Cart.RootObject) => {
-			// @ts-ignore
-			if (cart.attributes[clientIDProperty]) return;
-			attributes.littledata_updatedAt = new Date().getTime();
-			postCartToShopify(attributes);
-		});
-	}, 1000);
-}
-
-const getCart = (callback: CartCallback) => {
-	let { cart } = LittledataLayer;
-	let cartToken = cart && cart.token;
-	if (cartToken) return callback(cart);
-	requestJSON('/cart.json')
-		.then((cart: Cart.RootObject) => {
-			postCartToLittledata(cart);
-			cartToken = cart.token;
-			if (!cartToken) {
-				throw new Error('cart had no cart token');
-			}
-			postCartTokenWithAttributesToLittledata(cartToken);
-		})
-		.catch(error => {
-			console.error('Littledata tracker unable to fetch cart token from Shopify', error);
-		});
-};
-
-const postCartTokenWithAttributesToLittledata = (cartID: string) => {
-	const clientIDReq = new XMLHttpRequest();
-	clientIDReq.open('POST', `${LittledataLayer.transactionWatcherURL}/v2/clientID/store`);
-	clientIDReq.setRequestHeader('Content-Type', 'application/json');
-	clientIDReq.send(
-		JSON.stringify({
-			...attributes,
-			cartID,
-		}),
-	);
-};
-
-const postCartToShopify = (attributes: object, callback?: any) => {
-	const cartUpdateReq = new XMLHttpRequest();
-	cartUpdateReq.onload = () => {
-		const updatedCart = JSON.parse(cartUpdateReq.response);
-		LittledataLayer.cart = updatedCart;
-		if (callback) {
-			callback(updatedCart);
-		}
-	};
-	cartUpdateReq.open('POST', '/cart/update.json');
-	cartUpdateReq.setRequestHeader('Content-Type', 'application/json');
-	cartUpdateReq.send(
-		JSON.stringify({
-			attributes,
-		}),
-	);
-};
-
-function postCartToLittledata(cart: Cart.RootObject) {
-	const { attributes } = cart;
-	const updatedAt = attributes.littledata_updatedAt;
-	if (!updatedAt) return;
-	const clientIdCreated = new Date(Number(updatedAt));
-
-	const expiryTime = 60 * 60 * 1000; // 60 minutes is the time cart is cached in Redis
-	const timePassed = Date.now() - Number(clientIdCreated);
-	// only need to resend cart if it's expired from our Redis cache
-	if (timePassed < expiryTime) return;
-	const httpRequest = new XMLHttpRequest(); // new HttpRequest instance
-	httpRequest.open('POST', `${LittledataLayer.transactionWatcherURL}/cart/store`);
-	httpRequest.setRequestHeader('Content-Type', 'application/json');
-	httpRequest.send(JSON.stringify(cart));
-}
-
-export function setClientID(clientId: string, platform: 'google' | 'segment' | 'email') {
-	const clientIDProperty = `${platform}-clientID` as clientID;
-
-	if (!LittledataLayer[clientIDProperty]) {
-		// set it on data layer, so subsequent setClientID call is ignored
-		LittledataLayer[clientIDProperty] = clientId;
-		postClientID(clientId, platform);
-	}
-}
 
 export function removePii(str: string): string {
 	const piiRegexs = [
