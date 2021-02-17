@@ -31,6 +31,19 @@ export const initGtag = () => {
 
 	// @ts-ignore
 	gtag('js', new Date());
+
+	if (hasGA4()) {
+		gtag('config', LittledataLayer.measurementID, {
+			...getConfig(),
+			send_page_view: false,
+		});
+	}
+	if (hasGA3()) {
+		gtag('config', LittledataLayer.webPropertyID, {
+			...getConfig(),
+			send_page_view: false,
+		});
+	}
 };
 
 export const sendPageview = () => {
