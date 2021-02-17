@@ -458,7 +458,7 @@ exports.sendThankYouEvents = function (orderId) {
     var transactionStepShipping = helpers_1.sumShipping(order.last_charged_shipping_rates);
     var transactionStepTotal = transactionStepTax + transactionStepSubTotal + transactionStepShipping;
     window.dataLayer.push({
-      event: 'transactionStepComplete',
+      event: 'Transaction step completed',
       chTransactionId: order.carthook_order_id,
       transactionStepSubTotal: transactionStepSubTotal,
       transactionStepTotal: transactionStepTotal,
@@ -471,7 +471,7 @@ exports.sendThankYouEvents = function (orderId) {
 
   if (lineItems.length > 0) {
     window.dataLayer.push({
-      event: 'transactionComplete',
+      event: 'Transaction completed',
       transactionId: order[orderId],
       transactionSubTotal: helpers_1.sumProductSubtotal(lineItems),
       transactionTotal: order.total_price,
@@ -497,22 +497,24 @@ var constants_1 = __webpack_require__(19);
 var helpers_1 = __webpack_require__(17);
 
 exports.sendUpsellDownsellEvents = function () {
-  var transactionEventName = 'transactionBeforeUpsell';
-  var viewEventName = 'View upsell offer';
+  var eventType = 'upsell';
+  var transactionEventName = 'Transaction step completed';
   var pageType = window.CHDataObject.partial_type;
 
   if (pageType === 'downsell_page') {
-    transactionEventName = 'transactionBeforeDownsell';
-    viewEventName = 'View downsell offer';
+    transactionEventName = 'Transaction step completed';
+    eventType = 'downsell';
   }
 
+  var viewEventName = "View ".concat(eventType, " offer");
   var acceptButton = document.querySelector('.ch-accept-button'); // HTML selector for Accept button
 
   var rejectButton = document.querySelector('.ch-decline-button'); // HTML selector for Decline button
 
   var order = window.chData.order;
   var orderId = order.carthook_order_id;
-  var upsellProduct = window.chData.cart_data.line_items[0];
+  var upsellItems = helpers_1.convertToGtagProducts(window.chData.cart_data.line_items);
+  var upsellProduct = upsellItems[0];
   var lastChargedPage = window.chData.last_charged_page_type;
   var value = order.total_price; // Tracking transaction from the Checkout page, before upsell/downsell
 
@@ -540,7 +542,7 @@ exports.sendUpsellDownsellEvents = function () {
     });
   }
 
-  var event_label = upsellProduct.title;
+  var event_label = upsellProduct.id;
   var params = {
     event_category: constants_1.event_category,
     event_label: event_label
@@ -549,11 +551,11 @@ exports.sendUpsellDownsellEvents = function () {
   gtag('event', viewEventName, params); // GA event for Upsell Accepted step, triggered at the click of Accept button
 
   acceptButton.addEventListener('click', function () {
-    gtag('event', 'Accept offer', params);
+    gtag('event', "Accepted ".concat(eventType, " offer"), params);
   }); // GA event for Upsell Rejected step, triggered at the click of Decline button
 
   rejectButton.addEventListener('click', function () {
-    gtag('event', 'Reject offer', params);
+    gtag('event', "Rejected ".concat(eventType, " offer"), params);
   });
 };
 
