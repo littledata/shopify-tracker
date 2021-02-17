@@ -29,8 +29,6 @@ export const initGtag = () => {
 		};
 	window.ga.l = +new Date();
 
-	retrieveAndStoreClientId(true);
-
 	// @ts-ignore
 	gtag('js', new Date());
 };
@@ -56,6 +54,7 @@ export const sendPageview = () => {
 			send_page_view: true,
 		});
 	}
+	retrieveAndStoreClientId();
 
 	dataLayer.push({
 		event: 'pageview',
