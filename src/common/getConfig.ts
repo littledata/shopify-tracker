@@ -33,6 +33,7 @@ export default (): Gtag.CustomParams => {
 	const config: Gtag.CustomParams = {
 		linker: {
 			domains: [...DEFAULT_LINKER_DOMAINS, ...extraLinkerDomains],
+			accept_incoming: true,
 		},
 		anonymize_ip: anonymizeIp === false ? false : true, //default true
 		allow_ad_personalization_signals: googleSignals === true ? true : false, //default false
