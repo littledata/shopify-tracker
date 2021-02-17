@@ -60,9 +60,9 @@ const getCart = async (): Promise<Cart.RootObject> => {
 };
 
 const postCartToShopify = async (attributes: object) => {
-	const updatedCart = await postJSON('/cart/update.json', attributes) as Cart.RootObject
-	LittledataLayer.cart = updatedCart
-	return updatedCart
+	const updatedCart = (await postJSON('/cart/update.json', attributes)) as Cart.RootObject;
+	LittledataLayer.cart = updatedCart;
+	return updatedCart;
 };
 
 const postCartToLittledata = async (cart: Cart.RootObject) => {
@@ -75,14 +75,14 @@ const postCartToLittledata = async (cart: Cart.RootObject) => {
 	const timePassed = Date.now() - Number(clientIdCreated);
 	// only need to resend cart if it's expired from our Redis cache
 	if (timePassed < expiryTime) return;
-	const url = `${LittledataLayer.transactionWatcherURL}/cart/store`
-	await postJSON(url, cart)
-}
+	const url = `${LittledataLayer.transactionWatcherURL}/cart/store`;
+	await postJSON(url, cart);
+};
 
 const postCartTokenClientIdToLittledata = async (cartID: string) => {
-	const url = `${LittledataLayer.transactionWatcherURL}/v2/clientID/store`
+	const url = `${LittledataLayer.transactionWatcherURL}/v2/clientID/store`;
 	await postJSON(url, {
 		...attributes,
 		cartID,
-	})
+	});
 };

@@ -15,7 +15,7 @@ export const getJSON = (url: string) => {
 };
 
 export const postJSON = (url: string, body: object) => {
-	return new Promise((resolve,reject) => {
+	return new Promise((resolve, reject) => {
 		const xhr = new XMLHttpRequest();
 		xhr.onload = () => {
 			if (xhr.status >= 200 && xhr.status < 300) {
@@ -28,5 +28,5 @@ export const postJSON = (url: string, body: object) => {
 		xhr.open('POST', url);
 		xhr.setRequestHeader('Content-Type', 'application/json');
 		xhr.send(JSON.stringify(body));
-	})
-}
+	});
+};

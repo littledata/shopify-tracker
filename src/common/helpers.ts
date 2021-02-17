@@ -3,6 +3,7 @@ import { CustomWindow } from '../../index';
 import UrlChangeTracker from './UrlChangeTracker';
 import { customTask } from '../gaTracker/customTask';
 import { getValidGAClientId } from '../common/getCookie';
+import { setClientID } from './setClientId';
 
 declare let window: CustomWindow;
 interface CartCallback {
