@@ -6,7 +6,7 @@ import { getValidGAClientId } from '../common/getCookie';
 import { requestJSON } from './request';
 
 declare let window: CustomWindow;
-interface cartCallback {
+interface CartCallback {
 	(cart: Cart.RootObject): void;
 }
 
@@ -118,7 +118,7 @@ function postClientID(clientId: string, platform: string) {
 	}, 1000);
 }
 
-const getCart = (callback: cartCallback) => {
+const getCart = (callback: CartCallback) => {
 	let { cart } = LittledataLayer;
 	const cartToken = cart && cart.token;
 	if (cartToken) return callback(cart);
@@ -212,16 +212,6 @@ export const guid: string = (function() {
 	}
 	return `GA1.2.${s10()}.${s10()}`;
 })();
-
-// const createCookie = (name, value, days) => {
-// 	let expires = ''
-// 	if (days) {
-// 		const date = new Date();
-// 		date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-// 		expires = `; expires=${date.toGMTString()}`
-// 	}
-// 	document.cookie = `${name}=${value}${expires}; path=/;`
-// }
 
 export const trackProductImageClicks = (clickTag: (image: HTMLImageElement) => void) => {
 	if (LittledataLayer.productPageClicks === false) return false;
