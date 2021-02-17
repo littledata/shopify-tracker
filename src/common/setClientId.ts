@@ -1,16 +1,18 @@
-import { clientID } from '../../index';
+import { clientID, CustomWindow } from '../../index';
 import { getJSON, postJSON } from './httpRequest';
+
+declare let window: CustomWindow;
 
 let postCartTimeout: any;
 
 const attributes: Cart.Attributes = {}; //persist any previous attributes sent from this page
 const cartOnlyAttributes: LooseObject = {};
 
-export function setClientID(clientId: string, platform: 'google' | 'segment' | 'email') {
+export const setClientID = (clientId: string, platform: 'google' | 'segment' | 'email') => {
 	const clientIDProperty = `${platform}-clientID` as clientID;
 
-	if (LittledataLayer[clientIDProperty]) return;
-	LittledataLayer[clientIDProperty] = clientId;
+	if (window.LittledataLayer[clientIDProperty]) return;
+	window.LittledataLayer[clientIDProperty] = clientId;
 	if (typeof clientId !== 'string' || clientId.length === 0) return;
 	(attributes as any)[clientIDProperty] = clientId;
 
@@ -25,7 +27,7 @@ export function setClientID(clientId: string, platform: 'google' | 'segment' | '
 		attributes.littledata_updatedAt = new Date().getTime();
 		postCartToShopify(attributes);
 	}, 1000);
-}
+};
 
 export const setCartOnlyAttributes = (setAttributes: LooseObject) => {
 	const toSet = Object.keys(setAttributes);
@@ -40,7 +42,7 @@ export const setCartOnlyAttributes = (setAttributes: LooseObject) => {
 	if (needsToSend) postCartToShopify({ ...attributes, ...cartOnlyAttributes });
 };
 
-const getCart = async (): Promise<Cart.RootObject> => {
+export const getCart = async (): Promise<Cart.RootObject> => {
 	let { cart } = LittledataLayer;
 	let cartToken = cart && cart.token;
 	if (cartToken) return cart;
