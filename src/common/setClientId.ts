@@ -1,5 +1,5 @@
 import { clientID } from '../../index';
-import { requestJSON } from './request';
+import { getJSON, postJSON } from './httpRequest';
 
 let postCartTimeout: any;
 
@@ -45,7 +45,7 @@ const getCart = async (): Promise<Cart.RootObject> => {
 	let cartToken = cart && cart.token;
 	if (cartToken) return cart;
 	try {
-		cart = (await requestJSON('/cart.json')) as Cart.RootObject;
+		cart = (await getJSON('/cart.json')) as Cart.RootObject;
 	} catch (error) {
 		console.error('Littledata tracker unable to fetch cart token from Shopify', error);
 		return;
@@ -59,25 +59,13 @@ const getCart = async (): Promise<Cart.RootObject> => {
 	return cart;
 };
 
-const postCartToShopify = (attributes: object, callback?: any) => {
-	const cartUpdateReq = new XMLHttpRequest();
-	cartUpdateReq.onload = () => {
-		const updatedCart = JSON.parse(cartUpdateReq.response);
-		LittledataLayer.cart = updatedCart;
-		if (callback) {
-			callback(updatedCart);
-		}
-	};
-	cartUpdateReq.open('POST', '/cart/update.json');
-	cartUpdateReq.setRequestHeader('Content-Type', 'application/json');
-	cartUpdateReq.send(
-		JSON.stringify({
-			attributes,
-		}),
-	);
+const postCartToShopify = async (attributes: object) => {
+	const updatedCart = await postJSON('/cart/update.json', attributes) as Cart.RootObject
+	LittledataLayer.cart = updatedCart
+	return updatedCart
 };
 
-function postCartToLittledata(cart: Cart.RootObject) {
+const postCartToLittledata = async (cart: Cart.RootObject) => {
 	const { attributes } = cart;
 	const updatedAt = attributes.littledata_updatedAt;
 	if (!updatedAt) return;
@@ -87,20 +75,14 @@ function postCartToLittledata(cart: Cart.RootObject) {
 	const timePassed = Date.now() - Number(clientIdCreated);
 	// only need to resend cart if it's expired from our Redis cache
 	if (timePassed < expiryTime) return;
-	const httpRequest = new XMLHttpRequest(); // new HttpRequest instance
-	httpRequest.open('POST', `${LittledataLayer.transactionWatcherURL}/cart/store`);
-	httpRequest.setRequestHeader('Content-Type', 'application/json');
-	httpRequest.send(JSON.stringify(cart));
+	const url = `${LittledataLayer.transactionWatcherURL}/cart/store`
+	await postJSON(url, cart)
 }
 
-const postCartTokenClientIdToLittledata = (cartID: string) => {
-	const clientIDReq = new XMLHttpRequest();
-	clientIDReq.open('POST', `${LittledataLayer.transactionWatcherURL}/v2/clientID/store`);
-	clientIDReq.setRequestHeader('Content-Type', 'application/json');
-	clientIDReq.send(
-		JSON.stringify({
-			...attributes,
-			cartID,
-		}),
-	);
+const postCartTokenClientIdToLittledata = async (cartID: string) => {
+	const url = `${LittledataLayer.transactionWatcherURL}/v2/clientID/store`
+	await postJSON(url, {
+		...attributes,
+		cartID,
+	})
 };
