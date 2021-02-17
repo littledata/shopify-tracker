@@ -31,7 +31,6 @@ export const initGtag = () => {
 
 	// @ts-ignore
 	gtag('js', new Date());
-	retrieveAndStoreClientId();
 };
 
 export const sendPageview = () => {
@@ -55,6 +54,7 @@ export const sendPageview = () => {
 			send_page_view: true,
 		});
 	}
+	retrieveAndStoreClientId();
 
 	dataLayer.push({
 		event: 'pageview',
