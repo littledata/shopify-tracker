@@ -20,10 +20,11 @@ const getContext = () => {
 			name: 'shopify_littledata',
 			version: window.LittledataScriptVersion,
 		},
+		traits: window.analytics.user && window.analytics.user().traits,
 	};
 };
 
-const trackEvent = (eventName: string, params: object) => {
+export const trackEvent = (eventName: string, params: object) => {
 	// @ts-ignore
 	window.analytics.track(eventName, params, { context: getContext() });
 };
