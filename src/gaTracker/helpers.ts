@@ -34,10 +34,18 @@ export const initGtag = () => {
 
 	// @ts-ignore
 	gtag('js', new Date());
-	gtag('config', LittledataLayer.webPropertyID, {
-		...getConfig(),
-		send_page_view: false,
-	});
+	if (hasGA3()) {
+		gtag('config', LittledataLayer.webPropertyID, {
+			...getConfig(),
+			send_page_view: false,
+		});
+	}
+	if (hasGA4()) {
+		gtag('config', LittledataLayer.measurementID, {
+			...getConfig(),
+			send_page_view: false,
+		});
+	}
 };
 
 export const sendPageview = () => {
@@ -45,11 +53,22 @@ export const sendPageview = () => {
 	const locationWithMedium = addUTMMediumIfMissing(document.location.href);
 	const page_location = removePii(locationWithMedium);
 
-	gtag('config', LittledataLayer.webPropertyID, {
-		...getConfig(),
-		page_title,
-		page_location,
-	});
+	if (hasGA3()) {
+		gtag('config', LittledataLayer.webPropertyID, {
+			...getConfig(),
+			send_page_view: true,
+			page_title,
+			page_location,
+		});
+	}
+	if (hasGA4()) {
+		gtag('config', LittledataLayer.measurementID, {
+			...getConfig(),
+			send_page_view: true,
+			page_title,
+			page_location,
+		});
+	}
 
 	dataLayer.push({
 		event: 'pageview',
