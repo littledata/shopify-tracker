@@ -1,5 +1,5 @@
 import { clientID, CustomWindow } from '../../index';
-import { getJSON, postJSON } from './httpRequest';
+import { httpRequest } from './httpRequest';
 
 declare let window: CustomWindow;
 
@@ -47,7 +47,7 @@ export const getCart = async (): Promise<Cart.RootObject> => {
 	let cartToken = cart && cart.token;
 	if (cartToken) return cart;
 	try {
-		cart = (await getJSON('/cart.json')) as Cart.RootObject;
+		cart = (await httpRequest.getJSON('/cart.json')) as Cart.RootObject;
 	} catch (error) {
 		console.error('Littledata tracker unable to fetch cart token from Shopify', error);
 		return;
@@ -62,7 +62,7 @@ export const getCart = async (): Promise<Cart.RootObject> => {
 };
 
 const postCartToShopify = async (attributes: object) => {
-	const updatedCart = (await postJSON('/cart/update.json', attributes)) as Cart.RootObject;
+	const updatedCart = (await httpRequest.postJSON('/cart/update.json', attributes)) as Cart.RootObject;
 	LittledataLayer.cart = updatedCart;
 	return updatedCart;
 };
@@ -78,12 +78,12 @@ const postCartToLittledata = async (cart: Cart.RootObject) => {
 	// only need to resend cart if it's expired from our Redis cache
 	if (timePassed < expiryTime) return;
 	const url = `${LittledataLayer.transactionWatcherURL}/cart/store`;
-	await postJSON(url, cart);
+	await httpRequest.postJSON(url, cart);
 };
 
 const postCartTokenClientIdToLittledata = async (cartID: string) => {
 	const url = `${LittledataLayer.transactionWatcherURL}/v2/clientID/store`;
-	await postJSON(url, {
+	await httpRequest.postJSON(url, {
 		...attributes,
 		cartID,
 	});
