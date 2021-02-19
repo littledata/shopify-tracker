@@ -1,8 +1,4 @@
-/* global LittledataLayer */
-declare let window: CustomWindow;
-
-import { Detail, GA4Product } from '../..';
-import { getCookie, getValidGAClientId } from '../common/getCookie';
+import { CustomWindow, Detail, GA4Product } from '../..';
 import {
 	productListClicks,
 	removePii,
@@ -11,8 +7,11 @@ import {
 	trackSocialShares,
 } from '../common/helpers';
 
+import getConfig from '../common/getConfig';
 import getProductDetail from '../common/getProductDetail';
 import productListViews from '../common/productListViews';
+
+declare let window: CustomWindow;
 
 const event_category = 'Shopify (Littledata)';
 
@@ -30,14 +29,21 @@ export const initGtag = () => {
 		};
 	window.ga.l = +new Date();
 
-	retrieveAndStoreClientId(true);
-
 	// @ts-ignore
 	gtag('js', new Date());
-	gtag('config', LittledataLayer.webPropertyID, {
-		...getConfig(),
-		send_page_view: false,
-	});
+
+	if (hasGA4()) {
+		gtag('config', LittledataLayer.measurementID, {
+			...getConfig(),
+			send_page_view: false,
+		});
+	}
+	if (hasGA3()) {
+		gtag('config', LittledataLayer.webPropertyID, {
+			...getConfig(),
+			send_page_view: false,
+		});
+	}
 };
 
 export const sendPageview = () => {
@@ -45,11 +51,23 @@ export const sendPageview = () => {
 	const locationWithMedium = addUTMMediumIfMissing(document.location.href);
 	const page_location = removePii(locationWithMedium);
 
-	gtag('config', LittledataLayer.webPropertyID, {
-		...getConfig(),
-		page_title,
-		page_location,
-	});
+	if (hasGA4()) {
+		gtag('config', LittledataLayer.measurementID, {
+			...getConfig(),
+			page_title,
+			page_location,
+			send_page_view: true,
+		});
+	}
+	if (hasGA3()) {
+		gtag('config', LittledataLayer.webPropertyID, {
+			...getConfig(),
+			page_title,
+			page_location,
+			send_page_view: true,
+		});
+	}
+	retrieveAndStoreClientId();
 
 	dataLayer.push({
 		event: 'pageview',
@@ -101,7 +119,7 @@ export const trackEvents = () => {
 			if (hasGA4()) {
 				gtag('event', 'select_content', {
 					content_type: 'product',
-					item_id: product.shopify_product_id,
+					item_product_id: product.shopify_product_id,
 					item_sku: product.id,
 					item_variant_id: product.shopify_variant_id,
 					image_url: image.src,
@@ -160,57 +178,6 @@ export const filterGAProductFields = (product: LooseObject) => {
 		if (product[field]) gaProduct[field] = product[field];
 	});
 	return gaProduct;
-};
-
-export const getConfig = (): Gtag.CustomParams => {
-	const settings: LooseObject = window.LittledataLayer || {};
-	const { anonymizeIp, googleSignals, ecommerce, optimizeId, referralExclusion } = settings;
-
-	const DEFAULT_LINKER_DOMAINS = [
-		'^(?!cdn.)(.*)shopify.com',
-		'rechargeapps.com',
-		'recurringcheckout.com',
-		'carthook.com',
-		'checkout.com',
-		'shop.app',
-	];
-	const extraLinkerDomains = settings.extraLinkerDomains || [];
-
-	let excludeReferral = referralExclusion && referralExclusion.test(document.referrer);
-	const extraExcludedReferrers = ['shop.app'];
-	if (extraExcludedReferrers.includes(document.referrer)) {
-		excludeReferral = true;
-	}
-	if (document.referrer.includes(`${location.protocol}//${location.host}`)) {
-		//valid referrer may have host within the url, like https://newsite.com/about/shopify.com
-		//but less likely to have protocol as well, unless the same domain - self-referral
-		excludeReferral = true;
-	}
-	const config: Gtag.CustomParams = {
-		linker: {
-			domains: [...DEFAULT_LINKER_DOMAINS, ...extraLinkerDomains],
-		},
-		anonymize_ip: anonymizeIp === false ? false : true, //default true
-		allow_ad_personalization_signals: googleSignals === true ? true : false, //default false
-		currency: (ecommerce && ecommerce.currencyCode) || 'USD',
-		link_attribution: true,
-		optimize_id: optimizeId,
-		page_referrer: excludeReferral ? null : document.referrer,
-	};
-
-	const userId = settings.customer && settings.customer.id;
-	if (userId) {
-		config.user_id = userId;
-	}
-
-	const cookie = getCookie('_ga');
-	if (cookie && !getValidGAClientId(cookie)) {
-		//expiring the cookie after this session ensures invalid clientID
-		//is not propagated to future sessions
-		config.cookie_expires = 0;
-	}
-
-	return config;
 };
 
 const addUTMMediumIfMissing = (url: string) => {
@@ -332,7 +299,7 @@ function convertProductsToGa4Format(products: Detail[], sendIndex: boolean): GA4
 	return products.map(product => {
 		const converted = {
 			currency: (LittledataLayer.ecommerce && LittledataLayer.ecommerce.currencyCode) || '',
-			item_id: product.shopify_product_id,
+			item_product_id: product.shopify_product_id,
 			item_name: product.name,
 			item_brand: product.brand,
 			item_category: product.category,

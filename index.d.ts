@@ -19,7 +19,7 @@ export interface Detail {
 
 export interface GA4Product {
 	currency: string;
-	item_id: string;
+	item_product_id: string;
 	item_name: string;
 	item_brand: string;
 	item_category: string;
@@ -28,6 +28,18 @@ export interface GA4Product {
 	item_variant_id: string;
 	price: string;
 	index?: number;
+}
+
+export interface CustomWindow extends Window {
+	console: { (...data: any[]): void; (message?: any, ...optionalParams: any[]): void };
+	ga: any;
+	LittledataLayer: OwnLayer;
+	analytics: AnalyticsJS;
+	gtag: Gtag.Gtag;
+	dataLayer: any[];
+	LittledataScriptVersion: string;
+	Shopify?: LooseObject;
+	_ga_originalSendHitTask: any;
 }
 
 declare global {
@@ -151,22 +163,11 @@ declare global {
 		MPEndpoint?: string;
 		CDNForAnalyticsJS?: string;
 		segmentUserId?: string;
+		cookieUpdate?: boolean;
 	}
 
 	var LittledataLayer: OwnLayer;
 	var dataLayer: any[];
-
-	interface CustomWindow extends Window {
-		console: { (...data: any[]): void; (message?: any, ...optionalParams: any[]): void };
-		ga: any;
-		LittledataLayer: OwnLayer;
-		analytics: AnalyticsJS;
-		gtag: Gtag.Gtag;
-		dataLayer: any[];
-		LittledataScriptVersion: string;
-		Shopify?: LooseObject;
-		_ga_originalSendHitTask: any;
-	}
 
 	interface CartHookWindow extends Window {
 		gtag: Gtag.Gtag;
@@ -175,6 +176,7 @@ declare global {
 		chData: LooseObject;
 		_ga_originalSendHitTask: any;
 		console: LooseObject;
+		CHDataObject: LooseObject;
 	}
 
 	interface TimeBombHTMLAnchor extends HTMLAnchorElement {
@@ -184,15 +186,15 @@ declare global {
 	type ListClickCallback = (foundProduct: Impression, self: TimeBombHTMLAnchor) => void;
 
 	interface Customer {
-		accepts_marketing: boolean;
-		display_name: string;
+		accepts_marketing?: boolean;
+		display_name?: string;
 		email: string;
-		first_name: string;
-		id: number;
-		last_name: string;
-		name: string;
-		phone: string;
-		address: {
+		first_name?: string;
+		id: string;
+		last_name?: string;
+		name?: string;
+		phone?: string;
+		address?: {
 			address1: string;
 			address2: string;
 			city: string;

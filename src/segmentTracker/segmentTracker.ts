@@ -1,4 +1,5 @@
 /* eslint-env browser */
+import { CustomWindow } from '../..';
 declare let window: CustomWindow;
 
 import {
@@ -10,6 +11,7 @@ import {
 	validateLittledataLayer,
 } from '../common/helpers';
 import { callSegmentPage, identifyCustomer, initSegment, trackEvents } from './helpers';
+import { sendEventsWithPageview } from './helpers/sendEventsWithPageview';
 
 (function() {
 	validateLittledataLayer();
@@ -19,6 +21,7 @@ import { callSegmentPage, identifyCustomer, initSegment, trackEvents } from './h
 	documentReady(trackEvents);
 	pageView(function() {
 		callSegmentPage({});
+		sendEventsWithPageview(document.location.pathname);
 		window.analytics.ready(() => {
 			// @ts-ignore 'Integrations' property does, in fact exist
 			if (window.analytics.Integrations['Google Analytics']) {

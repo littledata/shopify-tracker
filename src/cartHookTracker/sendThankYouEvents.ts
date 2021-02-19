@@ -20,7 +20,7 @@ export const sendThankYouEvents = (orderId: string) => {
 		const transactionStepTotal = transactionStepTax + transactionStepSubTotal + transactionStepShipping;
 
 		window.dataLayer.push({
-			event: 'transactionStepComplete',
+			event: 'Transaction step completed',
 			chTransactionId: order.carthook_order_id,
 			transactionStepSubTotal,
 			transactionStepTotal,
@@ -33,7 +33,7 @@ export const sendThankYouEvents = (orderId: string) => {
 
 	if (lineItems.length > 0) {
 		window.dataLayer.push({
-			event: 'transactionComplete',
+			event: 'Transaction completed',
 			transactionId: order[orderId],
 			transactionSubTotal: sumProductSubtotal(lineItems),
 			transactionTotal: order.total_price,

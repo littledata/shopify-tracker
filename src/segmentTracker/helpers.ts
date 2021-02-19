@@ -1,4 +1,5 @@
 /* global LittledataLayer */
+import { CustomWindow } from '../..';
 declare let window: CustomWindow;
 import {
 	productListClicks,
@@ -14,12 +15,13 @@ import productListViews from '../common/productListViews';
 import getProductDetail from '../common/getProductDetail';
 import { addUserIdForCustomer } from './helpers/addUserIdForCustomer';
 
-const getContext = () => {
+export const getContext = () => {
 	return {
 		integration: {
 			name: 'shopify_littledata',
 			version: window.LittledataScriptVersion,
 		},
+		traits: window.analytics.user && window.analytics.user().traits(),
 	};
 };
 

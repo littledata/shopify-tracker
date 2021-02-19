@@ -1,4 +1,4 @@
-import { Detail } from '../../';
+import { Detail, CustomWindow } from '../../';
 import { should } from 'chai';
 import { segmentProduct } from '../../src/segmentTracker/helpers/segmentProduct';
 declare let window: CustomWindow;
