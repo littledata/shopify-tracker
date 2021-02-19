@@ -25,7 +25,7 @@ export const getContext = () => {
 	};
 };
 
-const trackEvent = (eventName: string, params: object) => {
+export const trackEvent = (eventName: string, params: object) => {
 	window.analytics.track(
 		eventName,
 		{ ...params, ...addUserIdForCustomer(window.LittledataLayer), sent_from: 'Littledata script' },
