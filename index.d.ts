@@ -19,7 +19,7 @@ export interface Detail {
 
 export interface GA4Product {
 	currency: string;
-	item_id: string;
+	item_product_id: string;
 	item_name: string;
 	item_brand: string;
 	item_category: string;
@@ -28,6 +28,49 @@ export interface GA4Product {
 	item_variant_id: string;
 	price: string;
 	index?: number;
+}
+
+export interface CustomWindow extends Window {
+	console: { (...data: any[]): void; (message?: any, ...optionalParams: any[]): void };
+	ga: any;
+	LittledataLayer: OwnLayer;
+	analytics: AnalyticsJS;
+	gtag: Gtag.Gtag;
+	dataLayer: any[];
+	LittledataScriptVersion: string;
+	Shopify?: LooseObject;
+	_ga_originalSendHitTask: any;
+}
+
+export interface OwnLayer extends Cart.Attributes {
+	version?: string;
+	customer?: Customer;
+	hideBranding?: boolean;
+	writeKey?: string;
+	webPropertyID?: string;
+	measurementID?: string;
+	referralExclusion?: RegExp;
+	enhancePrivacy?: boolean;
+	productClicks?: boolean;
+	googleAdsConversionIds?: string[];
+	ecommerce: {
+		currencyCode?: string;
+		impressions?: Impression[];
+		detail?: Detail;
+	};
+	transactionWatcherURL?: string;
+	cart?: Cart.RootObject;
+	anonymizeIp?: boolean;
+	googleSignals?: boolean;
+	optimizeId?: string;
+	productPageClicks?: boolean;
+	extraLinkerDomains?: string[];
+	cookiesToTrack?: string[];
+	doNotTrackReplaceState?: boolean;
+	MPEndpoint?: string;
+	CDNForAnalyticsJS?: string;
+	segmentUserId?: string;
+	cookieUpdate?: boolean;
 }
 
 declare global {
@@ -123,50 +166,8 @@ declare global {
 		value_type: string;
 	}
 
-	interface OwnLayer extends Cart.Attributes {
-		version?: string;
-		customer?: Customer;
-		hideBranding?: boolean;
-		writeKey?: string;
-		webPropertyID?: string;
-		measurementID?: string;
-		referralExclusion?: RegExp;
-		enhancePrivacy?: boolean;
-		productClicks?: boolean;
-		googleAdsConversionIds?: string[];
-		ecommerce: {
-			currencyCode?: string;
-			impressions?: Impression[];
-			detail?: Detail;
-		};
-		transactionWatcherURL?: string;
-		cart?: Cart.RootObject;
-		anonymizeIp?: boolean;
-		googleSignals?: boolean;
-		optimizeId?: string;
-		productPageClicks?: boolean;
-		extraLinkerDomains?: string[];
-		cookiesToTrack?: string[];
-		doNotTrackReplaceState?: boolean;
-		MPEndpoint?: string;
-		CDNForAnalyticsJS?: string;
-		segmentUserId?: string;
-	}
-
 	var LittledataLayer: OwnLayer;
 	var dataLayer: any[];
-
-	interface CustomWindow extends Window {
-		console: { (...data: any[]): void; (message?: any, ...optionalParams: any[]): void };
-		ga: any;
-		LittledataLayer: OwnLayer;
-		analytics: AnalyticsJS;
-		gtag: Gtag.Gtag;
-		dataLayer: any[];
-		LittledataScriptVersion: string;
-		Shopify?: LooseObject;
-		_ga_originalSendHitTask: any;
-	}
 
 	interface CartHookWindow extends Window {
 		gtag: Gtag.Gtag;
@@ -175,6 +176,7 @@ declare global {
 		chData: LooseObject;
 		_ga_originalSendHitTask: any;
 		console: LooseObject;
+		CHDataObject: LooseObject;
 	}
 
 	interface TimeBombHTMLAnchor extends HTMLAnchorElement {
@@ -184,15 +186,15 @@ declare global {
 	type ListClickCallback = (foundProduct: Impression, self: TimeBombHTMLAnchor) => void;
 
 	interface Customer {
-		accepts_marketing: boolean;
-		display_name: string;
+		id: string;
+		accepts_marketing?: boolean;
+		display_name?: string;
 		email: string;
-		first_name: string;
-		id: number;
-		last_name: string;
-		name: string;
-		phone: string;
-		address: {
+		first_name?: string;
+		last_name?: string;
+		name?: string;
+		phone?: string;
+		address?: {
 			address1: string;
 			address2: string;
 			city: string;
@@ -206,6 +208,9 @@ declare global {
 			zip: string;
 		};
 		generatedClientID?: string;
+		customerLifetimeValue: number;
+		purchaseCount: number;
+		tags: string;
 	}
 
 	interface SegmentAddressFormat {

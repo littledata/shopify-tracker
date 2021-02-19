@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", ({
 
 var helpers_1 = __webpack_require__(1);
 
-var helpers_2 = __webpack_require__(3);
+var helpers_2 = __webpack_require__(2);
 
 (function () {
   helpers_2.validateLittledataLayer();
@@ -29,14 +29,6 @@ var helpers_2 = __webpack_require__(3);
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
-
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
-
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
-
-function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
-
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
 
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -56,13 +48,13 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 
-var getCookie_1 = __webpack_require__(2);
+var helpers_1 = __webpack_require__(2);
 
-var helpers_1 = __webpack_require__(3);
+var getConfig_1 = __importDefault(__webpack_require__(7));
 
-var getProductDetail_1 = __importDefault(__webpack_require__(7));
+var getProductDetail_1 = __importDefault(__webpack_require__(8));
 
-var productListViews_1 = __importDefault(__webpack_require__(8));
+var productListViews_1 = __importDefault(__webpack_require__(9));
 
 var event_category = 'Shopify (Littledata)';
 
@@ -80,23 +72,45 @@ exports.initGtag = function () {
     (window.ga.q = window.ga.q || []).push(arguments);
   };
 
-  window.ga.l = +new Date();
-  helpers_1.retrieveAndStoreClientId(true); // @ts-ignore
+  window.ga.l = +new Date(); // @ts-ignore
 
   gtag('js', new Date());
-  gtag('config', LittledataLayer.webPropertyID, _objectSpread({}, exports.getConfig(), {
-    send_page_view: false
-  }));
+
+  if (hasGA4()) {
+    gtag('config', LittledataLayer.measurementID, _objectSpread({}, getConfig_1["default"](), {
+      send_page_view: false
+    }));
+  }
+
+  if (hasGA3()) {
+    gtag('config', LittledataLayer.webPropertyID, _objectSpread({}, getConfig_1["default"](), {
+      send_page_view: false
+    }));
+  }
 };
 
 exports.sendPageview = function () {
   var page_title = helpers_1.removePii(document.title);
   var locationWithMedium = addUTMMediumIfMissing(document.location.href);
   var page_location = helpers_1.removePii(locationWithMedium);
-  gtag('config', LittledataLayer.webPropertyID, _objectSpread({}, exports.getConfig(), {
-    page_title: page_title,
-    page_location: page_location
-  }));
+
+  if (hasGA4()) {
+    gtag('config', LittledataLayer.measurementID, _objectSpread({}, getConfig_1["default"](), {
+      page_title: page_title,
+      page_location: page_location,
+      send_page_view: true
+    }));
+  }
+
+  if (hasGA3()) {
+    gtag('config', LittledataLayer.webPropertyID, _objectSpread({}, getConfig_1["default"](), {
+      page_title: page_title,
+      page_location: page_location,
+      send_page_view: true
+    }));
+  }
+
+  helpers_1.retrieveAndStoreClientId();
   dataLayer.push({
     event: 'pageview',
     page_title: page_title,
@@ -148,7 +162,7 @@ exports.trackEvents = function () {
       if (hasGA4()) {
         gtag('event', 'select_content', {
           content_type: 'product',
-          item_id: product.shopify_product_id,
+          item_product_id: product.shopify_product_id,
           item_sku: product.id,
           item_variant_id: product.shopify_variant_id,
           image_url: image.src,
@@ -197,56 +211,6 @@ exports.filterGAProductFields = function (product) {
     if (product[field]) gaProduct[field] = product[field];
   });
   return gaProduct;
-};
-
-exports.getConfig = function () {
-  var settings = window.LittledataLayer || {};
-  var anonymizeIp = settings.anonymizeIp,
-      googleSignals = settings.googleSignals,
-      ecommerce = settings.ecommerce,
-      optimizeId = settings.optimizeId,
-      referralExclusion = settings.referralExclusion;
-  var DEFAULT_LINKER_DOMAINS = ['^(?!cdn.)(.*)shopify.com', 'rechargeapps.com', 'recurringcheckout.com', 'carthook.com', 'checkout.com', 'shop.app'];
-  var extraLinkerDomains = settings.extraLinkerDomains || [];
-  var excludeReferral = referralExclusion && referralExclusion.test(document.referrer);
-  var extraExcludedReferrers = ['shop.app'];
-
-  if (extraExcludedReferrers.includes(document.referrer)) {
-    excludeReferral = true;
-  }
-
-  if (document.referrer.includes("".concat(location.protocol, "//").concat(location.host))) {
-    //valid referrer may have host within the url, like https://newsite.com/about/shopify.com
-    //but less likely to have protocol as well, unless the same domain - self-referral
-    excludeReferral = true;
-  }
-
-  var config = {
-    linker: {
-      domains: [].concat(DEFAULT_LINKER_DOMAINS, _toConsumableArray(extraLinkerDomains))
-    },
-    anonymize_ip: anonymizeIp === false ? false : true,
-    allow_ad_personalization_signals: googleSignals === true ? true : false,
-    currency: ecommerce && ecommerce.currencyCode || 'USD',
-    link_attribution: true,
-    optimize_id: optimizeId,
-    page_referrer: excludeReferral ? null : document.referrer
-  };
-  var userId = settings.customer && settings.customer.id;
-
-  if (userId) {
-    config.user_id = userId;
-  }
-
-  var cookie = getCookie_1.getCookie('_ga');
-
-  if (cookie && !getCookie_1.getValidGAClientId(cookie)) {
-    //expiring the cookie after this session ensures invalid clientID
-    //is not propagated to future sessions
-    config.cookie_expires = 0;
-  }
-
-  return config;
 };
 
 var addUTMMediumIfMissing = function addUTMMediumIfMissing(url) {
@@ -377,7 +341,7 @@ function convertProductsToGa4Format(products, sendIndex) {
   return products.map(function (product) {
     var converted = {
       currency: LittledataLayer.ecommerce && LittledataLayer.ecommerce.currencyCode || '',
-      item_id: product.shopify_product_id,
+      item_product_id: product.shopify_product_id,
       item_name: product.name,
       item_brand: product.brand,
       item_category: product.category,
@@ -398,42 +362,6 @@ function convertProductsToGa4Format(products, sendIndex) {
 
 /***/ }),
 /* 2 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-
-exports.getCookie = function (name) {
-  if (document.cookie.length > 0) {
-    var cookieStart = document.cookie.indexOf("".concat(name, "="));
-
-    if (cookieStart !== -1) {
-      var valueStart = cookieStart + name.length + 1;
-      var cookieEnd = document.cookie.indexOf(';', valueStart);
-
-      if (cookieEnd === -1) {
-        cookieEnd = document.cookie.length;
-      }
-
-      var cookie = unescape(document.cookie.substring(valueStart, cookieEnd));
-      return cookie;
-    }
-  }
-
-  return '';
-};
-
-exports.getValidGAClientId = function () {
-  var cookie = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-  var match = cookie.match(/(\d{2,11})\.(\d{2,11})/g);
-  return match && match[0];
-};
-
-/***/ }),
-/* 3 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -454,11 +382,11 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 
-var UrlChangeTracker_1 = __importDefault(__webpack_require__(4));
+var UrlChangeTracker_1 = __importDefault(__webpack_require__(3));
 
-var customTask_1 = __webpack_require__(6);
+var customTask_1 = __webpack_require__(5);
 
-var getCookie_1 = __webpack_require__(2);
+var getCookie_1 = __webpack_require__(6);
 
 var maximumTimeout = 524288000; // about 6 hours in seconds
 
@@ -536,17 +464,23 @@ exports.productListClicks = function (clickTag) {
 };
 
 var postCartTimeout;
+var attributes = {}; //persist any previous attributes sent from this page
+
 var cartOnlyAttributes = {};
 
 exports.setCartOnlyAttributes = function (setAttributes) {
   var toSet = Object.keys(setAttributes);
+  var needsToSend = false;
   toSet.forEach(function (name) {
     var fieldName = "littledata_".concat(name);
-    cartOnlyAttributes[fieldName] = setAttributes[name];
-  });
-};
 
-var attributes = {}; //persist any previous attributes sent from this page
+    if (cartOnlyAttributes[fieldName] !== setAttributes[name]) {
+      cartOnlyAttributes[fieldName] = setAttributes[name];
+      needsToSend = true;
+    }
+  });
+  if (needsToSend) postCartToShopify(_objectSpread({}, attributes, {}, cartOnlyAttributes));
+};
 
 function postClientID(clientId, platform, sendCartToLittledata) {
   var attribute = "".concat(platform, "-clientID");
@@ -557,12 +491,7 @@ function postClientID(clientId, platform, sendCartToLittledata) {
 
   postCartTimeout = setTimeout(function () {
     attributes.littledata_updatedAt = new Date().getTime();
-    var cartUpdateReq = new XMLHttpRequest(); // new HttpRequest instance
-
-    cartUpdateReq.onload = function () {
-      var updatedCart = JSON.parse(cartUpdateReq.response);
-      LittledataLayer.cart = updatedCart;
-
+    postCartToShopify(attributes, function (updatedCart) {
       if (sendCartToLittledata) {
         postCartToLittledata(updatedCart);
       }
@@ -573,18 +502,28 @@ function postClientID(clientId, platform, sendCartToLittledata) {
       clientIDReq.send(JSON.stringify(_objectSpread({}, attributes, {
         cartID: "".concat(updatedCart.token)
       })));
-    };
-
-    cartUpdateReq.open('POST', '/cart/update.json');
-    cartUpdateReq.setRequestHeader('Content-Type', 'application/json');
-
-    var cartAttributes = _objectSpread({}, attributes, {}, cartOnlyAttributes);
-
-    cartUpdateReq.send(JSON.stringify({
-      attributes: cartAttributes
-    }));
+    });
   }, 1000);
 }
+
+var postCartToShopify = function postCartToShopify(attributes, callback) {
+  var cartUpdateReq = new XMLHttpRequest();
+
+  cartUpdateReq.onload = function () {
+    var updatedCart = JSON.parse(cartUpdateReq.response);
+    LittledataLayer.cart = updatedCart;
+
+    if (callback) {
+      callback(updatedCart);
+    }
+  };
+
+  cartUpdateReq.open('POST', '/cart/update.json');
+  cartUpdateReq.setRequestHeader('Content-Type', 'application/json');
+  cartUpdateReq.send(JSON.stringify({
+    attributes: attributes
+  }));
+};
 
 function postCartToLittledata(cart) {
   var httpRequest = new XMLHttpRequest(); // new HttpRequest instance
@@ -684,7 +623,7 @@ exports.trackSocialShares = function (clickTag) {
 };
 
 exports.validateLittledataLayer = function () {
-  window.LittledataScriptVersion = '10.0.4';
+  window.LittledataScriptVersion = '10.0.8';
 
   if (!window.LittledataLayer) {
     throw new Error('Aborting Littledata tracking as LittledataLayer was not found');
@@ -699,33 +638,20 @@ exports.advertiseLD = function (app) {
 };
 
 function retrieveAndStoreClientId() {
-  var withCustomTask = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-  var clientIdPromise = new Promise(function (resolve) {
-    // @ts-ignore
-    gtag('get', LittledataLayer.webPropertyID || LittledataLayer.measurementID, 'client_id', resolve);
-  });
-  return clientIdPromise.then(function (clientId) {
-    if (withCustomTask) {
-      exports.setCustomTask();
-    }
+  var postClientIdTimeout; //when GA first loads it may not have changed the cookie to accept _ga query param
+  //so we should wait 50ms after this
 
-    return setClientID(clientId, 'google');
-  })["catch"](function () {
-    var postClientIdTimeout;
-    var nextTimeout = 10;
-    waitForGaToLoad(postClientIdTimeout, nextTimeout);
-  });
+  var nextTimeout = 50;
+  waitForGaToLoad(postClientIdTimeout, nextTimeout);
 }
 
 exports.retrieveAndStoreClientId = retrieveAndStoreClientId;
 
-exports.setCustomTask = function () {
-  var trackers = window.ga && window.ga.getAll && window.ga.getAll();
-  if (!trackers || !trackers.length) return;
+exports.setCustomTask = function (tracker) {
   var MPEndpointLength = LittledataLayer.MPEndpoint && LittledataLayer.MPEndpoint.length;
 
   if (MPEndpointLength) {
-    trackers[0].set('customTask', customTask_1.customTask(LittledataLayer.MPEndpoint));
+    tracker.set('customTask', customTask_1.customTask(LittledataLayer.MPEndpoint));
   }
 };
 
@@ -746,8 +672,7 @@ function waitForGaToLoad(postClientIdTimeout, nextTimeout) {
   var trackers = window.ga && window.ga.getAll && window.ga.getAll();
 
   if (trackers && trackers.length) {
-    console.log('getGAClientId', getGAClientId(trackers[0]));
-    exports.setCustomTask();
+    exports.setCustomTask(trackers[0]);
     return setClientID(getGAClientId(trackers[0]), 'google');
   }
 
@@ -766,14 +691,14 @@ function getGAClientId(tracker) {
 }
 
 /***/ }),
-/* 4 */
+/* 3 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => /* binding */ UrlChangeTracker
 /* harmony export */ });
-/* harmony import */ var _MethodChain__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5);
+/* harmony import */ var _MethodChain__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(4);
 
 
 /**
@@ -902,7 +827,7 @@ function getPath() {
 
 
 /***/ }),
-/* 5 */
+/* 4 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -1082,7 +1007,7 @@ function getOrCreateMethodChain(context, methodName) {
 
 
 /***/ }),
-/* 6 */
+/* 5 */
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -1113,7 +1038,121 @@ exports.customTask = function (endpoint) {
 };
 
 /***/ }),
+/* 6 */
+/***/ ((__unused_webpack_module, exports) => {
+
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+
+exports.getCookie = function (name) {
+  if (document.cookie.length > 0) {
+    var cookieStart = document.cookie.indexOf("".concat(name, "="));
+
+    if (cookieStart !== -1) {
+      var valueStart = cookieStart + name.length + 1;
+      var cookieEnd = document.cookie.indexOf(';', valueStart);
+
+      if (cookieEnd === -1) {
+        cookieEnd = document.cookie.length;
+      }
+
+      var cookie = unescape(document.cookie.substring(valueStart, cookieEnd));
+      return cookie;
+    }
+  }
+
+  return '';
+};
+
+exports.getValidGAClientId = function () {
+  var cookie = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+  var match = cookie.match(/(\d{2,11})\.(\d{2,11})/g);
+  return match && match[0];
+};
+
+/***/ }),
 /* 7 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+
+var getCookie_1 = __webpack_require__(6);
+
+exports.DEFAULT_LINKER_DOMAINS = ['^(?!cdn.)(.*)shopify.com', 'rechargeapps.com', 'recurringcheckout.com', 'carthook.com', 'checkout.com', 'shop.app'];
+exports.extraExcludedReferrers = ['shop.app'];
+
+exports.default = function () {
+  var settings = window.LittledataLayer || {};
+  var anonymizeIp = settings.anonymizeIp,
+      googleSignals = settings.googleSignals,
+      ecommerce = settings.ecommerce,
+      optimizeId = settings.optimizeId,
+      referralExclusion = settings.referralExclusion;
+  var extraLinkerDomains = settings.extraLinkerDomains || [];
+  var excludeReferral = referralExclusion && referralExclusion.test(document.referrer);
+
+  if (exports.extraExcludedReferrers.includes(document.referrer)) {
+    excludeReferral = true;
+  }
+
+  if (document.referrer.includes("".concat(location.protocol, "//").concat(location.host))) {
+    // valid referrer may have host within the url, like https://newsite.com/about/shopify.com
+    // but less likely to have protocol as well, unless the same domain - self-referral
+    excludeReferral = true;
+  }
+
+  var config = {
+    linker: {
+      domains: [].concat(_toConsumableArray(exports.DEFAULT_LINKER_DOMAINS), _toConsumableArray(extraLinkerDomains)),
+      accept_incoming: true
+    },
+    anonymize_ip: anonymizeIp === false ? false : true,
+    allow_ad_personalization_signals: googleSignals === true ? true : false,
+    currency: ecommerce && ecommerce.currencyCode || 'USD',
+    link_attribution: true,
+    optimize_id: optimizeId,
+    page_referrer: excludeReferral ? null : document.referrer
+  };
+  var userId = settings.customer && settings.customer.id;
+
+  if (userId) {
+    config.user_id = userId;
+  }
+
+  var cookie = getCookie_1.getCookie('_ga');
+
+  if (cookie && !getCookie_1.getValidGAClientId(cookie)) {
+    //expiring the cookie after this session ensures invalid clientID
+    //is not propagated to future sessions
+    config.cookie_expires = 0;
+  }
+
+  if (settings.cookieUpdate === false) {
+    // If the cookie is being overwritten by a server-side cookie to avoid ITP
+    // this should be false
+    config.cookie_update = false;
+  }
+
+  return config;
+};
+
+/***/ }),
+/* 8 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -1146,7 +1185,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -1155,7 +1194,7 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 
-var helpers_1 = __webpack_require__(3);
+var helpers_1 = __webpack_require__(2);
 
 exports.default = function (impressionTag) {
   var waitForScroll = 0;

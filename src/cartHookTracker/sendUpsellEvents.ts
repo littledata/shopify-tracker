@@ -3,13 +3,24 @@ import { convertToGtagProducts, sumProductTax, sumProductSubtotal } from './help
 
 declare let window: CartHookWindow;
 
-export const sendUpsellEvents = () => {
+export const sendUpsellDownsellEvents = () => {
+	let eventType = 'upsell';
+	let transactionEventName = 'Transaction step completed';
+
+	const pageType = window.CHDataObject.partial_type;
+	if (pageType === 'downsell_page') {
+		transactionEventName = 'Transaction step completed';
+		eventType = 'downsell';
+	}
+	const viewEventName = `View ${eventType} offer`;
 	const acceptButton = document.querySelector('.ch-accept-button'); // HTML selector for Accept button
 	const rejectButton = document.querySelector('.ch-decline-button'); // HTML selector for Decline button
 	const { order } = window.chData;
 
 	const orderId = order.carthook_order_id;
-	const upsellProduct = window.chData.cart_data.line_items[0];
+	const upsellItems = convertToGtagProducts(window.chData.cart_data.line_items);
+	const upsellProduct = upsellItems[0];
+
 	const lastChargedPage = window.chData.last_charged_page_type;
 	const value = order.total_price;
 
@@ -26,7 +37,7 @@ export const sendUpsellEvents = () => {
 	}
 	if (items.length > 0) {
 		window.dataLayer.push({
-			event: 'transactionBeforeUpsell',
+			event: transactionEventName,
 			orderId,
 			value,
 			items,
@@ -37,16 +48,16 @@ export const sendUpsellEvents = () => {
 		});
 	}
 
-	const event_label = upsellProduct.title;
+	const event_label = upsellProduct.id;
 	const params = { event_category, event_label };
 	// GA event for Upsell step, triggered at the page load
-	gtag('event', 'View upsell offer', params);
+	gtag('event', viewEventName, params);
 	// GA event for Upsell Accepted step, triggered at the click of Accept button
 	acceptButton.addEventListener('click', function() {
-		gtag('event', 'Accept offer', params);
+		gtag('event', `Accepted ${eventType} offer`, params);
 	});
 	// GA event for Upsell Rejected step, triggered at the click of Decline button
 	rejectButton.addEventListener('click', function() {
-		gtag('event', 'Reject offer', params);
+		gtag('event', `Rejected ${eventType} offer`, params);
 	});
 };
