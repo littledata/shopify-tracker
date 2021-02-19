@@ -14,13 +14,13 @@ import { getCookie } from '../common/getCookie';
 import productListViews from '../common/productListViews';
 import getProductDetail from '../common/getProductDetail';
 
-const getContext = () => {
+export const getContext = () => {
 	return {
 		integration: {
 			name: 'shopify_littledata',
 			version: window.LittledataScriptVersion,
 		},
-		traits: window.analytics.user && window.analytics.user().traits,
+		traits: window.analytics.user && window.analytics.user().traits(),
 	};
 };
 
