@@ -11,7 +11,9 @@ const cartOnlyAttributes: LooseObject = {};
 export const setClientID = (clientId: string, platform: 'google' | 'segment' | 'email') => {
 	const clientIDProperty = `${platform}-clientID` as clientID;
 
-	if (window.LittledataLayer[clientIDProperty]) return;
+	if (window.LittledataLayer[clientIDProperty]) {
+		return;
+	}
 	window.LittledataLayer[clientIDProperty] = clientId;
 	if (typeof clientId !== 'string' || clientId.length === 0) return;
 	(attributes as any)[clientIDProperty] = clientId;
@@ -21,11 +23,9 @@ export const setClientID = (clientId: string, platform: 'google' | 'segment' | '
 	// to be included in the same cart update
 	postCartTimeout = setTimeout(async function() {
 		// first check if attributes are already stored on the cart
-		const cart = (await getCart()) as Cart.RootObject;
-		// @ts-ignore
-		if (!cart || cart.attributes[clientIDProperty]) return;
-		attributes.littledata_updatedAt = new Date().getTime();
-		postCartToShopify(attributes);
+		const cart = (await getCartWithToken()) as Cart.RootObject;
+		postCartTokenClientIdToLittledata(cart.token);
+		postCartToShopify({ ...attributes, littledata_updatedAt: new Date().getTime() });
 	}, 1000);
 };
 
@@ -42,8 +42,8 @@ export const setCartOnlyAttributes = (setAttributes: LooseObject) => {
 	if (needsToSend) postCartToShopify({ ...attributes, ...cartOnlyAttributes });
 };
 
-export const getCart = async (): Promise<Cart.RootObject> => {
-	let { cart } = LittledataLayer;
+export const getCartWithToken = async (): Promise<Cart.RootObject> => {
+	let { cart } = window.LittledataLayer;
 	let cartToken = cart && cart.token;
 	if (cartToken) return cart;
 	try {
@@ -53,22 +53,23 @@ export const getCart = async (): Promise<Cart.RootObject> => {
 		return;
 	}
 	postCartToLittledata(cart);
-	cartToken = cart.token;
-	if (!cartToken) {
+	if (!cart.token) {
 		throw new Error('cart had no cart token');
 	}
-	postCartTokenClientIdToLittledata(cartToken);
+	window.LittledataLayer.cart = cart;
 	return cart;
 };
 
 const postCartToShopify = async (attributes: object) => {
 	const updatedCart = (await httpRequest.postJSON('/cart/update.json', attributes)) as Cart.RootObject;
-	LittledataLayer.cart = updatedCart;
+	window.LittledataLayer.cart = {
+		...window.LittledataLayer.cart,
+		...updatedCart,
+	};
 	return updatedCart;
 };
 
 const postCartToLittledata = async (cart: Cart.RootObject) => {
-	const { attributes } = cart;
 	const updatedAt = attributes.littledata_updatedAt;
 	if (!updatedAt) return;
 	const clientIdCreated = new Date(Number(updatedAt));
@@ -77,12 +78,12 @@ const postCartToLittledata = async (cart: Cart.RootObject) => {
 	const timePassed = Date.now() - Number(clientIdCreated);
 	// only need to resend cart if it's expired from our Redis cache
 	if (timePassed < expiryTime) return;
-	const url = `${LittledataLayer.transactionWatcherURL}/cart/store`;
+	const url = `${window.LittledataLayer.transactionWatcherURL}/cart/store`;
 	await httpRequest.postJSON(url, cart);
 };
 
 const postCartTokenClientIdToLittledata = async (cartID: string) => {
-	const url = `${LittledataLayer.transactionWatcherURL}/v2/clientID/store`;
+	const url = `${window.LittledataLayer.transactionWatcherURL}/v2/clientID/store`;
 	await httpRequest.postJSON(url, {
 		...attributes,
 		cartID,
