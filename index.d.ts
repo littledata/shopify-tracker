@@ -42,6 +42,37 @@ export interface CustomWindow extends Window {
 	_ga_originalSendHitTask: any;
 }
 
+export interface OwnLayer extends Cart.Attributes {
+	version?: string;
+	customer?: Customer;
+	hideBranding?: boolean;
+	writeKey?: string;
+	webPropertyID?: string;
+	measurementID?: string;
+	referralExclusion?: RegExp;
+	enhancePrivacy?: boolean;
+	productClicks?: boolean;
+	googleAdsConversionIds?: string[];
+	ecommerce: {
+		currencyCode?: string;
+		impressions?: Impression[];
+		detail?: Detail;
+	};
+	transactionWatcherURL?: string;
+	cart?: Cart.RootObject;
+	anonymizeIp?: boolean;
+	googleSignals?: boolean;
+	optimizeId?: string;
+	productPageClicks?: boolean;
+	extraLinkerDomains?: string[];
+	cookiesToTrack?: string[];
+	doNotTrackReplaceState?: boolean;
+	MPEndpoint?: string;
+	CDNForAnalyticsJS?: string;
+	segmentUserId?: string;
+	cookieUpdate?: boolean;
+}
+
 declare global {
 	interface LooseObject {
 		[index: string]: any;
@@ -133,37 +164,6 @@ declare global {
 		type: 'automatic' | 'discount_code' | 'manual' | 'script';
 		value: number;
 		value_type: string;
-	}
-
-	interface OwnLayer extends Cart.Attributes {
-		version?: string;
-		customer?: Customer;
-		hideBranding?: boolean;
-		writeKey?: string;
-		webPropertyID?: string;
-		measurementID?: string;
-		referralExclusion?: RegExp;
-		enhancePrivacy?: boolean;
-		productClicks?: boolean;
-		googleAdsConversionIds?: string[];
-		ecommerce: {
-			currencyCode?: string;
-			impressions?: Impression[];
-			detail?: Detail;
-		};
-		transactionWatcherURL?: string;
-		cart?: Cart.RootObject;
-		anonymizeIp?: boolean;
-		googleSignals?: boolean;
-		optimizeId?: string;
-		productPageClicks?: boolean;
-		extraLinkerDomains?: string[];
-		cookiesToTrack?: string[];
-		doNotTrackReplaceState?: boolean;
-		MPEndpoint?: string;
-		CDNForAnalyticsJS?: string;
-		segmentUserId?: string;
-		cookieUpdate?: boolean;
 	}
 
 	var LittledataLayer: OwnLayer;

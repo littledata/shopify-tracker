@@ -1,6 +1,7 @@
+import { OwnLayer } from '../..';
 import { should } from 'chai';
 import { addUserIdForCustomer } from '../../src/segmentTracker/helpers/addUserIdForCustomer';
-import { customer } from './fakeCustomerObject';
+import { customer } from '../common/fakeCustomerObject';
 
 should();
 

@@ -1,3 +1,4 @@
+import { OwnLayer } from '../../..';
 import { MD5 } from '../../common/cryptoMD5';
 
 const hash = (string: string) => MD5(string).toString();
