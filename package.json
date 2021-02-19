@@ -16,6 +16,7 @@
 		"@types/jquery": "^3.3.31",
 		"@types/mocha": "^8.0.4",
 		"@types/sinon": "^9.0.9",
+		"@types/sinon-chai": "^3.2.5",
 		"@typescript-eslint/eslint-plugin": "^1.13.0",
 		"@typescript-eslint/parser": "^1.13.0",
 		"babel-loader": "^8.0.6",
@@ -47,8 +48,5 @@
 	"bugs": {
 		"url": "https://github.com/littledata/shopify-tracker/issues"
 	},
-	"homepage": "https://github.com/littledata/shopify-tracker#readme",
-	"dependencies": {
-		"@types/sinon-chai": "^3.2.5"
-	}
+	"homepage": "https://github.com/littledata/shopify-tracker#readme"
 }
