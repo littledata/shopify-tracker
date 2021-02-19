@@ -186,11 +186,11 @@ declare global {
 	type ListClickCallback = (foundProduct: Impression, self: TimeBombHTMLAnchor) => void;
 
 	interface Customer {
+		id: string;
 		accepts_marketing?: boolean;
 		display_name?: string;
 		email: string;
 		first_name?: string;
-		id: string;
 		last_name?: string;
 		name?: string;
 		phone?: string;
@@ -208,6 +208,9 @@ declare global {
 			zip: string;
 		};
 		generatedClientID?: string;
+		customerLifetimeValue: number;
+		purchaseCount: number;
+		tags: string;
 	}
 
 	interface SegmentAddressFormat {

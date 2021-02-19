@@ -1,5 +1,5 @@
 export const customer = {
-	id: 207119551,
+	id: '207119551',
 	email: 'bob.norman@hostmail.com',
 	accepts_marketing: false,
 	first_name: 'Bob',
@@ -19,4 +19,7 @@ export const customer = {
 		country_code: 'US',
 		country_name: 'United States',
 	},
+	customerLifetimeValue: 100,
+	purchaseCount: 25,
+	tags: '',
 };
