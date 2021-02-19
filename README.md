@@ -131,3 +131,10 @@ Example: `['iterableEmailCampaignId]` (array)
 If you have a [proxy CDN setup](https://segment.com/docs/connections/sources/catalog/libraries/website/javascript/custom-proxy/), redirecting to `https://cdn.segment.com`, to load Segment's AnalyticsJS library from your own domain you can specify it here. It must include the full domain, with no trailing slash.
 
 Default: `https://cdn.segment.com` (string)
+
+**segmentUserId**
+
+You can [choose an identifier to use](https://segment.com/docs/connections/sources/catalog/libraries/website/shopify-littledata/#user-identity) for logged-in users.WARNING: this must match what is configured for server-side events in Littledata's app settings.
+
+Possible values: `none`, `shopifyCustomerId`, `email`, `md5EmailHash`
+Default: `shopifyCustomerId` (string)

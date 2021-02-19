@@ -834,7 +834,53 @@ var chunk = function chunk(arr, size) {
 };
 
 /***/ }),
-/* 10 */,
+/* 10 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+
+var helpers_1 = __webpack_require__(2);
+
+var helpers_2 = __webpack_require__(11);
+
+var sendEventsWithPageview_1 = __webpack_require__(14);
+
+(function () {
+  helpers_1.validateLittledataLayer();
+  helpers_2.initSegment();
+  helpers_1.advertiseLD('Segment');
+  helpers_2.identifyCustomer(LittledataLayer.customer);
+  helpers_1.documentReady(helpers_2.trackEvents);
+  helpers_1.pageView(function () {
+    helpers_2.callSegmentPage({});
+    sendEventsWithPageview_1.sendEventsWithPageview(document.location.pathname);
+    window.analytics.ready(function () {
+      // @ts-ignore 'Integrations' property does, in fact exist
+      if (window.analytics.Integrations['Google Analytics']) {
+        helpers_1.retrieveAndStoreClientId();
+      }
+
+      var user = window.analytics.user;
+
+      if (user) {
+        helpers_1.setClientID(user().anonymousId(), 'segment');
+
+        var _user$traits = user().traits(),
+            email = _user$traits.email;
+
+        if (email) {
+          helpers_1.setClientID(email, 'email');
+        }
+      }
+    });
+  });
+})();
+
+/***/ }),
 /* 11 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
@@ -1114,31 +1160,7 @@ exports.segmentProduct = function (dataLayerProduct) {
 };
 
 /***/ }),
-/* 14 */,
-/* 15 */,
-/* 16 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-
-exports.getQueryStringParam = function (url, param) {
-  if (!url) return '';
-  var matches = url.match("".concat(param, "=([a-z,A-Z,0-9,-]+)"));
-  if (!matches || !matches.length || !matches[1]) return '';
-  return matches[1];
-};
-
-/***/ }),
-/* 17 */,
-/* 18 */,
-/* 19 */,
-/* 20 */,
-/* 21 */,
-/* 22 */
+/* 14 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -1147,64 +1169,23 @@ Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
 
-var getQueryStringParam_1 = __webpack_require__(16);
-
 var helpers_1 = __webpack_require__(11);
 
-(function () {
-  // @ts-ignore
-  if (window.Shopify.Checkout && window.Shopify.Checkout.page === 'thank_you') {
-    // @ts-ignore
-    var scriptSrc = document.currentScript.src;
-    var segmentProperty = getQueryStringParam_1.getQueryStringParam(scriptSrc, 'segmentProperty');
+exports.sendEventsWithPageview = function (pathname) {
+  if (pathname === '/cart') {
+    helpers_1.trackEvent('Cart Viewed', {});
+  }
 
-    if (!segmentProperty) {
-      throw new Error('Could not add segment thank you page script beacuse of missing segmentProperty');
-    }
+  if (pathname === '/account/register') {
+    helpers_1.trackEvent('Registration Viewed', {});
+  }
 
-    helpers_1.initSegment(); // @ts-ignore
-
-    var checkout = window.Shopify.checkout; // @ts-ignore
-
-    var products = checkout.line_items.map(function (product) {
-      return {
-        brand: product.vendor,
-        category: product.category,
-        url: product.handle,
-        product_id: String(product.sku),
-        position: product.list_position,
-        name: product.title,
-        price: parseFloat(product.price),
-        variant: product.variant_title,
-        quantity: product.quantity
-      };
-    }); // @ts-ignore
-
-    var orderNumberHTML = document.getElementsByClassName('os-order-number')[0].innerHTML;
-
-    if (!orderNumberHTML) {
-      throw new Error('Could not add segment thank you page script beacuse of missing order number in HTML');
-    }
-
-    var indexOfNumber = orderNumberHTML.indexOf('#');
-    var orderNumber = orderNumberHTML.substring(indexOfNumber).trim(); // @ts-ignore
-
-    analytics.track('Thankyou Page Viewed', {
-      coupon: checkout.coupon,
-      currency: checkout.currency,
-      discount: checkout.discount,
-      email: checkout.email,
-      order_id: orderNumber,
-      presentment_currency: checkout.presentment_currency,
-      presentment_total: checkout.total_price_set && checkout.total_price_set.presentment_money && checkout.total_price_set.presentment_money.amount,
-      products: products,
-      sent_from: 'Littledata app',
-      shipping: checkout.shipping_rate && checkout.shipping_rate.price,
-      tax: checkout.total_tax,
-      total: checkout.total_price
+  if (pathname === '/search') {
+    helpers_1.trackEvent('Products Searched', {
+      query: document.location.search.replace('?q=', '').replace('+', ' ')
     });
   }
-})();
+};
 
 /***/ })
 /******/ 	]);
@@ -1264,7 +1245,7 @@ var helpers_1 = __webpack_require__(11);
 /************************************************************************/
 /******/ 	// startup
 /******/ 	// Load entry module
-/******/ 	__webpack_require__(22);
+/******/ 	__webpack_require__(10);
 /******/ 	// This entry module used 'exports' so it can't be inlined
 /******/ })()
 ;

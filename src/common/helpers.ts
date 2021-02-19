@@ -55,16 +55,20 @@ export const productUrlRegex = `^(?!\/\/cdn)[-\.:\/,a-z,A-Z]*\/products\/`;
 
 let postCartTimeout: any;
 
+const attributes: Cart.Attributes = {}; //persist any previous attributes sent from this page
 const cartOnlyAttributes: LooseObject = {};
 export const setCartOnlyAttributes = (setAttributes: LooseObject) => {
 	const toSet = Object.keys(setAttributes);
+	let needsToSend = false;
 	toSet.forEach((name: string) => {
 		const fieldName = `littledata_${name}`;
-		cartOnlyAttributes[fieldName] = setAttributes[name];
+		if (cartOnlyAttributes[fieldName] !== setAttributes[name]) {
+			cartOnlyAttributes[fieldName] = setAttributes[name];
+			needsToSend = true;
+		}
 	});
+	if (needsToSend) postCartToShopify({ ...attributes, ...cartOnlyAttributes });
 };
-
-const attributes: Cart.Attributes = {}; //persist any previous attributes sent from this page
 
 function postClientID(clientId: string, platform: string, sendCartToLittledata: boolean) {
 	const attribute = `${platform}-clientID`;
@@ -76,10 +80,7 @@ function postClientID(clientId: string, platform: string, sendCartToLittledata: 
 	// to be included in the same cart update
 	postCartTimeout = setTimeout(function() {
 		attributes.littledata_updatedAt = new Date().getTime();
-		const cartUpdateReq = new XMLHttpRequest(); // new HttpRequest instance
-		cartUpdateReq.onload = function() {
-			const updatedCart = JSON.parse(cartUpdateReq.response);
-			LittledataLayer.cart = updatedCart;
+		postCartToShopify(attributes, function(updatedCart: Cart.RootObject) {
 			if (sendCartToLittledata) {
 				postCartToLittledata(updatedCart);
 			}
@@ -92,20 +93,27 @@ function postClientID(clientId: string, platform: string, sendCartToLittledata: 
 					cartID: `${updatedCart.token}`,
 				}),
 			);
-		};
-		cartUpdateReq.open('POST', '/cart/update.json');
-		cartUpdateReq.setRequestHeader('Content-Type', 'application/json');
-		const cartAttributes: object = {
-			...attributes,
-			...cartOnlyAttributes,
-		};
-		cartUpdateReq.send(
-			JSON.stringify({
-				attributes: cartAttributes,
-			}),
-		);
+		});
 	}, 1000);
 }
+
+const postCartToShopify = (attributes: object, callback?: any) => {
+	const cartUpdateReq = new XMLHttpRequest();
+	cartUpdateReq.onload = () => {
+		const updatedCart = JSON.parse(cartUpdateReq.response);
+		LittledataLayer.cart = updatedCart;
+		if (callback) {
+			callback(updatedCart);
+		}
+	};
+	cartUpdateReq.open('POST', '/cart/update.json');
+	cartUpdateReq.setRequestHeader('Content-Type', 'application/json');
+	cartUpdateReq.send(
+		JSON.stringify({
+			attributes,
+		}),
+	);
+};
 
 function postCartToLittledata(cart: Cart.RootObject) {
 	const httpRequest = new XMLHttpRequest(); // new HttpRequest instance
@@ -157,26 +165,6 @@ export function removePii(str: string): string {
 	return piiRegexs.reduce((memo, curr) => memo.replace(curr.regex, 'REMOVED'), str);
 }
 
-/**
- * guid
- */
-export const guid: string = (function() {
-	function s10() {
-		return Math.floor(Math.random() * 10e9);
-	}
-	return `GA1.2.${s10()}.${s10()}`;
-})();
-
-// const createCookie = (name, value, days) => {
-// 	let expires = ''
-// 	if (days) {
-// 		const date = new Date();
-// 		date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-// 		expires = `; expires=${date.toGMTString()}`
-// 	}
-// 	document.cookie = `${name}=${value}${expires}; path=/;`
-// }
-
 export const trackProductImageClicks = (clickTag: (image: HTMLImageElement) => void) => {
 	if (LittledataLayer.productPageClicks === false) return false;
 	getElementsByHref('^https://cdn.shopify.com/s/files/.*/products/').forEach(element => {
@@ -217,34 +205,18 @@ export const advertiseLD = (app: string) => {
 	}
 };
 
-export function retrieveAndStoreClientId(withCustomTask: boolean = false) {
-	const clientIdPromise = new Promise(resolve => {
-		// @ts-ignore
-		gtag('get', LittledataLayer.webPropertyID || LittledataLayer.measurementID, 'client_id', resolve);
-	});
-
-	return clientIdPromise
-		.then((clientId: string) => {
-			if (withCustomTask) {
-				setCustomTask();
-			}
-
-			return setClientID(clientId, 'google');
-		})
-		.catch(() => {
-			let postClientIdTimeout: any;
-			let nextTimeout = 10;
-			waitForGaToLoad(postClientIdTimeout, nextTimeout);
-		});
+export function retrieveAndStoreClientId() {
+	let postClientIdTimeout: any;
+	//when GA first loads it may not have changed the cookie to accept _ga query param
+	//so we should wait 50ms after this
+	let nextTimeout = 50;
+	waitForGaToLoad(postClientIdTimeout, nextTimeout);
 }
 
-export const setCustomTask = () => {
-	const trackers = window.ga && window.ga.getAll && window.ga.getAll();
-	if (!trackers || !trackers.length) return;
-
+export const setCustomTask = (tracker: any) => {
 	const MPEndpointLength = LittledataLayer.MPEndpoint && LittledataLayer.MPEndpoint.length;
 	if (MPEndpointLength) {
-		trackers[0].set('customTask', customTask(LittledataLayer.MPEndpoint));
+		tracker.set('customTask', customTask(LittledataLayer.MPEndpoint));
 	}
 };
 
@@ -264,7 +236,7 @@ function waitForGaToLoad(postClientIdTimeout: any, nextTimeout: number) {
 	// until after ga.getAll is available but before hit is sent
 	const trackers = window.ga && window.ga.getAll && window.ga.getAll();
 	if (trackers && trackers.length) {
-		setCustomTask();
+		setCustomTask(trackers[0]);
 		return setClientID(getGAClientId(trackers[0]), 'google');
 	}
 

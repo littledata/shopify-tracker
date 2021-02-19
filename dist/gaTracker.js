@@ -1,8 +1,366 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ([
-/* 0 */,
-/* 1 */,
+/* 0 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+
+var helpers_1 = __webpack_require__(1);
+
+var helpers_2 = __webpack_require__(2);
+
+(function () {
+  helpers_2.validateLittledataLayer();
+  helpers_1.initGtag();
+  helpers_2.advertiseLD('Google Analytics');
+  helpers_2.documentReady(helpers_1.trackEvents);
+  helpers_2.pageView(function () {
+    helpers_1.sendPageview();
+  });
+})();
+
+/***/ }),
+/* 1 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+
+var helpers_1 = __webpack_require__(2);
+
+var getConfig_1 = __importDefault(__webpack_require__(7));
+
+var getProductDetail_1 = __importDefault(__webpack_require__(8));
+
+var productListViews_1 = __importDefault(__webpack_require__(9));
+
+var event_category = 'Shopify (Littledata)';
+
+exports.initGtag = function () {
+  window.dataLayer = window.dataLayer || [];
+
+  var stubFunction = function stubFunction() {
+    dataLayer.push(arguments);
+  }; //eslint-disable-line
+
+
+  window.gtag = window.gtag || stubFunction;
+
+  window.ga = window.ga || function () {
+    (window.ga.q = window.ga.q || []).push(arguments);
+  };
+
+  window.ga.l = +new Date(); // @ts-ignore
+
+  gtag('js', new Date());
+
+  if (hasGA4()) {
+    gtag('config', LittledataLayer.measurementID, _objectSpread({}, getConfig_1["default"](), {
+      send_page_view: false
+    }));
+  }
+
+  if (hasGA3()) {
+    gtag('config', LittledataLayer.webPropertyID, _objectSpread({}, getConfig_1["default"](), {
+      send_page_view: false
+    }));
+  }
+};
+
+exports.sendPageview = function () {
+  var page_title = helpers_1.removePii(document.title);
+  var locationWithMedium = addUTMMediumIfMissing(document.location.href);
+  var page_location = helpers_1.removePii(locationWithMedium);
+
+  if (hasGA4()) {
+    gtag('config', LittledataLayer.measurementID, _objectSpread({}, getConfig_1["default"](), {
+      page_title: page_title,
+      page_location: page_location,
+      send_page_view: true
+    }));
+  }
+
+  if (hasGA3()) {
+    gtag('config', LittledataLayer.webPropertyID, _objectSpread({}, getConfig_1["default"](), {
+      page_title: page_title,
+      page_location: page_location,
+      send_page_view: true
+    }));
+  }
+
+  helpers_1.retrieveAndStoreClientId();
+  dataLayer.push({
+    event: 'pageview',
+    page_title: page_title,
+    page_location: page_location
+  });
+  var googleAds = LittledataLayer.googleAdsConversionIds;
+
+  if (_typeof(googleAds) === 'object' && googleAds.length > 0) {
+    googleAds.forEach(function (adId) {
+      return gtag('config', adId);
+    });
+  }
+
+  var product = getProductDetail_1["default"]();
+
+  if (product) {
+    product.list_position = parseInt(window.localStorage.getItem('position')) || 1;
+    sendViewItemEvent(product);
+  }
+};
+
+exports.trackEvents = function () {
+  /* run list, product, and clientID scripts everywhere */
+  if (LittledataLayer.ecommerce.impressions.length) {
+    helpers_1.productListClicks(function (product, self) {
+      var productFromImpressions = LittledataLayer.ecommerce.impressions.find(function (prod) {
+        return prod.name === product.name && prod.handle === product.handle;
+      });
+      var pos = productFromImpressions && productFromImpressions.list_position;
+      window.localStorage.setItem('position', String(pos));
+      sendSelectContentEvent(product, self);
+    });
+    productListViews_1["default"](function (products) {
+      sendViewItemListEvent(products);
+    });
+  }
+
+  var product = getProductDetail_1["default"]();
+
+  if (product) {
+    // if PDP, we can also track clicks on images and social shares
+    helpers_1.trackProductImageClicks(function (image) {
+      dataLayer.push({
+        event: 'product_image_click',
+        name: image.name,
+        image_url: image.src
+      });
+
+      if (hasGA4()) {
+        gtag('event', 'select_content', {
+          content_type: 'product',
+          item_product_id: product.shopify_product_id,
+          item_sku: product.id,
+          item_variant_id: product.shopify_variant_id,
+          image_url: image.src,
+          send_to: LittledataLayer.measurementID
+        });
+      }
+
+      if (hasGA3()) {
+        gtag('event', 'Product image click', {
+          event_category: event_category,
+          event_label: image.name,
+          send_to: LittledataLayer.webPropertyID
+        });
+      }
+    });
+    helpers_1.trackSocialShares(function (network) {
+      dataLayer.push({
+        event: 'share_product',
+        network: network
+      });
+
+      if (hasGA4()) {
+        gtag('event', 'share', {
+          method: network,
+          send_to: LittledataLayer.measurementID
+        });
+      }
+
+      if (hasGA3()) {
+        gtag('event', 'Social share', {
+          event_category: event_category,
+          event_label: network,
+          send_to: LittledataLayer.webPropertyID
+        });
+      }
+    });
+  }
+};
+
+exports.filterGAProductFields = function (product) {
+  //pick only the allowed fields from GA EE specification
+  //https://developers.google.com/tag-manager/enhanced-ecommerce#product-impressions
+  var gaProductFields = ['name', 'id', 'price', 'brand', 'category', 'variant', 'list', 'list_name', 'position', 'list_position'];
+  var gaProduct = {};
+  gaProductFields.forEach(function (field) {
+    if (product[field]) gaProduct[field] = product[field];
+  });
+  return gaProduct;
+};
+
+var addUTMMediumIfMissing = function addUTMMediumIfMissing(url) {
+  var utmMedium = /(\?|&)utm_medium=/;
+  var utmSource = /utm_source=[a-z,A-Z,0-9,-,_]+/;
+  var sourceMatches = url.match(utmSource);
+
+  if (!sourceMatches || !sourceMatches.length || utmMedium.test(url)) {
+    return url;
+  } // Shopify adds a utm_source tag for it's own tracking, without specifying utm_medium
+  // we add 'referral' to ensure it shows up in GA
+
+
+  var sourceTag = sourceMatches[0];
+  var utmTags = sourceTag + '&utm_medium=referral';
+  return url.replace(sourceTag, utmTags);
+};
+
+function sendViewItemListEvent(products) {
+  if (hasGA4()) {
+    var listName = products && products.length && products[0].list_name || '';
+    var page_title = helpers_1.removePii(document.title);
+    gtag('event', 'view_item_list', {
+      items: convertProductsToGa4Format(products, true),
+      item_list_name: page_title,
+      item_list_id: listName,
+      send_to: LittledataLayer.measurementID
+    });
+  }
+
+  if (hasGA3()) {
+    var gaProducts = products.map(function (product) {
+      return exports.filterGAProductFields(product);
+    });
+    gtag('event', 'view_item_list', {
+      event_category: event_category,
+      items: gaProducts,
+      send_to: LittledataLayer.webPropertyID,
+      non_interaction: true
+    });
+  }
+
+  dataLayer.push({
+    event: 'view_item_list',
+    ecommerce: {
+      impressions: products
+    }
+  });
+}
+
+function sendViewItemEvent(product) {
+  if (hasGA4()) {
+    gtag('event', 'view_item', {
+      items: convertProductsToGa4Format(new Array(product), false),
+      send_to: LittledataLayer.measurementID
+    });
+  }
+
+  if (hasGA3()) {
+    gtag('event', 'view_item', {
+      event_category: event_category,
+      items: [exports.filterGAProductFields(product)],
+      non_interaction: true,
+      send_to: LittledataLayer.webPropertyID
+    });
+  }
+
+  dataLayer.push({
+    event: 'view_item',
+    ecommerce: {
+      detail: {
+        actionField: {
+          list: product.list_name
+        },
+        products: [product]
+      }
+    }
+  });
+}
+
+function sendSelectContentEvent(product, self) {
+  dataLayer.push({
+    event: 'select_content',
+    ecommerce: {
+      click: {
+        actionField: {
+          list: product.list_name
+        },
+        products: [product]
+      }
+    }
+  });
+
+  if (hasGA4()) {
+    gtag('event', 'select_item', {
+      items: convertProductsToGa4Format(new Array(product), true),
+      send_to: LittledataLayer.measurementID,
+      event_callback: function event_callback() {
+        window.clearTimeout(self.timeout);
+        document.location.href = self.href;
+      }
+    });
+  }
+
+  if (hasGA3()) {
+    gtag('event', 'select_content', {
+      event_category: event_category,
+      content_type: 'product',
+      items: [exports.filterGAProductFields(product)],
+      send_to: LittledataLayer.webPropertyID,
+      event_callback: function event_callback() {
+        window.clearTimeout(self.timeout);
+        document.location.href = self.href;
+      }
+    });
+  }
+}
+
+function hasGA4() {
+  return LittledataLayer.measurementID !== undefined;
+}
+
+function hasGA3() {
+  return LittledataLayer.webPropertyID !== undefined;
+}
+
+function convertProductsToGa4Format(products, sendIndex) {
+  return products.map(function (product) {
+    var converted = {
+      currency: LittledataLayer.ecommerce && LittledataLayer.ecommerce.currencyCode || '',
+      item_product_id: product.shopify_product_id,
+      item_name: product.name,
+      item_brand: product.brand,
+      item_category: product.category,
+      item_variant: product.variant,
+      item_sku: product.id,
+      item_variant_id: product.shopify_variant_id,
+      price: product.price,
+      index: product.list_position
+    };
+
+    if (!sendIndex) {
+      delete converted.index;
+    }
+
+    return converted;
+  });
+}
+
+/***/ }),
 /* 2 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
@@ -716,7 +1074,84 @@ exports.getValidGAClientId = function () {
 };
 
 /***/ }),
-/* 7 */,
+/* 7 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+
+var getCookie_1 = __webpack_require__(6);
+
+exports.DEFAULT_LINKER_DOMAINS = ['^(?!cdn.)(.*)shopify.com', 'rechargeapps.com', 'recurringcheckout.com', 'carthook.com', 'checkout.com', 'shop.app'];
+exports.extraExcludedReferrers = ['shop.app'];
+
+exports.default = function () {
+  var settings = window.LittledataLayer || {};
+  var anonymizeIp = settings.anonymizeIp,
+      googleSignals = settings.googleSignals,
+      ecommerce = settings.ecommerce,
+      optimizeId = settings.optimizeId,
+      referralExclusion = settings.referralExclusion;
+  var extraLinkerDomains = settings.extraLinkerDomains || [];
+  var excludeReferral = referralExclusion && referralExclusion.test(document.referrer);
+
+  if (exports.extraExcludedReferrers.includes(document.referrer)) {
+    excludeReferral = true;
+  }
+
+  if (document.referrer.includes("".concat(location.protocol, "//").concat(location.host))) {
+    // valid referrer may have host within the url, like https://newsite.com/about/shopify.com
+    // but less likely to have protocol as well, unless the same domain - self-referral
+    excludeReferral = true;
+  }
+
+  var config = {
+    linker: {
+      domains: [].concat(_toConsumableArray(exports.DEFAULT_LINKER_DOMAINS), _toConsumableArray(extraLinkerDomains)),
+      accept_incoming: true
+    },
+    anonymize_ip: anonymizeIp === false ? false : true,
+    allow_ad_personalization_signals: googleSignals === true ? true : false,
+    currency: ecommerce && ecommerce.currencyCode || 'USD',
+    link_attribution: true,
+    optimize_id: optimizeId,
+    page_referrer: excludeReferral ? null : document.referrer
+  };
+  var userId = settings.customer && settings.customer.id;
+
+  if (userId) {
+    config.user_id = userId;
+  }
+
+  var cookie = getCookie_1.getCookie('_ga');
+
+  if (cookie && !getCookie_1.getValidGAClientId(cookie)) {
+    //expiring the cookie after this session ensures invalid clientID
+    //is not propagated to future sessions
+    config.cookie_expires = 0;
+  }
+
+  if (settings.cookieUpdate === false) {
+    // If the cookie is being overwritten by a server-side cookie to avoid ITP
+    // this should be false
+    config.cookie_update = false;
+  }
+
+  return config;
+};
+
+/***/ }),
 /* 8 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -833,379 +1268,6 @@ var chunk = function chunk(arr, size) {
   });
 };
 
-/***/ }),
-/* 10 */,
-/* 11 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-var __importDefault = this && this.__importDefault || function (mod) {
-  return mod && mod.__esModule ? mod : {
-    "default": mod
-  };
-};
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-
-var helpers_1 = __webpack_require__(2);
-
-var addEmailToEvents_1 = __webpack_require__(12);
-
-var segmentProduct_1 = __webpack_require__(13);
-
-var getCookie_1 = __webpack_require__(6);
-
-var productListViews_1 = __importDefault(__webpack_require__(9));
-
-var getProductDetail_1 = __importDefault(__webpack_require__(8));
-
-var getContext = function getContext() {
-  return {
-    integration: {
-      name: 'shopify_littledata',
-      version: window.LittledataScriptVersion
-    },
-    traits: window.analytics.user && window.analytics.user().traits
-  };
-};
-
-exports.trackEvent = function (eventName, params) {
-  // @ts-ignore
-  window.analytics.track(eventName, params, {
-    context: getContext()
-  });
-};
-
-exports.identifyCustomer = function (customer) {
-  var cookieTraits = {};
-  var cookies = LittledataLayer.cookiesToTrack;
-
-  if (cookies) {
-    cookies.forEach(function (cookie) {
-      cookieTraits[cookie] = getCookie_1.getCookie(cookie);
-    });
-  }
-
-  helpers_1.setCartOnlyAttributes(cookieTraits); //this will add to Shopify cart
-
-  if (customer) {
-    window.analytics.identify(customer.id, _objectSpread({
-      email: customer.email,
-      name: customer.name,
-      phone: customer.phone || customer.address && customer.address.phone,
-      address: parseAddress(customer.address)
-    }, cookieTraits));
-  }
-};
-
-exports.trackEvents = function () {
-  if (LittledataLayer) {
-    /* run list, product, and clientID scripts everywhere */
-    if (LittledataLayer.ecommerce.impressions.length) {
-      helpers_1.productListClicks(function (product) {
-        var productFromImpressions = LittledataLayer.ecommerce.impressions.find(function (prod) {
-          return prod.name === product.name && prod.handle === product.handle;
-        });
-        var pos = productFromImpressions && productFromImpressions.list_position;
-        window.localStorage.setItem('position', String(pos));
-        exports.trackEvent('Product Clicked', _objectSpread({}, segmentProduct_1.segmentProduct(product), {
-          currency: LittledataLayer.ecommerce.currencyCode,
-          list_id: product.list
-        }));
-      });
-      productListViews_1["default"](function (products) {
-        var listId = products && products[0].list;
-        var segmentProducts = products.map(segmentProduct_1.segmentProduct);
-        exports.trackEvent('Product List Viewed', {
-          list_id: listId,
-          products: segmentProducts
-        });
-      });
-    }
-
-    var productDetail = getProductDetail_1["default"]();
-
-    if (productDetail) {
-      var product = segmentProduct_1.segmentProduct(productDetail); // if PDP, we can also track clicks on images and social shares
-
-      helpers_1.trackProductImageClicks(function (image) {
-        product.image_url = image.src;
-        exports.trackEvent('Product Image Clicked', product);
-      });
-      helpers_1.trackSocialShares(function (network) {
-        exports.trackEvent('Product Shared', _objectSpread({}, product, {
-          share_via: network
-        }));
-      });
-    }
-  }
-};
-
-exports.initSegment = function () {
-  // Create a queue, but don't obliterate an existing one!
-  // @ts-ignore
-  var analytics = window.analytics = window.analytics || []; // If the real analytics.js is already on the page return.
-
-  if (analytics.initialize) return;
-
-  if (analytics.invoked) {
-    window.console && console.error && console.error('Segment snippet included twice.');
-    return;
-  }
-
-  analytics.invoked = true;
-  analytics.methods = ['trackSubmit', 'trackClick', 'trackLink', 'trackForm', 'pageview', 'identify', 'reset', 'group', 'track', 'ready', 'alias', 'debug', 'page', 'once', 'off', 'on', 'addSourceMiddleware', 'addIntegrationMiddleware', 'setAnonymousId', 'addDestinationMiddleware'];
-
-  analytics.factory = function (t) {
-    return function () {
-      var e = Array.prototype.slice.call(arguments);
-      e.unshift(t);
-      analytics.push(e);
-      return analytics;
-    };
-  };
-
-  for (var t = 0; t < analytics.methods.length; t++) {
-    var e = analytics.methods[t];
-    analytics[e] = analytics.factory(e);
-  } // use custom CDN path, or fallback to Segment's CDN
-
-
-  var CDNdomain = LittledataLayer.CDNForAnalyticsJS || 'https://cdn.segment.com'; // Define a method to load Analytics.js from CDN,
-  // and that will be sure to only ever load it once.
-
-  analytics.load = function (key, options) {
-    // Create an async script element based on your key.
-    var script = document.createElement('script');
-    script.type = 'text/javascript';
-    script.async = true;
-    script.src = "".concat(CDNdomain, "/analytics.js/v1/").concat(key, "/analytics.min.js"); // Insert our script next to the first script element.
-
-    var first = document.getElementsByTagName('script')[0];
-    first.parentNode.insertBefore(script, first);
-    analytics._loadOptions = options;
-  }; // Add a version to keep track of what's in the wild.
-
-
-  analytics.SNIPPET_VERSION = '4.1.0';
-  analytics.addSourceMiddleware(addEmailToEvents_1.addEmailToTrackEvents);
-  analytics.load(LittledataLayer.writeKey);
-  window.dataLayer = window.dataLayer || [];
-};
-
-var parseAddress = function parseAddress(a) {
-  var output = {};
-  if (!a) return output;
-
-  if (a.address1) {
-    output.street = a.address1;
-    if (a.address2) output.street += ", ".concat(a.address2);
-  }
-
-  if (a.city) output.city = a.city;
-  if (a.zip) output.postalCode = a.zip;
-  if (a.province) output.state = a.province;
-  if (a.country) output.country = a.country;
-  return output;
-};
-
-exports.callSegmentPage = function (integrations) {
-  // https://segment.com/docs/sources/website/analytics.js/#page
-  var pageName = document.title;
-  window.analytics.page(pageName, {}, {
-    context: getContext(),
-    integrations: integrations
-  });
-  var productDetail = getProductDetail_1["default"]();
-
-  if (productDetail) {
-    var properties = segmentProduct_1.segmentProduct(productDetail);
-    properties.currency = LittledataLayer.ecommerce.currencyCode;
-    properties.position = parseInt(window.localStorage.getItem('position')) || 1;
-    window.analytics.ready(function () {
-      //need to wait for anonymousId to be available
-      exports.trackEvent('Product Viewed', properties);
-    });
-  }
-};
-
-/***/ }),
-/* 12 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-
-exports.addEmailToTrackEvents = function (_ref) {
-  var payload = _ref.payload,
-      next = _ref.next;
-  if (payload.action() !== 'track') return next(payload);
-  payload.obj = _objectSpread({}, payload.obj, {
-    properties: addEmailToProperties(payload.obj.properties)
-  });
-  next(payload);
-};
-
-var addEmailToProperties = function addEmailToProperties(properties) {
-  var email = window.analytics.user && window.analytics.user().traits().email;
-
-  if (email) {
-    properties.email = email;
-  }
-
-  return properties;
-};
-
-/***/ }),
-/* 13 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-
-exports.segmentProduct = function (dataLayerProduct) {
-  var output = {
-    brand: dataLayerProduct.brand,
-    category: dataLayerProduct.category,
-    url: "".concat(window.document.location.origin, "/products/").concat(dataLayerProduct.handle),
-    product_id: String(dataLayerProduct.id),
-    sku: dataLayerProduct.id,
-    name: dataLayerProduct.name,
-    price: parseFloat(dataLayerProduct.price),
-    variant: dataLayerProduct.variant,
-    shopify_product_id: String(dataLayerProduct.shopify_product_id),
-    shopify_variant_id: String(dataLayerProduct.shopify_variant_id)
-  };
-
-  if (dataLayerProduct.image_url) {
-    output.image_url = dataLayerProduct.image_url;
-  }
-
-  if (dataLayerProduct.list_position) {
-    output.position = dataLayerProduct.list_position;
-  }
-
-  if (dataLayerProduct.compare_at_price) {
-    output.compare_at_price = dataLayerProduct.compare_at_price;
-  }
-
-  return output;
-};
-
-/***/ }),
-/* 14 */,
-/* 15 */,
-/* 16 */
-/***/ ((__unused_webpack_module, exports) => {
-
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-
-exports.getQueryStringParam = function (url, param) {
-  if (!url) return '';
-  var matches = url.match("".concat(param, "=([a-z,A-Z,0-9,-]+)"));
-  if (!matches || !matches.length || !matches[1]) return '';
-  return matches[1];
-};
-
-/***/ }),
-/* 17 */,
-/* 18 */,
-/* 19 */,
-/* 20 */,
-/* 21 */,
-/* 22 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-
-var getQueryStringParam_1 = __webpack_require__(16);
-
-var helpers_1 = __webpack_require__(11);
-
-(function () {
-  // @ts-ignore
-  if (window.Shopify.Checkout && window.Shopify.Checkout.page === 'thank_you') {
-    // @ts-ignore
-    var scriptSrc = document.currentScript.src;
-    var segmentProperty = getQueryStringParam_1.getQueryStringParam(scriptSrc, 'segmentProperty');
-
-    if (!segmentProperty) {
-      throw new Error('Could not add segment thank you page script beacuse of missing segmentProperty');
-    }
-
-    helpers_1.initSegment(); // @ts-ignore
-
-    var checkout = window.Shopify.checkout; // @ts-ignore
-
-    var products = checkout.line_items.map(function (product) {
-      return {
-        brand: product.vendor,
-        category: product.category,
-        url: product.handle,
-        product_id: String(product.sku),
-        position: product.list_position,
-        name: product.title,
-        price: parseFloat(product.price),
-        variant: product.variant_title,
-        quantity: product.quantity
-      };
-    }); // @ts-ignore
-
-    var orderNumberHTML = document.getElementsByClassName('os-order-number')[0].innerHTML;
-
-    if (!orderNumberHTML) {
-      throw new Error('Could not add segment thank you page script beacuse of missing order number in HTML');
-    }
-
-    var indexOfNumber = orderNumberHTML.indexOf('#');
-    var orderNumber = orderNumberHTML.substring(indexOfNumber).trim(); // @ts-ignore
-
-    analytics.track('Thankyou Page Viewed', {
-      coupon: checkout.coupon,
-      currency: checkout.currency,
-      discount: checkout.discount,
-      email: checkout.email,
-      order_id: orderNumber,
-      presentment_currency: checkout.presentment_currency,
-      presentment_total: checkout.total_price_set && checkout.total_price_set.presentment_money && checkout.total_price_set.presentment_money.amount,
-      products: products,
-      sent_from: 'Littledata app',
-      shipping: checkout.shipping_rate && checkout.shipping_rate.price,
-      tax: checkout.total_tax,
-      total: checkout.total_price
-    });
-  }
-})();
-
 /***/ })
 /******/ 	]);
 /************************************************************************/
@@ -1264,7 +1326,7 @@ var helpers_1 = __webpack_require__(11);
 /************************************************************************/
 /******/ 	// startup
 /******/ 	// Load entry module
-/******/ 	__webpack_require__(22);
+/******/ 	__webpack_require__(0);
 /******/ 	// This entry module used 'exports' so it can't be inlined
 /******/ })()
 ;

@@ -51,7 +51,7 @@ import { initSegment } from '../segmentTracker/helpers';
 				checkout.total_price_set.presentment_money &&
 				checkout.total_price_set.presentment_money.amount,
 			products: products,
-			sent_from: 'Littledata app',
+			sent_from: 'Littledata script',
 			shipping: checkout.shipping_rate && checkout.shipping_rate.price,
 			tax: checkout.total_tax,
 			total: checkout.total_price,

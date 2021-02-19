@@ -42,6 +42,39 @@ export interface CustomWindow extends Window {
 	_ga_originalSendHitTask: any;
 }
 
+export interface OwnLayer extends Cart.Attributes {
+	version?: string;
+	customer?: Customer;
+	hideBranding?: boolean;
+	writeKey?: string;
+	webPropertyID?: string;
+	measurementID?: string;
+	referralExclusion?: RegExp;
+	enhancePrivacy?: boolean;
+	productClicks?: boolean;
+	googleAdsConversionIds?: string[];
+	ecommerce: {
+		currencyCode?: string;
+		impressions?: Impression[];
+		detail?: Detail;
+	};
+	transactionWatcherURL?: string;
+	cart?: Cart.RootObject;
+	anonymizeIp?: boolean;
+	googleSignals?: boolean;
+	optimizeId?: string;
+	productPageClicks?: boolean;
+	extraLinkerDomains?: string[];
+	cookiesToTrack?: string[];
+	doNotTrackReplaceState?: boolean;
+	MPEndpoint?: string;
+	CDNForAnalyticsJS?: string;
+	segmentUserId?: string;
+	cookieUpdate?: boolean;
+	debug?: boolean;
+	pageType?: string;
+}
+
 declare global {
 	interface LooseObject {
 		[index: string]: any;
@@ -135,39 +168,6 @@ declare global {
 		value_type: string;
 	}
 
-	interface OwnLayer extends Cart.Attributes {
-		version?: string;
-		customer?: Customer;
-		hideBranding?: boolean;
-		writeKey?: string;
-		webPropertyID?: string;
-		measurementID?: string;
-		referralExclusion?: RegExp;
-		enhancePrivacy?: boolean;
-		productClicks?: boolean;
-		googleAdsConversionIds?: string[];
-		ecommerce: {
-			currencyCode?: string;
-			impressions?: Impression[];
-			detail?: Detail;
-			impressionsToSend?: ImpressionToSend[];
-		};
-		transactionWatcherURL?: string;
-		cart?: Cart.RootObject;
-		anonymizeIp?: boolean;
-		googleSignals?: boolean;
-		optimizeId?: string;
-		productPageClicks?: boolean;
-		extraLinkerDomains?: string[];
-		cookiesToTrack?: string[];
-		doNotTrackReplaceState?: boolean;
-		MPEndpoint?: string;
-		CDNForAnalyticsJS?: string;
-		cookieUpdate?: boolean;
-		debug?: boolean;
-		pageType?: string;
-	}
-
 	interface ImpressionToSend {
 		handle: string;
 		shopify_variant_id: string;
@@ -194,11 +194,11 @@ declare global {
 	type ListClickCallback = (foundProduct: Impression, element: TimeBombHTMLAnchor, openInNewTab: boolean) => void;
 
 	interface Customer {
+		id: string;
 		accepts_marketing?: boolean;
 		display_name?: string;
 		email: string;
 		first_name?: string;
-		id: string;
 		last_name?: string;
 		name?: string;
 		phone?: string;
@@ -206,19 +206,19 @@ declare global {
 			address1: string;
 			address2: string;
 			city: string;
-			company: string;
+			company?: string;
 			country: string;
 			country_code: string;
-			first_name: string;
-			id: string;
-			last_name: string;
 			phone: string;
 			province: string;
 			province_code: string;
-			street: string;
+			street?: string;
 			zip: string;
 		};
 		generatedClientID?: string;
+		customerLifetimeValue: number;
+		purchaseCount: number;
+		tags: string;
 	}
 
 	interface SegmentAddressFormat {

@@ -4,37 +4,44 @@ declare let window: CustomWindow;
 import { trackProductImageClicks, trackSocialShares, setCartOnlyAttributes } from '../common/helpers';
 import { addEmailToTrackEvents } from './helpers/addEmailToEvents';
 import { segmentProduct } from './helpers/segmentProduct';
-import { addTraitsToTrackEvents } from './helpers/addTraitsToEvents';
 
 import { getCookie } from '../common/getCookie';
 import productListViews from '../common/productListViews';
 import getProductDetail from '../common/getProductDetail';
 import { listClickCallback } from '../common/addClickListener';
+import { addUserIdForCustomer } from './helpers/addUserIdForCustomer';
 
-const getContext = () => {
+export const getContext = () => {
 	return {
 		integration: {
 			name: 'shopify_littledata',
 			version: window.LittledataScriptVersion,
 		},
+		traits: window.analytics.user && window.analytics.user().traits(),
 	};
 };
 
 export const trackEvent = (eventName: string, params: object, callback?: any) => {
-	window.analytics.track(eventName, params, { context: getContext() }, callback);
+	window.analytics.track(
+		eventName,
+		{ ...params, ...addUserIdForCustomer(window.LittledataLayer), sent_from: 'Littledata script' },
+		{ context: getContext() },
+		callback,
+	);
 };
 
-export const identifyCustomer = (customer: Customer) => {
+export const identifyCustomer = () => {
 	const cookieTraits: any = {};
-	const cookies = LittledataLayer.cookiesToTrack;
-	if (cookies) {
-		cookies.forEach(cookie => {
-			cookieTraits[cookie] = getCookie(cookie);
-		});
-	}
+	const cookies = LittledataLayer.cookiesToTrack || [];
+	cookies.forEach(cookie => {
+		cookieTraits[cookie] = getCookie(cookie);
+	});
 	setCartOnlyAttributes(cookieTraits); //this will add to Shopify cart
-	if (customer) {
-		window.analytics.identify(customer.id, {
+
+	const { userId } = addUserIdForCustomer(LittledataLayer);
+	if (userId) {
+		const { customer } = LittledataLayer;
+		window.analytics.identify(userId, {
 			email: customer.email,
 			name: customer.name,
 			phone: customer.phone || (customer.address && customer.address.phone),
@@ -170,7 +177,6 @@ export const initSegment = () => {
 	analytics.SNIPPET_VERSION = '4.1.0';
 
 	analytics.addSourceMiddleware(addEmailToTrackEvents);
-	analytics.addSourceMiddleware(addTraitsToTrackEvents);
 	analytics.load(LittledataLayer.writeKey);
 	window.dataLayer = window.dataLayer || [];
 };
