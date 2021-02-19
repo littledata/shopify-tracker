@@ -4,16 +4,19 @@ import sinonChai from 'sinon-chai';
 import { setClientID } from '../../src/common/setClientID';
 import 'jsdom-global/register';
 import { CustomWindow } from '../..';
-import { httpRequest } from './httpRequest';
+import { httpRequest } from '../../src/common/httpRequest';
 
 declare let window: CustomWindow;
 should();
 chai.use(sinonChai);
 
 describe('getCart', () => {
+	let postJSON: any;
+	let getJSON: any;
 	before(() => {
-		const postJSON = sinon.stub(httpRequest, 'postJSON');
-		postJSON.withArgs('/cart/update.json').resolves({
+		postJSON = sinon.stub(httpRequest, 'postJSON');
+		getJSON = sinon.stub(httpRequest, 'getJSON');
+		postJSON.withArgs('/cart/update.json', sinon.match.object).resolves({
 			shoe: 1,
 		});
 		window.LittledataLayer = {
@@ -22,7 +25,8 @@ describe('getCart', () => {
 		};
 	});
 	it('fetches cart', () => {
-		setClientID();
-		true.should.be.true;
+		setClientID('111', 'google');
+		getJSON.should.have.been.called();
+		postJSON.should.have.been.called();
 	});
 });
