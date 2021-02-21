@@ -38,7 +38,6 @@ describe('setClientID', () => {
 		getJSON.withArgs('/cart.json').resolves(cart);
 		window.LittledataLayer = {
 			ecommerce: {},
-			customer: { id: '123', email: 'test@test.com' },
 		};
 	});
 	afterEach(() => {
