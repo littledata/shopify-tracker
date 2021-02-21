@@ -17,7 +17,7 @@ import { sendEventsWithPageview } from './helpers/sendEventsWithPageview';
 	validateLittledataLayer();
 	initSegment();
 	advertiseLD('Segment');
-	identifyCustomer(LittledataLayer.customer);
+	identifyCustomer();
 	documentReady(trackEvents);
 	pageView(function() {
 		callSegmentPage({});

@@ -1,1 +1,229 @@
-!function(e){var t={};function n(r){if(t[r])return t[r].exports;var o=t[r]={i:r,l:!1,exports:{}};return e[r].call(o.exports,o,o.exports,n),o.l=!0,o.exports}n.m=e,n.c=t,n.d=function(e,t,r){n.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:r})},n.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},n.t=function(e,t){if(1&t&&(e=n(e)),8&t)return e;if(4&t&&"object"==typeof e&&e&&e.__esModule)return e;var r=Object.create(null);if(n.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var o in e)n.d(r,o,function(t){return e[t]}.bind(null,o));return r},n.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return n.d(t,"a",t),t},n.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},n.p="",n(n.s=8)}({5:function(e,t,n){"use strict";n.d(t,"a",(function(){return r}));var r=function(e){var t=e.indexOf("webPropertyId="),n=e.indexOf("&",t),r=e.substring(t+14,n),o=e.indexOf("segmentProperty=",n);return{webPropertyId:r,segmentProperty:e.substring(o)}}},8:function(e,t,n){"use strict";n.r(t);var r=n(5);!function(){if(window.Shopify.Checkout&&"thank_you"===window.Shopify.Checkout.page){var e=document.currentScript.src,t=Object(r.a)(e).webPropertyId,n=document.createElement("script");n.async=!0;var o="https://www.googletagmanager.com/gtag/js?id="+t;n.src=o,document.getElementsByTagName("head")[0].appendChild(n),window.dataLayer=window.dataLayer||[];window.gtag=window.gtag||function(){dataLayer.push(arguments)},gtag("js",new Date),gtag("config",t);var a=parseInt(window.Shopify.checkout.total_price);gtag("event","Checkout",{event_category:"Shopify (Littledata)",event_label:"Thank you page",value:a})}}()}});
+/******/ (() => { // webpackBootstrap
+/******/ 	"use strict";
+/******/ 	var __webpack_modules__ = ({
+
+/***/ 7:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+
+var getCookie_1 = __webpack_require__(6);
+
+exports.DEFAULT_LINKER_DOMAINS = ['^(?!cdn.)(.*)shopify.com', 'rechargeapps.com', 'recurringcheckout.com', 'carthook.com', 'checkout.com', 'shop.app'];
+exports.extraExcludedReferrers = ['shop.app'];
+
+exports.default = function () {
+  var settings = window.LittledataLayer || {};
+  var anonymizeIp = settings.anonymizeIp,
+      googleSignals = settings.googleSignals,
+      ecommerce = settings.ecommerce,
+      optimizeId = settings.optimizeId,
+      referralExclusion = settings.referralExclusion;
+  var extraLinkerDomains = settings.extraLinkerDomains || [];
+  var excludeReferral = referralExclusion && referralExclusion.test(document.referrer);
+
+  if (exports.extraExcludedReferrers.includes(document.referrer)) {
+    excludeReferral = true;
+  }
+
+  if (document.referrer.includes("".concat(location.protocol, "//").concat(location.host))) {
+    // valid referrer may have host within the url, like https://newsite.com/about/shopify.com
+    // but less likely to have protocol as well, unless the same domain - self-referral
+    excludeReferral = true;
+  }
+
+  var config = {
+    linker: {
+      domains: [].concat(_toConsumableArray(exports.DEFAULT_LINKER_DOMAINS), _toConsumableArray(extraLinkerDomains)),
+      accept_incoming: true
+    },
+    anonymize_ip: anonymizeIp === false ? false : true,
+    allow_ad_personalization_signals: googleSignals === true ? true : false,
+    currency: ecommerce && ecommerce.currencyCode || 'USD',
+    link_attribution: true,
+    optimize_id: optimizeId,
+    page_referrer: excludeReferral ? null : document.referrer
+  };
+  var userId = settings.customer && settings.customer.id;
+
+  if (userId) {
+    config.user_id = userId;
+  }
+
+  var cookie = getCookie_1.getCookie('_ga');
+
+  if (cookie && !getCookie_1.getValidGAClientId(cookie)) {
+    //expiring the cookie after this session ensures invalid clientID
+    //is not propagated to future sessions
+    config.cookie_expires = 0;
+  }
+
+  if (settings.cookieUpdate === false) {
+    // If the cookie is being overwritten by a server-side cookie to avoid ITP
+    // this should be false
+    config.cookie_update = false;
+  }
+
+  return config;
+};
+
+/***/ }),
+
+/***/ 6:
+/***/ ((__unused_webpack_module, exports) => {
+
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+
+exports.getCookie = function (name) {
+  if (document.cookie.length > 0) {
+    var cookieStart = document.cookie.indexOf("".concat(name, "="));
+
+    if (cookieStart !== -1) {
+      var valueStart = cookieStart + name.length + 1;
+      var cookieEnd = document.cookie.indexOf(';', valueStart);
+
+      if (cookieEnd === -1) {
+        cookieEnd = document.cookie.length;
+      }
+
+      var cookie = unescape(document.cookie.substring(valueStart, cookieEnd));
+      return cookie;
+    }
+  }
+
+  return '';
+};
+
+exports.getValidGAClientId = function () {
+  var cookie = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+  var match = cookie.match(/(\d{2,11})\.(\d{2,11})/g);
+  return match && match[0];
+};
+
+/***/ }),
+
+/***/ 16:
+/***/ ((__unused_webpack_module, exports) => {
+
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+
+exports.getQueryStringParam = function (url, param) {
+  if (!url) return '';
+  var matches = url.match("".concat(param, "=([a-z,A-Z,0-9,-]+)"));
+  if (!matches || !matches.length || !matches[1]) return '';
+  return matches[1];
+};
+
+/***/ }),
+
+/***/ 23:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+
+var getConfig_1 = __importDefault(__webpack_require__(7));
+
+var getQueryStringParam_1 = __webpack_require__(16);
+
+(function () {
+  // @ts-ignore
+  if (window.Shopify.Checkout && window.Shopify.Checkout.page === 'thank_you') {
+    // @ts-ignore
+    var scriptSrc = document.currentScript.src;
+    var webPropertyId = getQueryStringParam_1.getQueryStringParam(scriptSrc, 'webPropertyId');
+
+    if (!webPropertyId) {
+      throw new Error('Could not add ga thank you page script beacuse of missing webPropertyId');
+    }
+
+    var script = document.createElement('script');
+    script.async = true;
+    var src = 'https://www.googletagmanager.com/gtag/js?id=' + webPropertyId;
+    script.src = src;
+    document.getElementsByTagName('head')[0].appendChild(script);
+    window.dataLayer = window.dataLayer || [];
+
+    var stubFunction = function stubFunction() {
+      dataLayer.push(arguments);
+    }; //eslint-disable-line
+
+
+    window.gtag = window.gtag || stubFunction; // @ts-ignore
+
+    gtag('js', new Date());
+    gtag('config', webPropertyId, getConfig_1["default"]());
+    var total = window.Shopify.checkout && window.Shopify.checkout.total_price;
+    var value = parseInt(total);
+    gtag('event', 'Checkout', {
+      event_category: 'Shopify (Littledata)',
+      event_label: 'Thank you page',
+      value: value,
+      send_to: webPropertyId
+    });
+  }
+})();
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		if(__webpack_module_cache__[moduleId]) {
+/******/ 			return __webpack_module_cache__[moduleId].exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	// startup
+/******/ 	// Load entry module
+/******/ 	// This entry module is referenced by other modules so it can't be inlined
+/******/ 	__webpack_require__(23);
+/******/ })()
+;

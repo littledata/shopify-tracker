@@ -97,16 +97,6 @@ export function removePii(str: string): string {
 	return piiRegexs.reduce((memo, curr) => memo.replace(curr.regex, 'REMOVED'), str);
 }
 
-/**
- * guid
- */
-export const guid: string = (function() {
-	function s10() {
-		return Math.floor(Math.random() * 10e9);
-	}
-	return `GA1.2.${s10()}.${s10()}`;
-})();
-
 export const trackProductImageClicks = (clickTag: (image: HTMLImageElement) => void) => {
 	if (LittledataLayer.productPageClicks === false) return false;
 	getElementsByHref('^https://cdn.shopify.com/s/files/.*/products/').forEach(element => {
@@ -131,7 +121,7 @@ export const trackSocialShares = (clickTag: (name?: string) => void) => {
 };
 
 export const validateLittledataLayer = () => {
-	window.LittledataScriptVersion = '10.0.7';
+	window.LittledataScriptVersion = '10.1';
 	if (!window.LittledataLayer) {
 		throw new Error('Aborting Littledata tracking as LittledataLayer was not found');
 	}

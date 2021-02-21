@@ -2,6 +2,7 @@ import { should } from 'chai';
 import getConfig, { extraExcludedReferrers, DEFAULT_LINKER_DOMAINS } from '../../src/common/getConfig';
 import 'jsdom-global/register';
 import { CustomWindow } from '../..';
+import { customer } from './fakeCustomerObject';
 declare let window: CustomWindow;
 
 should();
@@ -26,7 +27,7 @@ describe('getConfig', () => {
 	it('takes a userId', () => {
 		window.LittledataLayer = {
 			ecommerce: {},
-			customer: { id: '123', email: 'test@test.com' },
+			customer,
 		};
 		getConfig().should.contain({
 			user_id: window.LittledataLayer.customer.id,
