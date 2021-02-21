@@ -9,13 +9,16 @@ const attributes: Cart.Attributes = {}; //persist any previous attributes sent f
 const cartOnlyAttributes: LooseObject = {};
 
 export const setClientID = (clientId: string, platform: 'google' | 'segment' | 'email') => {
+	if (typeof clientId !== 'string' || clientId.length === 0) return;
 	const clientIDProperty = `${platform}-clientID` as clientID;
-
 	if (window.LittledataLayer[clientIDProperty]) {
 		return;
 	}
+	const lastPostedString = window.localStorage.getItem(`littledata-${clientIDProperty}`);
+	if (lastPostedString && isLessThanOneHourAgo(Number(lastPostedString))) {
+		return;
+	}
 	window.LittledataLayer[clientIDProperty] = clientId;
-	if (typeof clientId !== 'string' || clientId.length === 0) return;
 	(attributes as any)[clientIDProperty] = clientId;
 
 	clearTimeout(postCartTimeout);
@@ -24,6 +27,7 @@ export const setClientID = (clientId: string, platform: 'google' | 'segment' | '
 	postCartTimeout = setTimeout(async function() {
 		// first check if attributes are already stored on the cart
 		const cart = (await getCartWithToken()) as Cart.RootObject;
+		postCartToLittledata(cart);
 		postCartTokenClientIdToLittledata(cart.token);
 		postCartToShopify({ ...attributes, littledata_updatedAt: new Date().getTime() });
 	}, 1000);
@@ -52,7 +56,6 @@ export const getCartWithToken = async (): Promise<Cart.RootObject> => {
 		console.error('Littledata tracker unable to fetch cart token from Shopify', error);
 		return;
 	}
-	postCartToLittledata(cart);
 	if (!cart.token) {
 		throw new Error('cart had no cart token');
 	}
@@ -66,18 +69,14 @@ const postCartToShopify = async (attributes: object) => {
 		...window.LittledataLayer.cart,
 		...updatedCart,
 	};
+	addAttributesToLocalStorage(attributes);
 	return updatedCart;
 };
 
 const postCartToLittledata = async (cart: Cart.RootObject) => {
 	const updatedAt = attributes.littledata_updatedAt;
-	if (!updatedAt) return;
-	const clientIdCreated = new Date(Number(updatedAt));
-
-	const expiryTime = 60 * 60 * 1000; // 60 minutes is the time cart is cached in Redis
-	const timePassed = Date.now() - Number(clientIdCreated);
-	// only need to resend cart if it's expired from our Redis cache
-	if (timePassed < expiryTime) return;
+	// 60 minutes is the time cart is cached in Redis
+	if (!updatedAt || isLessThanOneHourAgo(updatedAt)) return;
 	const url = `${window.LittledataLayer.transactionWatcherURL}/cart/store`;
 	await httpRequest.postJSON(url, cart);
 };
@@ -88,4 +87,17 @@ const postCartTokenClientIdToLittledata = async (cartID: string) => {
 		...attributes,
 		cartID,
 	});
+};
+
+const addAttributesToLocalStorage = (attributes: Cart.Attributes) => {
+	Object.keys(attributes).forEach(attribute => {
+		window.localStorage.setItem(`littledata-${attribute}`, String(Date.now()));
+	});
+};
+
+const isLessThanOneHourAgo = (updatedAt: number) => {
+	const dateUpdated = new Date(Number(updatedAt));
+	const oneHour = 60 * 60 * 1000;
+	const timePassed = Date.now() - Number(dateUpdated);
+	return timePassed < oneHour;
 };

@@ -3,6 +3,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { setClientID } from '../../src/common/setClientID';
 import 'jsdom-global/register';
+import 'mock-local-storage';
 import { CustomWindow } from '../..';
 import { httpRequest } from '../../src/common/httpRequest';
 
@@ -43,6 +44,7 @@ describe('setClientID', () => {
 	afterEach(() => {
 		postJSON.restore();
 		getJSON.restore();
+		window.localStorage.clear();
 	});
 	it('sets client ID if no cart token is found', async () => {
 		setClientID('111', 'google');
@@ -82,7 +84,7 @@ describe('setClientID', () => {
 		getJSON.should.not.have.been.called;
 	});
 
-	it('handles de-bounces multiple requests', async () => {
+	it('de-bounces multiple requests', async () => {
 		setClientID('111', 'google');
 		await timeoutPromise(50);
 		setClientID('aaa', 'segment');
@@ -100,12 +102,44 @@ describe('setClientID', () => {
 		});
 	});
 
+	it('does not post cart if cart contains attribute', async () => {
+		getJSON.withArgs('/cart.json').resolves({
+			attributes: {
+				'google-clientID': '111',
+			},
+		});
+		setClientID('111', 'google');
+		await timeoutPromise(1200); //a bit longer than 1s timeout
+		getJSON.should.have.been.called;
+		postJSON.should.not.have.been.called;
+	});
+
 	it('aborts if Shopify does not return cart token', async () => {
 		getJSON.withArgs('/cart.json').resolves({});
 		setClientID('111', 'google');
 		await timeoutPromise(1200); //a bit longer than 1s timeout
 		getJSON.should.have.been.called;
 		postJSON.should.not.have.been.called;
+	});
+
+	it('aborts with invalid clientID', async () => {
+		setClientID('', 'google');
+		await timeoutPromise(1200); //a bit longer than 1s timeout
+		getJSON.should.not.have.been.called;
+	});
+
+	it('continues if clientID date in localstorage is older than an hour', async () => {
+		window.localStorage.setItem('littledata-segment-clientID', String(Date.now() - 120 * 60 * 1000));
+		setClientID('abc', 'segment');
+		await timeoutPromise(1200); //a bit longer than 1s timeout
+		getJSON.should.have.been.called;
+	});
+
+	it('aborts if clientID date in localstorage is within an hour', async () => {
+		window.localStorage.setItem('littledata-segment-clientID', String(Date.now()));
+		setClientID('abc', 'segment');
+		await timeoutPromise(1200); //a bit longer than 1s timeout
+		getJSON.should.not.have.been.called;
 	});
 });
 

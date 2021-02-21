@@ -29,6 +29,7 @@
 		"jsdom": "16.4.0",
 		"jsdom-global": "3.0.2",
 		"mocha": "^8.2.1",
+		"mock-local-storage": "^1.1.17",
 		"prettier": "^1.18.2",
 		"sinon": "^2.4.1",
 		"sinon-chai": "^2.12.0",
