@@ -14,10 +14,15 @@ export default (): Gtag.CustomParams => {
 		'checkout.com',
 		'shop.app',
 	];
+	const extraExcludedReferrers = ['shop.app'];
 	const extraLinkerDomains = settings.extraLinkerDomains || [];
 
-	let excludeReferral = referralExclusion && referralExclusion.test(document.referrer);
-	const extraExcludedReferrers = ['shop.app'];
+	const exclusionRegex =
+		typeof referralExclusion === 'string'
+			? new RegExp(referralExclusion.replace(/^\//, '').replace(/\/$/, ''))
+			: referralExclusion;
+	let excludeReferral = exclusionRegex && exclusionRegex.test(document.referrer);
+
 	if (extraExcludedReferrers.includes(document.referrer)) {
 		excludeReferral = true;
 	}
