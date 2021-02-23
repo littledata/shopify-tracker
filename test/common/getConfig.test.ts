@@ -67,6 +67,13 @@ describe('getConfig', () => {
 		});
 	});
 
+	it('works when referralExclusion is a string', () => {
+		window.LittledataLayer.referralExclusion = '/(test|normal)/';
+		getConfig().should.contain({
+			page_referrer: null,
+		});
+	});
+
 	it('excludes self-referrals', () => {
 		Object.defineProperty(window.document, 'referrer', { value: 'about://' });
 		getConfig().should.contain({
