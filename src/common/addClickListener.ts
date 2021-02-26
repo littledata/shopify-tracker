@@ -7,6 +7,7 @@ export const addClickListener = (element: TimeBombHTMLAnchor, clickTag: ListClic
 		const product = findProductInArray(LittledataLayer.ecommerce.impressions, handle, shopify_variant_id);
 
 		if (!product) return;
+		window.localStorage.setItem('position', String(product.list_position));
 		debugModeLog(product);
 		ev.preventDefault();
 		/* wait a maximum of 1 second before redirecting */

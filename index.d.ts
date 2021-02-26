@@ -56,6 +56,7 @@ export interface OwnLayer extends Cart.Attributes {
 	ecommerce: {
 		currencyCode?: string;
 		impressions?: Impression[];
+		impressionsToSend?: ImpressionToSend[];
 		detail?: Detail;
 	};
 	transactionWatcherURL?: string;

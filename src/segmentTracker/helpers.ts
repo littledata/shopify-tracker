@@ -55,12 +55,6 @@ export const trackEvents = () => {
 	if (LittledataLayer) {
 		/* run list, product, and clientID scripts everywhere */
 		const clickTag = (product: Impression, element: TimeBombHTMLAnchor, openInNewTab: boolean) => {
-			const productFromImpressions = LittledataLayer.ecommerce.impressions.find(
-				prod => prod.name === product.name && prod.handle === product.handle,
-			);
-			const pos = productFromImpressions && productFromImpressions.list_position;
-			window.localStorage.setItem('position', String(pos));
-
 			trackEvent(
 				'Product Clicked',
 				{

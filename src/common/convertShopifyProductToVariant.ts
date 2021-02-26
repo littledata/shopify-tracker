@@ -23,6 +23,7 @@ export const convertShopifyProductToVariant = (
 		shopify_product_id: String(product.id),
 		shopify_variant_id: String(variant.id),
 		compare_at_price: variant.compare_at_price,
+		image_url: product.images.length && product.images[0],
 	};
 
 	if (list_position) {
