@@ -20,7 +20,11 @@ export default (): Gtag.CustomParams => {
 
 	const extraLinkerDomains = settings.extraLinkerDomains || [];
 
-	let excludeReferral = referralExclusion && referralExclusion.test(document.referrer);
+	const exclusionRegex =
+		typeof referralExclusion === 'string'
+			? new RegExp(referralExclusion.replace(/^\//, '').replace(/\/$/, ''))
+			: referralExclusion;
+	let excludeReferral = exclusionRegex && exclusionRegex.test(document.referrer);
 
 	if (extraExcludedReferrers.includes(document.referrer)) {
 		excludeReferral = true;

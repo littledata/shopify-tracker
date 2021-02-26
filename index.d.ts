@@ -49,7 +49,7 @@ export interface OwnLayer extends Cart.Attributes {
 	writeKey?: string;
 	webPropertyID?: string;
 	measurementID?: string;
-	referralExclusion?: RegExp;
+	referralExclusion?: RegExp | string; //before layer v8.8 it was a RegExp
 	enhancePrivacy?: boolean;
 	productClicks?: boolean;
 	googleAdsConversionIds?: string[];
