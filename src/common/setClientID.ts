@@ -1,3 +1,4 @@
+import 'regenerator-runtime/runtime';
 import { clientID, CustomWindow } from '../../index';
 import { httpRequest } from './httpRequest';
 
