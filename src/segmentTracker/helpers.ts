@@ -1,18 +1,14 @@
 /* global LittledataLayer */
 import { CustomWindow } from '../..';
 declare let window: CustomWindow;
-import {
-	productListClicks,
-	trackProductImageClicks,
-	trackSocialShares,
-	setCartOnlyAttributes,
-} from '../common/helpers';
+import { productListClicks, trackProductImageClicks, trackSocialShares } from '../common/helpers';
 import { addEmailToTrackEvents } from './helpers/addEmailToEvents';
 import { segmentProduct } from './helpers/segmentProduct';
 
 import { getCookie } from '../common/getCookie';
 import productListViews from '../common/productListViews';
 import getProductDetail from '../common/getProductDetail';
+import { setCartOnlyAttributes } from '../common/setClientID';
 import { addUserIdForCustomer } from './helpers/addUserIdForCustomer';
 
 export const getContext = () => {

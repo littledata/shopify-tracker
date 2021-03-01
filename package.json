@@ -6,7 +6,7 @@
 		"lint": "node ./node_modules/eslint/bin/eslint.js --ext .ts ./src",
 		"prettier": "prettier --write \"**/*.{[tj]s,html}\"",
 		"test": "env TEST=true mocha -r esm -r ts-node/register --recursive --parallel  ./test/**/**/**/**/*.ts",
-		"test-watch": "env TEST=true mocha -w -r esm -r ts-node/register --recursive  ./test/**/**/**/**/*.ts"
+		"test-watch": "env TEST=true mocha --watch-extensions ts --watch -r esm -r ts-node/register --recursive  ./test/**/**/**/**/*.ts"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.5.5",
@@ -16,6 +16,7 @@
 		"@types/jquery": "^3.3.31",
 		"@types/mocha": "^8.0.4",
 		"@types/sinon": "^9.0.9",
+		"@types/sinon-chai": "^3.2.5",
 		"@typescript-eslint/eslint-plugin": "^1.13.0",
 		"@typescript-eslint/parser": "^1.13.0",
 		"babel-loader": "^8.0.6",
@@ -29,6 +30,7 @@
 		"jsdom": "16.4.0",
 		"jsdom-global": "3.0.2",
 		"mocha": "^8.2.1",
+		"mock-local-storage": "^1.1.17",
 		"prettier": "^1.18.2",
 		"sinon": "^2.4.1",
 		"sinon-chai": "^2.12.0",
