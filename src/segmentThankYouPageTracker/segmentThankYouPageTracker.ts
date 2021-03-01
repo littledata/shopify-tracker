@@ -1,28 +1,31 @@
+import { OwnLayer } from '../..';
 import { getQueryStringParam } from '../common/getQueryStringParam';
 import { initSegment } from '../segmentTracker/helpers';
 
+interface ShopifyWindow {
+	LittledataLayer: OwnLayer;
+	Shopify: LooseObject;
+}
+declare let window: ShopifyWindow;
+
 (function() {
-	// @ts-ignore
+	window.LittledataLayer = {
+		ecommerce: {},
+	};
 	if (window.Shopify.Checkout && window.Shopify.Checkout.page === 'thank_you') {
 		// @ts-ignore
 		const scriptSrc = document.currentScript.src;
-		const segmentProperty = getQueryStringParam(scriptSrc, 'segmentProperty');
-
-		if (!segmentProperty) {
-			throw new Error('Could not add segment thank you page script beacuse of missing segmentProperty');
-		}
+		const writeKey = getQueryStringParam(scriptSrc, 'segmentProperty');
+		window.LittledataLayer.writeKey = writeKey;
 
 		initSegment();
-		// @ts-ignore
 		const checkout = window.Shopify.checkout;
-		// @ts-ignore
-		const products = checkout.line_items.map(product => {
+		const products = checkout.line_items.map((product: LooseObject) => {
 			return {
 				brand: product.vendor,
 				category: product.category,
 				url: product.handle,
 				product_id: String(product.sku),
-				position: product.list_position,
 				name: product.title,
 				price: parseFloat(product.price),
 				variant: product.variant_title,
