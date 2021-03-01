@@ -7,9 +7,9 @@ import {
 	documentReady,
 	pageView,
 	retrieveAndStoreClientId,
-	setClientID,
 	validateLittledataLayer,
 } from '../common/helpers';
+import { setClientID } from '../common/setClientID';
 import { callSegmentPage, identifyCustomer, initSegment, trackEvents } from './helpers';
 import { sendEventsWithPageview } from './helpers/sendEventsWithPageview';
 

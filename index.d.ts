@@ -80,6 +80,7 @@ declare global {
 
 	namespace Cart {
 		export interface Attributes {
+			token?: string;
 			updatedAt?: string; //old format pre v8.3
 			littledata_updatedAt?: number;
 			'google-clientID'?: string;
@@ -145,10 +146,10 @@ declare global {
 			total_weight: number;
 			item_count: number;
 			items: Item[];
-			requires_shipping: boolean;
+			requires_shipping?: boolean;
 			currency: string;
-			items_subtotal_price: number;
-			cart_level_discount_applications: any[];
+			items_subtotal_price?: number;
+			cart_level_discount_applications?: any[];
 		}
 	}
 
