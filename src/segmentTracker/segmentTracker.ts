@@ -23,10 +23,7 @@ import { sendEventsWithPageview } from './helpers/sendEventsWithPageview';
 		callSegmentPage({});
 		sendEventsWithPageview(document.location.pathname);
 		window.analytics.ready(() => {
-			// @ts-ignore 'Integrations' property does, in fact exist
-			if (window.analytics.Integrations['Google Analytics']) {
-				retrieveAndStoreClientId();
-			}
+			retrieveAndStoreClientId();
 			const { user } = window.analytics;
 			if (user) {
 				setClientID(user().anonymousId(), 'segment');
