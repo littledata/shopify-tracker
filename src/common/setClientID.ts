@@ -1,4 +1,3 @@
-import 'regenerator-runtime/runtime';
 import { clientID, CustomWindow } from '../../index';
 import { httpRequest } from './httpRequest';
 
@@ -48,10 +47,10 @@ export const setCartOnlyAttributes = (setAttributes: LooseObject) => {
 	if (needsToSend) postCartToShopify({ ...attributes, ...cartOnlyAttributes });
 };
 
-export const getCartWithToken = async (): Promise<void | Cart.RootObject> => {
+export const getCartWithToken = (): Promise<void | Cart.RootObject> => {
 	let { cart } = window.LittledataLayer;
 	let cartToken = cart && cart.token;
-	if (cartToken) return cart;
+	if (cartToken) return Promise.resolve(cart);
 	return httpRequest
 		.getJSON('/cart.json')
 		.then((cart: Cart.RootObject) => {
@@ -67,8 +66,8 @@ export const getCartWithToken = async (): Promise<void | Cart.RootObject> => {
 		});
 };
 
-const postCartToShopify = async (attributes: object) => {
-	httpRequest.postJSON('/cart/update.json', attributes).then((updatedCart: Cart.RootObject) => {
+const postCartToShopify = (attributes: object) => {
+	return httpRequest.postJSON('/cart/update.json', { attributes }).then((updatedCart: Cart.RootObject) => {
 		window.LittledataLayer.cart = {
 			...window.LittledataLayer.cart,
 			...updatedCart,
@@ -78,7 +77,7 @@ const postCartToShopify = async (attributes: object) => {
 	});
 };
 
-const postCartToLittledata = async (cart: Cart.RootObject) => {
+const postCartToLittledata = (cart: Cart.RootObject) => {
 	const updatedAt = attributes.littledata_updatedAt;
 	// 60 minutes is the time cart is cached in Redis
 	if (!updatedAt || isLessThanOneHourAgo(updatedAt)) return;
@@ -86,7 +85,7 @@ const postCartToLittledata = async (cart: Cart.RootObject) => {
 	httpRequest.postJSON(url, cart);
 };
 
-const postCartTokenClientIdToLittledata = async (cartID: string) => {
+const postCartTokenClientIdToLittledata = (cartID: string) => {
 	const url = `${window.LittledataLayer.transactionWatcherURL}/v2/clientID/store`;
 	httpRequest.postJSON(url, {
 		...attributes,
