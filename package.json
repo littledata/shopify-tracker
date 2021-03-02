@@ -10,6 +10,7 @@
 	},
 	"devDependencies": {
 		"@babel/core": "^7.5.5",
+		"@babel/plugin-transform-regenerator": "^7.12.13",
 		"@babel/preset-env": "^7.5.5",
 		"@types/chai": "^4.2.14",
 		"@types/gtag.js": "0.0.2",

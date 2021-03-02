@@ -23,7 +23,7 @@ module.exports = {
 					},
 					'ts-loader',
 				],
-				exclude: /(node_modules|\.test\.)/,
+				exclude: /node_modules/,
 			},
 		],
 	},
