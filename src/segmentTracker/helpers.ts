@@ -1,11 +1,7 @@
 /* global LittledataLayer */
+import { CustomWindow } from '../..';
 declare let window: CustomWindow;
-import {
-	productListClicks,
-	trackProductImageClicks,
-	trackSocialShares,
-	setCartOnlyAttributes,
-} from '../common/helpers';
+import { productListClicks, trackProductImageClicks, trackSocialShares } from '../common/helpers';
 import { addEmailToTrackEvents } from './helpers/addEmailToEvents';
 import { addGAClientIdToEvents } from './helpers/addGAClientIdToEvents';
 import { segmentProduct } from './helpers/segmentProduct';
@@ -13,32 +9,39 @@ import { segmentProduct } from './helpers/segmentProduct';
 import { getCookie } from '../common/getCookie';
 import productListViews from '../common/productListViews';
 import getProductDetail from '../common/getProductDetail';
+import { setCartOnlyAttributes } from '../common/setClientID';
+import { addUserIdForCustomer } from './helpers/addUserIdForCustomer';
 
-const getContext = () => {
+export const getContext = () => {
 	return {
 		integration: {
 			name: 'shopify_littledata',
 			version: window.LittledataScriptVersion,
 		},
+		traits: window.analytics.user && window.analytics.user().traits(),
 	};
 };
 
-const trackEvent = (eventName: string, params: object) => {
-	// @ts-ignore
-	window.analytics.track(eventName, params, { context: getContext() });
+export const trackEvent = (eventName: string, params: object) => {
+	window.analytics.track(
+		eventName,
+		{ ...params, ...addUserIdForCustomer(window.LittledataLayer), sent_from: 'Littledata script' },
+		{ context: getContext() },
+	);
 };
 
-export const identifyCustomer = (customer: Customer) => {
+export const identifyCustomer = () => {
 	const cookieTraits: any = {};
-	const cookies = LittledataLayer.cookiesToTrack;
-	if (cookies) {
-		cookies.forEach(cookie => {
-			cookieTraits[cookie] = getCookie(cookie);
-		});
-	}
+	const cookies = LittledataLayer.cookiesToTrack || [];
+	cookies.forEach(cookie => {
+		cookieTraits[cookie] = getCookie(cookie);
+	});
 	setCartOnlyAttributes(cookieTraits); //this will add to Shopify cart
-	if (customer) {
-		window.analytics.identify(customer.id, {
+
+	const { userId } = addUserIdForCustomer(LittledataLayer);
+	if (userId) {
+		const { customer } = LittledataLayer;
+		window.analytics.identify(userId, {
 			email: customer.email,
 			name: customer.name,
 			phone: customer.phone || (customer.address && customer.address.phone),

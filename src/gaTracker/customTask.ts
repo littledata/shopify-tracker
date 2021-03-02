@@ -1,3 +1,4 @@
+import { CustomWindow } from '../..';
 declare let window: CustomWindow;
 
 export const customTask = (endpoint: string) => {

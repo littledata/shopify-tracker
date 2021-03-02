@@ -1,5 +1,6 @@
-import { getQueryStringParam } from '../common/getQueryStringParam';
+import { CustomWindow } from '../..';
 import getConfig from '../common/getConfig';
+import { getQueryStringParam } from '../common/getQueryStringParam';
 
 declare let window: CustomWindow;
 (function() {
@@ -35,6 +36,7 @@ declare let window: CustomWindow;
 			event_category: 'Shopify (Littledata)',
 			event_label: 'Thank you page',
 			value,
+			send_to: webPropertyId,
 		});
 	}
 })();

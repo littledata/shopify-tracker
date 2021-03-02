@@ -1,7 +1,4 @@
-/* global LittledataLayer */
-declare let window: CustomWindow;
-
-import { Detail, GA4Product } from '../..';
+import { CustomWindow, Detail, GA4Product } from '../..';
 import {
 	productListClicks,
 	removePii,
@@ -10,9 +7,11 @@ import {
 	trackSocialShares,
 } from '../common/helpers';
 
+import getConfig from '../common/getConfig';
 import getProductDetail from '../common/getProductDetail';
 import productListViews from '../common/productListViews';
-import getConfig from '../common/getConfig';
+
+declare let window: CustomWindow;
 
 const event_category = 'Shopify (Littledata)';
 
@@ -30,14 +29,21 @@ export const initGtag = () => {
 		};
 	window.ga.l = +new Date();
 
-	retrieveAndStoreClientId(true);
-
 	// @ts-ignore
 	gtag('js', new Date());
-	gtag('config', LittledataLayer.webPropertyID, {
-		...getConfig(),
-		send_page_view: false,
-	});
+
+	if (hasGA4()) {
+		gtag('config', LittledataLayer.measurementID, {
+			...getConfig(),
+			send_page_view: false,
+		});
+	}
+	if (hasGA3()) {
+		gtag('config', LittledataLayer.webPropertyID, {
+			...getConfig(),
+			send_page_view: false,
+		});
+	}
 };
 
 export const sendPageview = () => {
@@ -45,11 +51,23 @@ export const sendPageview = () => {
 	const locationWithMedium = addUTMMediumIfMissing(document.location.href);
 	const page_location = removePii(locationWithMedium);
 
-	gtag('config', LittledataLayer.webPropertyID, {
-		...getConfig(),
-		page_title,
-		page_location,
-	});
+	if (hasGA4()) {
+		gtag('config', LittledataLayer.measurementID, {
+			...getConfig(),
+			page_title,
+			page_location,
+			send_page_view: true,
+		});
+	}
+	if (hasGA3()) {
+		gtag('config', LittledataLayer.webPropertyID, {
+			...getConfig(),
+			page_title,
+			page_location,
+			send_page_view: true,
+		});
+	}
+	retrieveAndStoreClientId();
 
 	dataLayer.push({
 		event: 'pageview',
@@ -101,7 +119,7 @@ export const trackEvents = () => {
 			if (hasGA4()) {
 				gtag('event', 'select_content', {
 					content_type: 'product',
-					item_id: product.shopify_product_id,
+					item_product_id: product.shopify_product_id,
 					item_sku: product.id,
 					item_variant_id: product.shopify_variant_id,
 					image_url: image.src,
@@ -281,7 +299,7 @@ function convertProductsToGa4Format(products: Detail[], sendIndex: boolean): GA4
 	return products.map(product => {
 		const converted = {
 			currency: (LittledataLayer.ecommerce && LittledataLayer.ecommerce.currencyCode) || '',
-			item_id: product.shopify_product_id,
+			item_product_id: product.shopify_product_id,
 			item_name: product.name,
 			item_brand: product.brand,
 			item_category: product.category,

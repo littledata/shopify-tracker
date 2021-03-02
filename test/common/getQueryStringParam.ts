@@ -1,5 +1,6 @@
 import { should } from 'chai';
 import { getQueryStringParam } from '../../src/common/getQueryStringParam';
+import { CustomWindow } from '../..';
 declare let window: CustomWindow;
 
 should();
