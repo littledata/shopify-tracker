@@ -5,7 +5,7 @@
 		"start": "node ./node_modules/webpack/bin/webpack.js --watch",
 		"lint": "node ./node_modules/eslint/bin/eslint.js --ext .ts ./src",
 		"prettier": "prettier --write \"**/*.{[tj]s,html}\"",
-		"test": "env TEST=true mocha -r esm -r ts-node/register --recursive --parallel  ./test/**/**/**/**/*.ts",
+		"test": "env TEST=true mocha -r esm -r ts-node/register --recursive  ./test/**/**/**/**/*.ts",
 		"test-watch": "env TEST=true mocha --watch-extensions ts --watch -r esm -r ts-node/register --recursive  ./test/**/**/**/**/*.ts"
 	},
 	"devDependencies": {

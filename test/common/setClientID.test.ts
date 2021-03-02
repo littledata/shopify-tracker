@@ -55,8 +55,10 @@ describe('setClientID', () => {
 			cartID: 'abc',
 		});
 		postJSON.should.have.been.calledWith('/cart/update.json', {
-			'google-clientID': '111',
-			littledata_updatedAt: sinon.match.number,
+			attributes: {
+				'google-clientID': '111',
+				littledata_updatedAt: sinon.match.number,
+			},
 		});
 		window.LittledataLayer.cart.should.include({
 			token: 'abc',
@@ -95,9 +97,11 @@ describe('setClientID', () => {
 			cartID: 'abc',
 		});
 		postJSON.should.have.been.calledWith('/cart/update.json', {
-			'google-clientID': '111',
-			'segment-clientID': 'aaa',
-			littledata_updatedAt: sinon.match.number,
+			attributes: {
+				'google-clientID': '111',
+				'segment-clientID': 'aaa',
+				littledata_updatedAt: sinon.match.number,
+			},
 		});
 	});
 
