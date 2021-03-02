@@ -1,4 +1,3 @@
-import 'regenerator-runtime/runtime';
 import { clientID, CustomWindow } from '../../index';
 import { httpRequest } from './httpRequest';
 
@@ -25,12 +24,13 @@ export const setClientID = (clientId: string, platform: 'google' | 'segment' | '
 	clearTimeout(postCartTimeout);
 	// timeout is to allow 2 client IDs posted within 1 second
 	// to be included in the same cart update
-	postCartTimeout = setTimeout(async function() {
+	postCartTimeout = setTimeout(() => {
 		// first check if attributes are already stored on the cart
-		const cart = (await getCartWithToken()) as Cart.RootObject;
-		postCartToLittledata(cart);
-		postCartTokenClientIdToLittledata(cart.token);
-		postCartToShopify({ ...attributes, littledata_updatedAt: new Date().getTime() });
+		getCartWithToken().then((cart: Cart.RootObject) => {
+			postCartToLittledata(cart);
+			postCartTokenClientIdToLittledata(cart.token);
+			postCartToShopify({ ...attributes, littledata_updatedAt: new Date().getTime() });
+		});
 	}, 1000);
 };
 
@@ -47,31 +47,34 @@ export const setCartOnlyAttributes = (setAttributes: LooseObject) => {
 	if (needsToSend) postCartToShopify({ ...attributes, ...cartOnlyAttributes });
 };
 
-export const getCartWithToken = async (): Promise<Cart.RootObject> => {
+export const getCartWithToken = async (): Promise<void | Cart.RootObject> => {
 	let { cart } = window.LittledataLayer;
 	let cartToken = cart && cart.token;
 	if (cartToken) return cart;
-	try {
-		cart = (await httpRequest.getJSON('/cart.json')) as Cart.RootObject;
-	} catch (error) {
-		console.error('Littledata tracker unable to fetch cart token from Shopify', error);
-		return;
-	}
-	if (!cart.token) {
-		throw new Error('cart had no cart token');
-	}
-	window.LittledataLayer.cart = cart;
-	return cart;
+	return httpRequest
+		.getJSON('/cart.json')
+		.then((cart: Cart.RootObject) => {
+			if (!cart.token) {
+				throw new Error('cart had no cart token');
+			}
+			window.LittledataLayer.cart = cart;
+			return cart;
+		})
+		.catch(error => {
+			console.error('Littledata tracker unable to fetch cart token from Shopify', error);
+			return;
+		});
 };
 
 const postCartToShopify = async (attributes: object) => {
-	const updatedCart = (await httpRequest.postJSON('/cart/update.json', attributes)) as Cart.RootObject;
-	window.LittledataLayer.cart = {
-		...window.LittledataLayer.cart,
-		...updatedCart,
-	};
-	addAttributesToLocalStorage(attributes);
-	return updatedCart;
+	httpRequest.postJSON('/cart/update.json', attributes).then((updatedCart: Cart.RootObject) => {
+		window.LittledataLayer.cart = {
+			...window.LittledataLayer.cart,
+			...updatedCart,
+		};
+		addAttributesToLocalStorage(attributes);
+		return updatedCart;
+	});
 };
 
 const postCartToLittledata = async (cart: Cart.RootObject) => {
@@ -79,12 +82,12 @@ const postCartToLittledata = async (cart: Cart.RootObject) => {
 	// 60 minutes is the time cart is cached in Redis
 	if (!updatedAt || isLessThanOneHourAgo(updatedAt)) return;
 	const url = `${window.LittledataLayer.transactionWatcherURL}/cart/store`;
-	await httpRequest.postJSON(url, cart);
+	httpRequest.postJSON(url, cart);
 };
 
 const postCartTokenClientIdToLittledata = async (cartID: string) => {
 	const url = `${window.LittledataLayer.transactionWatcherURL}/v2/clientID/store`;
-	await httpRequest.postJSON(url, {
+	httpRequest.postJSON(url, {
 		...attributes,
 		cartID,
 	});
