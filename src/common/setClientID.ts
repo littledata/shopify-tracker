@@ -25,11 +25,9 @@ export const setClientID = (clientId: string, platform: 'google' | 'segment' | '
 	// timeout is to allow 2 client IDs posted within 1 second
 	// to be included in the same cart update
 	postCartTimeout = setTimeout(() => {
-		// first check if attributes are already stored on the cart
 		getCartWithToken().then((cart: Cart.RootObject) => {
 			postCartToLittledata(cart);
-			postCartTokenClientIdToLittledata(cart.token);
-			postCartToShopify({ ...attributes, littledata_updatedAt: new Date().getTime() });
+			postCartTokenClientIdToLittledata(cart);
 		});
 	}, 1000);
 };
@@ -48,9 +46,6 @@ export const setCartOnlyAttributes = (setAttributes: LooseObject) => {
 };
 
 export const getCartWithToken = (): Promise<void | Cart.RootObject> => {
-	let { cart } = window.LittledataLayer;
-	let cartToken = cart && cart.token;
-	if (cartToken) return Promise.resolve(cart);
 	return httpRequest
 		.getJSON('/cart.json')
 		.then((cart: Cart.RootObject) => {
@@ -58,12 +53,25 @@ export const getCartWithToken = (): Promise<void | Cart.RootObject> => {
 				throw new Error('cart had no cart token');
 			}
 			window.LittledataLayer.cart = cart;
-			return cart;
+			return checkCartHasAttributes(cart);
 		})
 		.catch(error => {
 			console.error('Littledata tracker unable to fetch cart token from Shopify', error);
 			return;
 		});
+};
+
+const checkCartHasAttributes = (cart: Cart.RootObject): Promise<void | Cart.RootObject> => {
+	// until the attributes are added to cart, the cart token is not stable
+	// when cart/update is successful, and the cart is created, we can expect a stable cart
+	console.log(cart.attributes.littledata_updatedAt);
+	if (cart.attributes.littledata_updatedAt) {
+		return Promise.resolve(cart);
+	}
+	// after cart/update is successful, and the cart is created, we can expect a stable cart token
+	return postCartToShopify({ ...attributes, littledata_updatedAt: new Date().getTime() }).then(() => {
+		return getCartWithToken();
+	});
 };
 
 const postCartToShopify = (attributes: object) => {
@@ -79,12 +87,17 @@ const postCartToShopify = (attributes: object) => {
 const postCartToLittledata = (cart: Cart.RootObject) => {
 	const updatedAt = attributes.littledata_updatedAt;
 	// 60 minutes is the time cart is cached in Redis
-	if (!updatedAt || isLessThanOneHourAgo(updatedAt)) return;
+	const oneHourInMilliseconds = 60 * 60 * 1000;
+	if (!updatedAt || isLessThanMillisecondsAgo(updatedAt, oneHourInMilliseconds)) return;
 	const url = `${window.LittledataLayer.transactionWatcherURL}/cart/store`;
 	httpRequest.postJSON(url, cart);
 };
 
-const postCartTokenClientIdToLittledata = (cartID: string) => {
+const postCartTokenClientIdToLittledata = (cart: Cart.RootObject) => {
+	const updatedAt = cart.attributes.littledata_updatedAt;
+	if (!isLessThanMillisecondsAgo(updatedAt, 2000)) return;
+	// cart was only just updated and we should send cart token
+	const cartID = cart.token;
 	const url = `${window.LittledataLayer.transactionWatcherURL}/v2/clientID/store`;
 	httpRequest.postJSON(url, {
 		...attributes,
@@ -92,9 +105,8 @@ const postCartTokenClientIdToLittledata = (cartID: string) => {
 	});
 };
 
-const isLessThanOneHourAgo = (updatedAt: number) => {
+const isLessThanMillisecondsAgo = (updatedAt: string, milliseconds: number) => {
 	const dateUpdated = new Date(Number(updatedAt));
-	const oneHour = 60 * 60 * 1000;
 	const timePassed = Date.now() - Number(dateUpdated);
-	return timePassed < oneHour;
+	return timePassed < milliseconds;
 };

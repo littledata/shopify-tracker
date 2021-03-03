@@ -82,7 +82,7 @@ declare global {
 		export interface Attributes {
 			token?: string;
 			updatedAt?: string; //old format pre v8.3
-			littledata_updatedAt?: number;
+			littledata_updatedAt?: string;
 			'google-clientID'?: string;
 			'segment-clientID'?: string;
 			'email-clientID'?: string;

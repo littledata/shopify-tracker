@@ -23,6 +23,8 @@ const cart = {
 	currency: 'USD',
 };
 
+const staleDatestamp = String(new Date().getTime());
+
 describe('setClientID', () => {
 	let postJSON: any;
 	let getJSON: any;
@@ -34,7 +36,18 @@ describe('setClientID', () => {
 				'google-clientID': '111',
 			},
 		});
-		getJSON.withArgs('/cart.json').resolves(cart);
+		getJSON
+			.withArgs('/cart.json')
+			.onFirstCall()
+			.resolves(cart)
+			.onSecondCall()
+			.resolves({
+				...cart,
+				attributes: {
+					'google-clientID': '111',
+					littledata_updatedAt: String(new Date().getTime()),
+				},
+			});
 		window.LittledataLayer = {
 			ecommerce: {},
 		};
@@ -43,10 +56,10 @@ describe('setClientID', () => {
 		postJSON.restore();
 		getJSON.restore();
 	});
-	it('sets client ID if no cart token is found', async () => {
+	it('sets client ID if no attributes are found on the cart', async () => {
 		setClientID('111', 'google');
 		await timeoutPromise(1200); //a bit longer than 1s timeout
-		getJSON.should.have.been.called;
+		getJSON.should.have.been.calledTwice;
 		postJSON.should.have.been.calledTwice;
 		postJSON.should.have.been.calledWith(sinon.match(/clientID\/store/), {
 			'google-clientID': '111',
@@ -76,19 +89,12 @@ describe('setClientID', () => {
 		getJSON.should.not.have.been.called;
 	});
 
-	it('never fetches cart if we have a cart token', async () => {
-		window.LittledataLayer.cart = cart;
-		setClientID('111', 'google');
-		await timeoutPromise(1200); //a bit longer than 1s timeout
-		getJSON.should.not.have.been.called;
-	});
-
 	it('de-bounces multiple requests', async () => {
 		setClientID('111', 'google');
 		await timeoutPromise(50);
 		setClientID('aaa', 'segment');
 		await timeoutPromise(1200); //a bit longer than 1s timeout
-		getJSON.should.have.been.calledOnce;
+		getJSON.should.have.been.calledTwice;
 		postJSON.should.have.been.calledWith(sinon.match(/clientID\/store/), {
 			'google-clientID': '111',
 			'segment-clientID': 'aaa',
@@ -103,20 +109,43 @@ describe('setClientID', () => {
 		});
 	});
 
-	it('does not post cart if cart contains attribute', async () => {
-		getJSON.withArgs('/cart.json').resolves({
-			attributes: {
-				'google-clientID': '111',
-			},
-		});
+	it('does not post cart if cart already contains attribute', async () => {
+		getJSON
+			.withArgs('/cart.json')
+			.onFirstCall()
+			.resolves({
+				attributes: {
+					'google-clientID': '111',
+					littledata_updatedAt: String(new Date().getTime()),
+				},
+			});
 		setClientID('111', 'google');
 		await timeoutPromise(1200); //a bit longer than 1s timeout
-		getJSON.should.have.been.called;
+		getJSON.should.have.been.calledOnce;
+		postJSON.should.not.have.been.called;
+	});
+
+	it('does not send cart token on to Littledata if updated at is not recent', async () => {
+		getJSON
+			.withArgs('/cart.json')
+			.onFirstCall()
+			.resolves({
+				attributes: {
+					'google-clientID': '111',
+					littledata_updatedAt: staleDatestamp,
+				},
+			});
+		setClientID('111', 'google');
+		await timeoutPromise(1200); //a bit longer than 1s timeout
+		getJSON.should.have.been.calledOnce;
 		postJSON.should.not.have.been.called;
 	});
 
 	it('aborts if Shopify does not return cart token', async () => {
-		getJSON.withArgs('/cart.json').resolves({});
+		getJSON
+			.withArgs('/cart.json')
+			.onFirstCall()
+			.resolves({});
 		setClientID('111', 'google');
 		await timeoutPromise(1200); //a bit longer than 1s timeout
 		getJSON.should.have.been.called;
