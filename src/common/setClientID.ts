@@ -63,8 +63,6 @@ export const getCartWithToken = (): Promise<void | Cart.RootObject> => {
 
 const checkCartHasAttributes = (cart: Cart.RootObject): Promise<void | Cart.RootObject> => {
 	// until the attributes are added to cart, the cart token is not stable
-	// when cart/update is successful, and the cart is created, we can expect a stable cart
-	console.log(cart.attributes.littledata_updatedAt);
 	if (cart.attributes.littledata_updatedAt) {
 		return Promise.resolve(cart);
 	}
