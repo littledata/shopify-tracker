@@ -19,7 +19,7 @@ export const setClientID = (clientId: string, platform: 'google' | 'segment' | '
 	}
 
 	window.LittledataLayer[clientIDProperty] = clientId;
-	(attributes as any)[clientIDProperty] = clientId;
+	attributes[clientIDProperty] = clientId;
 
 	clearTimeout(postCartTimeout);
 	// timeout is to allow 2 client IDs posted within 1 second
