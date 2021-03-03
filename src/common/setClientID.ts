@@ -11,25 +11,19 @@ const cartOnlyAttributes: LooseObject = {};
 export const setClientID = (clientId: string, platform: 'google' | 'segment' | 'email') => {
 	if (typeof clientId !== 'string' || clientId.length === 0) return;
 	const clientIDProperty = `${platform}-clientID` as clientID;
-	if (
-		window.LittledataLayer[clientIDProperty] ||
-		(window.LittledataLayer.cart && window.LittledataLayer.cart.attributes[clientIDProperty])
-	) {
+	if (window.LittledataLayer.cart && window.LittledataLayer.cart.attributes[clientIDProperty]) {
 		return;
 	}
 
-	window.LittledataLayer[clientIDProperty] = clientId;
 	attributes[clientIDProperty] = clientId;
 
 	clearTimeout(postCartTimeout);
 	// timeout is to allow 2 client IDs posted within 1 second
 	// to be included in the same cart update
 	postCartTimeout = setTimeout(() => {
-		// first check if attributes are already stored on the cart
 		getCartWithToken().then((cart: Cart.RootObject) => {
 			postCartToLittledata(cart);
-			postCartTokenClientIdToLittledata(cart.token);
-			postCartToShopify({ ...attributes, littledata_updatedAt: new Date().getTime() });
+			postCartTokenClientIdToLittledata(cart);
 		});
 	}, 1000);
 };
@@ -48,9 +42,8 @@ export const setCartOnlyAttributes = (setAttributes: LooseObject) => {
 };
 
 export const getCartWithToken = (): Promise<void | Cart.RootObject> => {
-	let { cart } = window.LittledataLayer;
-	let cartToken = cart && cart.token;
-	if (cartToken) return Promise.resolve(cart);
+	const { cart } = window.LittledataLayer;
+	if (cart) return checkCartHasAttributes(cart);
 	return httpRequest
 		.getJSON('/cart.json')
 		.then((cart: Cart.RootObject) => {
@@ -58,12 +51,24 @@ export const getCartWithToken = (): Promise<void | Cart.RootObject> => {
 				throw new Error('cart had no cart token');
 			}
 			window.LittledataLayer.cart = cart;
-			return cart;
+			return checkCartHasAttributes(cart);
 		})
 		.catch(error => {
 			console.error('Littledata tracker unable to fetch cart token from Shopify', error);
 			return;
 		});
+};
+
+const checkCartHasAttributes = (cart: Cart.RootObject): Promise<void | Cart.RootObject> => {
+	// until the attributes are added to cart, the cart token is not stable
+	const attributesToSet = Object.keys(attributes);
+	const attributesInCart = Object.keys(cart.attributes);
+	const allAttributesInCart = attributesToSet.every(attribute => attributesInCart.includes(attribute));
+	if (allAttributesInCart) {
+		return Promise.resolve(cart);
+	}
+	// after cart/update is successful this will return a stable cart token
+	return postCartToShopify({ ...attributes, littledata_updatedAt: new Date().getTime() });
 };
 
 const postCartToShopify = (attributes: object) => {
@@ -77,14 +82,17 @@ const postCartToShopify = (attributes: object) => {
 };
 
 const postCartToLittledata = (cart: Cart.RootObject) => {
-	const updatedAt = attributes.littledata_updatedAt;
 	// 60 minutes is the time cart is cached in Redis
-	if (!updatedAt || isLessThanOneHourAgo(updatedAt)) return;
+	const oneHourInMilliseconds = 60 * 60 * 1000;
+	if (updatedAtLessThanMillisecondsAgo(cart, oneHourInMilliseconds)) return;
 	const url = `${window.LittledataLayer.transactionWatcherURL}/cart/store`;
 	httpRequest.postJSON(url, cart);
 };
 
-const postCartTokenClientIdToLittledata = (cartID: string) => {
+const postCartTokenClientIdToLittledata = (cart: Cart.RootObject) => {
+	if (!updatedAtLessThanMillisecondsAgo(cart, 2000)) return;
+	// cart was only just updated and we should send cart token
+	const cartID = cart.token;
 	const url = `${window.LittledataLayer.transactionWatcherURL}/v2/clientID/store`;
 	httpRequest.postJSON(url, {
 		...attributes,
@@ -92,9 +100,10 @@ const postCartTokenClientIdToLittledata = (cartID: string) => {
 	});
 };
 
-const isLessThanOneHourAgo = (updatedAt: number) => {
+const updatedAtLessThanMillisecondsAgo = (cart: Cart.RootObject, milliseconds: number) => {
+	const updatedAt = cart.attributes.littledata_updatedAt;
+	if (!updatedAt) return false;
 	const dateUpdated = new Date(Number(updatedAt));
-	const oneHour = 60 * 60 * 1000;
 	const timePassed = Date.now() - Number(dateUpdated);
-	return timePassed < oneHour;
+	return timePassed < milliseconds;
 };
