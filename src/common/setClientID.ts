@@ -11,15 +11,15 @@ const cartOnlyAttributes: LooseObject = {};
 export const setClientID = (clientId: string, platform: 'google' | 'segment' | 'email') => {
 	if (typeof clientId !== 'string' || clientId.length === 0) return;
 	const clientIDProperty = `${platform}-clientID` as clientID;
-	if (window.LittledataLayer[clientIDProperty]) {
+	if (
+		window.LittledataLayer[clientIDProperty] ||
+		(window.LittledataLayer.cart && window.LittledataLayer.cart.attributes[clientIDProperty])
+	) {
 		return;
 	}
-	const lastPostedString = window.localStorage.getItem(`littledata-${clientIDProperty}`);
-	if (lastPostedString && isLessThanOneHourAgo(Number(lastPostedString))) {
-		return;
-	}
+
 	window.LittledataLayer[clientIDProperty] = clientId;
-	(attributes as any)[clientIDProperty] = clientId;
+	attributes[clientIDProperty] = clientId;
 
 	clearTimeout(postCartTimeout);
 	// timeout is to allow 2 client IDs posted within 1 second
@@ -72,7 +72,6 @@ const postCartToShopify = (attributes: object) => {
 			...window.LittledataLayer.cart,
 			...updatedCart,
 		};
-		addAttributesToLocalStorage(attributes);
 		return updatedCart;
 	});
 };
@@ -90,12 +89,6 @@ const postCartTokenClientIdToLittledata = (cartID: string) => {
 	httpRequest.postJSON(url, {
 		...attributes,
 		cartID,
-	});
-};
-
-const addAttributesToLocalStorage = (attributes: Cart.Attributes) => {
-	Object.keys(attributes).forEach(attribute => {
-		window.localStorage.setItem(`littledata-${attribute}`, String(Date.now()));
 	});
 };
 

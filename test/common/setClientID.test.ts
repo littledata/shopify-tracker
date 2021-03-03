@@ -3,7 +3,6 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { setClientID } from '../../src/common/setClientID';
 import 'jsdom-global/register';
-import 'mock-local-storage';
 import { CustomWindow } from '../..';
 import { httpRequest } from '../../src/common/httpRequest';
 
@@ -43,7 +42,6 @@ describe('setClientID', () => {
 	afterEach(() => {
 		postJSON.restore();
 		getJSON.restore();
-		window.localStorage.clear();
 	});
 	it('sets client ID if no cart token is found', async () => {
 		setClientID('111', 'google');
@@ -131,15 +129,13 @@ describe('setClientID', () => {
 		getJSON.should.not.have.been.called;
 	});
 
-	it('continues if clientID date in localstorage is older than an hour', async () => {
-		window.localStorage.setItem('littledata-segment-clientID', String(Date.now() - 120 * 60 * 1000));
-		setClientID('abc', 'segment');
-		await timeoutPromise(1200); //a bit longer than 1s timeout
-		getJSON.should.have.been.called;
-	});
-
-	it('aborts if clientID date in localstorage is within an hour', async () => {
-		window.localStorage.setItem('littledata-segment-clientID', String(Date.now()));
+	it('aborts if cart attributes are present', async () => {
+		window.LittledataLayer.cart = {
+			...cart,
+			attributes: {
+				'segment-clientID': 'abc',
+			},
+		};
 		setClientID('abc', 'segment');
 		await timeoutPromise(1200); //a bit longer than 1s timeout
 		getJSON.should.not.have.been.called;
