@@ -69,6 +69,7 @@ export interface OwnLayer extends Cart.Attributes {
 	doNotTrackReplaceState?: boolean;
 	MPEndpoint?: string;
 	CDNForAnalyticsJS?: string;
+	attributes?: Cart.Attributes;
 	segmentUserId?: string;
 	cookieUpdate?: boolean;
 }

@@ -60,6 +60,7 @@ describe('setClientID', () => {
 			});
 		window.LittledataLayer = {
 			ecommerce: {},
+			attributes: {},
 		};
 	});
 	afterEach(() => {
@@ -115,16 +116,15 @@ describe('setClientID', () => {
 		await timeoutPromise(1050);
 		setClientID('bbb', 'segment');
 		await timeoutPromise(1100); //a bit longer than 1s timeout
-		postJSON.should.have.been.calledThrice;
+		postJSON.should.have.been.callCount(4);
 		postJSON.should.have.been.calledWith(sinon.match(/clientID\/store/), {
 			'google-clientID': '111',
-			'segment-clientID': 'aaa', //carried over from previous test
+			'segment-clientID': 'bbb',
 			cartID: 'abc',
 		});
 		postJSON.should.have.been.calledWith('/cart/update.json', {
 			attributes: {
 				'google-clientID': '111',
-				'segment-clientID': 'aaa', //carried over from previous test
 				littledata_updatedAt: sinon.match.number,
 			},
 		});
