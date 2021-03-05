@@ -1,4 +1,7 @@
 import { ShopifyProduct } from '../../shopifyProductInterface';
+import { CustomWindow } from '../..';
+
+declare let window: CustomWindow;
 
 export const convertShopifyProductToVariant = (
 	product: ShopifyProduct,
@@ -23,7 +26,7 @@ export const convertShopifyProductToVariant = (
 		shopify_product_id: String(product.id),
 		shopify_variant_id: String(variant.id),
 		compare_at_price: variant.compare_at_price,
-		image_url: product.images.length && product.images[0],
+		image_url: getFirstImageURL(product.images),
 	};
 
 	if (list_position) {
@@ -31,4 +34,10 @@ export const convertShopifyProductToVariant = (
 	}
 
 	return output;
+};
+
+const getFirstImageURL = (images: ShopifyProduct['images']) => {
+	const firstImage = images.length && images[0];
+	if (!firstImage) return '';
+	return firstImage.replace(/^\/\//, 'https://');
 };

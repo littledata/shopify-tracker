@@ -2,7 +2,7 @@ import { getElementsByHref, productUrlRegex } from './helpers';
 import { convertShopifyProductToVariant } from './convertShopifyProductToVariant';
 import { getHandleAndVariantFromProductLink } from './getHandleAndVariantFromProductLink';
 import { addClickListener, findProductInArray, findProductIndexInArray } from './addClickListener';
-import { requestJSON } from './request';
+import { httpRequest } from './httpRequest';
 
 type impressionCallback = (impressionTag: Impression[]) => void;
 
@@ -105,7 +105,8 @@ export const getVariantsFromShopify = (
 ) => {
 	const handleGroups = groupBy(impressions, 'handle');
 	Object.keys(handleGroups).forEach(handle =>
-		requestJSON(`/products/${handle}.json`)
+		httpRequest
+			.getJSON(`/products/${handle}.json`)
 			.then((json: any) => {
 				const variantsToSend = handleGroups[handle].map((impression: ImpressionToSend) =>
 					convertShopifyProductToVariant(

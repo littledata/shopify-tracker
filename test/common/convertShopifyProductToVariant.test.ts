@@ -2,7 +2,9 @@ import sampleShopifyProduct from './sampleShopifyProduct';
 import { should } from 'chai';
 import 'jsdom-global/register';
 import { convertShopifyProductToVariant } from '../../src/common/convertShopifyProductToVariant';
+import { CustomWindow } from '../..';
 
+declare let window: CustomWindow;
 should();
 
 describe('convertShopifyProductToVariant', () => {
@@ -23,6 +25,7 @@ describe('convertShopifyProductToVariant', () => {
 			shopify_product_id: '329678821',
 			shopify_variant_id: '794864229',
 			compare_at_price: null,
+			image_url: 'https://cdn.shopify.com/s/files/1/0040/7092/products/red-rain-coat.jpeg?v=1402604893',
 		});
 	});
 
@@ -40,6 +43,12 @@ describe('convertShopifyProductToVariant', () => {
 		});
 		convertShopifyProductToVariant(sampleShopifyProduct, '794864229', 5).should.include({
 			list_position: 5,
+		});
+	});
+
+	it('handles product with no images', () => {
+		convertShopifyProductToVariant({ ...sampleShopifyProduct, images: [] }, '794864229').should.include({
+			image_url: '',
 		});
 	});
 });
