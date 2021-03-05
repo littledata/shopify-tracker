@@ -12,7 +12,11 @@ export const setClientID = (clientId: string, platform: 'google' | 'segment' | '
 
 	if (typeof clientId !== 'string' || clientId.length === 0) return;
 	const clientIDProperty = `${platform}-clientID` as clientID;
-	if (window.LittledataLayer.cart && window.LittledataLayer.cart.attributes[clientIDProperty]) {
+	if (
+		window.LittledataLayer.cart &&
+		window.LittledataLayer.cart.attributes[clientIDProperty] &&
+		window.LittledataLayer.cart.token
+	) {
 		return;
 	}
 
@@ -44,7 +48,7 @@ export const setCartOnlyAttributes = (setAttributes: LooseObject) => {
 
 export const getCartWithToken = (): Promise<void | Cart.RootObject> => {
 	const { cart } = window.LittledataLayer;
-	if (cart) return checkCartHasAttributes(cart);
+	if (cart && cart.token) return checkCartHasAttributes(cart);
 	return httpRequest
 		.getJSON('/cart.json')
 		.then((cart: Cart.RootObject) => {
