@@ -15,7 +15,9 @@ export const addGAClientIdToEvents = ({ payload, next }: MiddlewareOptions) => {
 };
 
 const addGACientId = (integrations: LooseObject) => {
-	const clientId = window.LittledataLayer.attributes['google-clientID'];
+	const clientId =
+		(window.LittledataLayer.cart && window.LittledataLayer.cart.attributes['google-clientID']) ||
+		(window.LittledataLayer.attributes && window.LittledataLayer.attributes['google-clientID']);
 	if (clientId) {
 		integrations['Google Analytics'] = {};
 		integrations['Google Analytics'].clientId = clientId;
