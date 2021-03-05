@@ -1,14 +1,16 @@
 /* global LittledataLayer */
 import { CustomWindow } from '../..';
 declare let window: CustomWindow;
-import { trackProductImageClicks, trackSocialShares, setCartOnlyAttributes } from '../common/helpers';
+import { trackProductImageClicks, trackSocialShares } from '../common/helpers';
 import { addEmailToTrackEvents } from './helpers/addEmailToEvents';
+import { addGAClientIdToEvents } from './helpers/addGAClientIdToEvents';
 import { segmentProduct } from './helpers/segmentProduct';
 
 import { getCookie } from '../common/getCookie';
 import productListViews from '../common/productListViews';
 import getProductDetail from '../common/getProductDetail';
 import { listClickCallback } from '../common/addClickListener';
+import { setCartOnlyAttributes } from '../common/setClientID';
 import { addUserIdForCustomer } from './helpers/addUserIdForCustomer';
 
 export const getContext = () => {
@@ -171,6 +173,7 @@ export const initSegment = () => {
 	analytics.SNIPPET_VERSION = '4.1.0';
 
 	analytics.addSourceMiddleware(addEmailToTrackEvents);
+	analytics.addSourceMiddleware(addGAClientIdToEvents);
 	analytics.load(LittledataLayer.writeKey);
 	window.dataLayer = window.dataLayer || [];
 };
