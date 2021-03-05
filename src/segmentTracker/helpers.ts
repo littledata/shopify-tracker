@@ -80,23 +80,24 @@ export const trackEvents = () => {
 
 		productListViews(impressionTag, clickTag);
 
-		const productDetail = getProductDetail();
-		if (productDetail) {
-			const product = segmentProduct(productDetail);
+		getProductDetail().then(productDetail => {
+			if (productDetail) {
+				const product = segmentProduct(productDetail);
 
-			// if PDP, we can also track clicks on images and social shares
-			trackProductImageClicks(image => {
-				product.image_url = image.src;
-				trackEvent('Product Image Clicked', product);
-			});
-
-			trackSocialShares(network => {
-				trackEvent('Product Shared', {
-					...product,
-					share_via: network,
+				// if PDP, we can also track clicks on images and social shares
+				trackProductImageClicks(image => {
+					product.image_url = image.src;
+					trackEvent('Product Image Clicked', product);
 				});
-			});
-		}
+
+				trackSocialShares(network => {
+					trackEvent('Product Shared', {
+						...product,
+						share_via: network,
+					});
+				});
+			}
+		});
 	}
 };
 
@@ -205,14 +206,15 @@ export const callSegmentPage = (integrations: Record<string, any>) => {
 		},
 	);
 
-	const productDetail = getProductDetail();
-	if (productDetail) {
-		const properties = segmentProduct(productDetail);
-		properties.currency = LittledataLayer.ecommerce.currencyCode;
-		properties.position = parseInt(window.localStorage.getItem('position')) || 1;
-		window.analytics.ready(() => {
-			//need to wait for anonymousId to be available
-			trackEvent('Product Viewed', properties);
-		});
-	}
+	getProductDetail().then(productDetail => {
+		if (productDetail) {
+			const properties = segmentProduct(productDetail);
+			properties.currency = LittledataLayer.ecommerce.currencyCode;
+			properties.position = parseInt(window.localStorage.getItem('position')) || 1;
+			window.analytics.ready(() => {
+				//need to wait for anonymousId to be available
+				trackEvent('Product Viewed', properties);
+			});
+		}
+	});
 };

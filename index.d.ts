@@ -55,6 +55,7 @@ export interface OwnLayer extends Cart.Attributes {
 	googleAdsConversionIds?: string[];
 	ecommerce: {
 		currencyCode?: string;
+		variants?: LooseObject[]; //from before data layer v9
 		impressions?: Impression[];
 		impressionsToSend?: ImpressionToSend[];
 		detail?: Detail;

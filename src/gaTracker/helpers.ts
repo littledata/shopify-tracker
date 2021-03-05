@@ -73,11 +73,11 @@ export const sendPageview = () => {
 		googleAds.forEach(adId => gtag('config', adId));
 	}
 
-	const product = getProductDetail();
-	if (product) {
-		product.list_position = parseInt(window.localStorage.getItem('position')) || 1;
-		sendViewItemEvent(product);
-	}
+	getProductDetail().then((product: Detail) => {
+		if (product) {
+			sendViewItemEvent(product);
+		}
+	});
 };
 
 export const trackEvents = () => {
@@ -90,56 +90,57 @@ export const trackEvents = () => {
 		sendViewItemListEvent(products);
 	}, clickTag);
 
-	const product = getProductDetail();
-	if (product) {
-		// if PDP, we can also track clicks on images and social shares
-		trackProductImageClicks(image => {
-			dataLayer.push({
-				event: 'product_image_click',
-				name: image.id,
-				image_url: image.src,
-			});
-
-			if (hasGA4()) {
-				gtag('event', 'select_content', {
-					content_type: 'product',
-					item_product_id: product.shopify_product_id,
-					item_sku: product.id,
-					item_variant_id: product.shopify_variant_id,
+	getProductDetail().then((product: Detail) => {
+		if (product) {
+			// if PDP, we can also track clicks on images and social shares
+			trackProductImageClicks(image => {
+				dataLayer.push({
+					event: 'product_image_click',
+					name: image.id,
 					image_url: image.src,
-					send_to: LittledataLayer.measurementID,
 				});
-			}
-			if (hasGA3()) {
-				gtag('event', 'Product image click', {
-					event_category,
-					event_label: image.id,
-					send_to: LittledataLayer.webPropertyID,
-				});
-			}
-		});
 
-		trackSocialShares(network => {
-			dataLayer.push({
-				event: 'share_product',
-				network,
+				if (hasGA4()) {
+					gtag('event', 'select_content', {
+						content_type: 'product',
+						item_product_id: product.shopify_product_id,
+						item_sku: product.id,
+						item_variant_id: product.shopify_variant_id,
+						image_url: image.src,
+						send_to: LittledataLayer.measurementID,
+					});
+				}
+				if (hasGA3()) {
+					gtag('event', 'Product image click', {
+						event_category,
+						event_label: image.id,
+						send_to: LittledataLayer.webPropertyID,
+					});
+				}
 			});
 
-			if (hasGA4()) {
-				gtag('event', 'share', {
-					method: network,
-					send_to: LittledataLayer.measurementID,
+			trackSocialShares(network => {
+				dataLayer.push({
+					event: 'share_product',
+					network,
 				});
-			}
-			if (hasGA3()) {
-				gtag('event', 'Social share', {
-					event_category,
-					event_label: network,
-					send_to: LittledataLayer.webPropertyID,
-				});
-			}
-		});
-	}
+
+				if (hasGA4()) {
+					gtag('event', 'share', {
+						method: network,
+						send_to: LittledataLayer.measurementID,
+					});
+				}
+				if (hasGA3()) {
+					gtag('event', 'Social share', {
+						event_category,
+						event_label: network,
+						send_to: LittledataLayer.webPropertyID,
+					});
+				}
+			});
+		}
+	});
 };
 
 export const filterGAProductFields = (product: LooseObject) => {
