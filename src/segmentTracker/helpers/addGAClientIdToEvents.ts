@@ -1,4 +1,7 @@
 import { MiddlewareOptions } from '../../../segmentInterface';
+import { CustomWindow } from '../../..';
+
+declare let window: CustomWindow;
 
 // Segment only adds GA ClientID for the GA destination by default
 // Adding it here sends it to Segment's servers, regardless of whether GA desintation is enabled
