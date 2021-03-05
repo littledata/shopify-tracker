@@ -66,6 +66,10 @@ const checkCartHasAttributes = (cart: Cart.RootObject): Promise<void | Cart.Root
 	const attributesInCart = Object.keys(cart.attributes);
 	const allAttributesInCart = attributesToSet.every(attribute => attributesInCart.includes(attribute));
 	if (allAttributesInCart) {
+		window.LittledataLayer.attributes = {
+			...window.LittledataLayer.attributes,
+			...cart.attributes,
+		};
 		return Promise.resolve(cart);
 	}
 	// after cart/update is successful this will return a stable cart token
