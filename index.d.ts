@@ -76,6 +76,7 @@ export interface OwnLayer {
 	cookieUpdate?: boolean;
 	debug?: boolean;
 	pageType?: string;
+	usePageTypeForListName?: boolean;
 }
 
 declare global {

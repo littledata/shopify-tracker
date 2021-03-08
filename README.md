@@ -40,7 +40,7 @@ The following fields of the `LittledataLayer` object allow for configuration of 
 
 Debug mode adds extra console logs to track how the script is performing.
 
-Deafult: `null` (boolean)
+Deafult: `undefined` (boolean)
 
 **productClicks**
 
@@ -52,7 +52,7 @@ Default: `true` (boolean)
 
 By default we track clicks on product images and social share buttons on the product details page. If this doesn't work with your theme you can opt out by setting this field to `false`.
 
-Default: `null` (boolean)
+Default: `undefined` (boolean)
 
 **hideBranding**
 
@@ -63,6 +63,12 @@ Default: `false` (boolean)
 **doNotTrackReplaceState**
 
 For some themes, where the URL changes (e.g. a new variant) without a new page load our script will track a new page view. Change this setting to `true` to disable a new page view on `history.replaceState()` via [browser History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API)
+
+Default: `undefined` (boolean)
+
+**usePageTypeForListName**
+
+Littledata's tracking script uses the `document.location.pathname` as the list name for list events. Setting `usePageTypeForListName: true` overrides this to use [Shopify's page_type](https://shopify.dev/docs/themes/liquid/reference/objects/request#request-page_type) as the list name, which has fewer values and may be more helpful in reporting.
 
 Default: `undefined` (boolean)
 
