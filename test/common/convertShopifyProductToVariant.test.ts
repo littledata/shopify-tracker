@@ -29,8 +29,8 @@ describe('convertShopifyProductToVariant', () => {
 		});
 	});
 
-	it('uses pageType as list name', () => {
-		window.LittledataLayer = { ecommerce: {}, pageType: 'collection' };
+	it('uses pageType as list name if usePageTypeForListName is set', () => {
+		window.LittledataLayer = { ecommerce: {}, pageType: 'collection', usePageTypeForListName: true };
 
 		convertShopifyProductToVariant(sampleShopifyProduct, '794864229').should.include({
 			list_name: 'collection',
