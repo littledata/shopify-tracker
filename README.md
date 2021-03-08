@@ -16,9 +16,9 @@ There is also an extra tracker for our [Carthook checkout connection](https://ww
 
 The latest minified versions of these scripts are hosted on a CDN:
 
--   https://cdn.jsdelivr.net/gh/littledata/shopify-tracker/dist/gaTracker.js
+-   https://master-shopify-tracker.s3.amazonaws.com/gaTracker.js
 
--   https://cdn.jsdelivr.net/gh/littledata/shopify-tracker/dist/segmentTracker.js
+-   https://master-shopify-tracker.s3.amazonaws.com/segmentTracker.js
 
 You can find which version your browser has loaded by looking at `LittledataScriptVersion` window-scope variable.
 

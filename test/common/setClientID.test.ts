@@ -89,6 +89,9 @@ describe('setClientID', () => {
 		window.LittledataLayer.cart.attributes.should.include({
 			'google-clientID': '111',
 		});
+		window.LittledataLayer.attributes.should.include({
+			'google-clientID': '111',
+		});
 	});
 
 	it('de-bounces multiple requests', async () => {
@@ -108,6 +111,10 @@ describe('setClientID', () => {
 				'segment-clientID': 'aaa',
 				littledata_updatedAt: sinon.match.number,
 			},
+		});
+		window.LittledataLayer.attributes.should.include({
+			'google-clientID': '222',
+			'segment-clientID': 'aaa',
 		});
 	});
 
@@ -135,22 +142,30 @@ describe('setClientID', () => {
 				littledata_updatedAt: sinon.match.number,
 			},
 		});
+		window.LittledataLayer.attributes.should.include({
+			'google-clientID': '111',
+			'segment-clientID': 'bbb',
+		});
 	});
 
 	it('does not post cart if cart already contains attribute', async () => {
+		const attributes = {
+			'google-clientID': '111',
+			'segment-clientID': 'bbb',
+			littledata_updatedAt: String(new Date().getTime()),
+		};
 		getJSON
 			.withArgs('/cart.json')
 			.onFirstCall()
 			.resolves({
-				attributes: {
-					'google-clientID': '111',
-					littledata_updatedAt: String(new Date().getTime()),
-				},
+				token: 'abc',
+				attributes,
 			});
 		setClientID('111', 'google');
-		await timeoutPromise(1200); //a bit longer than 1s timeout
+		await timeoutPromise(1100); //a bit longer than 1s timeout
 		getJSON.should.have.been.calledOnce;
-		postJSON.should.not.have.been.called;
+		postJSON.should.not.have.been.calledWith('/cart.json', sinon.match.object);
+		window.LittledataLayer.attributes.should.include(attributes);
 	});
 
 	it('does not send cart token on to Littledata if updated at is not recent', async () => {
@@ -164,7 +179,7 @@ describe('setClientID', () => {
 				},
 			});
 		setClientID('111', 'google');
-		await timeoutPromise(1200); //a bit longer than 1s timeout
+		await timeoutPromise(1100); //a bit longer than 1s timeout
 		getJSON.should.have.been.calledOnce;
 		postJSON.should.not.have.been.called;
 	});
@@ -175,14 +190,14 @@ describe('setClientID', () => {
 			.onFirstCall()
 			.resolves({});
 		setClientID('111', 'google');
-		await timeoutPromise(1200); //a bit longer than 1s timeout
+		await timeoutPromise(1100); //a bit longer than 1s timeout
 		getJSON.should.have.been.called;
 		postJSON.should.not.have.been.called;
 	});
 
 	it('aborts with invalid clientID', async () => {
 		setClientID('', 'google');
-		await timeoutPromise(1200); //a bit longer than 1s timeout
+		await timeoutPromise(1100); //a bit longer than 1s timeout
 		getJSON.should.not.have.been.called;
 	});
 
@@ -194,8 +209,21 @@ describe('setClientID', () => {
 			},
 		};
 		setClientID('abc', 'segment');
-		await timeoutPromise(1200); //a bit longer than 1s timeout
+		await timeoutPromise(1100); //a bit longer than 1s timeout
 		getJSON.should.not.have.been.called;
+	});
+
+	it('still fetches if data layer cart does not have token', async () => {
+		window.LittledataLayer.cart = {
+			...cart,
+			token: undefined,
+			attributes: {
+				'segment-clientID': 'abc',
+			},
+		};
+		setClientID('abc', 'segment');
+		await timeoutPromise(1100); //a bit longer than 1s timeout
+		getJSON.should.have.been.called;
 	});
 });
 
