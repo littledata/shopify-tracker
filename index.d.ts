@@ -8,7 +8,7 @@ export interface Detail {
 	category: string;
 	variant: string;
 	list_name: string;
-	list: string; // duplicate property for GTM
+	list?: string; // duplicate property for GTM
 	handle: string;
 	list_position?: number;
 	shopify_product_id?: string;
@@ -55,7 +55,9 @@ export interface OwnLayer {
 	googleAdsConversionIds?: string[];
 	ecommerce: {
 		currencyCode?: string;
+		variants?: LooseObject[]; //from before data layer v9
 		impressions?: Impression[];
+		impressionsToSend?: ImpressionToSend[];
 		detail?: Detail;
 	};
 	transactionWatcherURL?: string;
@@ -72,6 +74,9 @@ export interface OwnLayer {
 	attributes?: Cart.Attributes;
 	segmentUserId?: string;
 	cookieUpdate?: boolean;
+	debug?: boolean;
+	pageType?: string;
+	usePageTypeForListName?: boolean;
 }
 
 declare global {
@@ -155,7 +160,7 @@ declare global {
 	}
 
 	interface Impression extends Detail {
-		list_position: number;
+		list_position?: number;
 	}
 
 	interface DiscountApplication {
@@ -166,6 +171,12 @@ declare global {
 		type: 'automatic' | 'discount_code' | 'manual' | 'script';
 		value: number;
 		value_type: string;
+	}
+
+	interface ImpressionToSend {
+		handle: string;
+		shopify_variant_id: string;
+		list_position: number;
 	}
 
 	var LittledataLayer: OwnLayer;
@@ -185,7 +196,7 @@ declare global {
 		timeout: number;
 	}
 
-	type ListClickCallback = (foundProduct: Impression, self: TimeBombHTMLAnchor) => void;
+	type ListClickCallback = (foundProduct: Impression, element: TimeBombHTMLAnchor, openInNewTab: boolean) => void;
 
 	interface Customer {
 		id: string;
