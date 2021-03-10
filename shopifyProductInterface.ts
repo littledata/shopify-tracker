@@ -13,29 +13,28 @@ export interface ShopifyProduct {
 	tags: string;
 	template_suffix?: string;
 	title: string;
-	description: string;
+	description?: string;
 	updated_at?: string;
 	vendor?: string;
 	type?: string;
 	variants: ShopifyVariant[];
-	price_min: string;
-	price_max: string;
-	available: boolean;
+	price_min?: string;
+	price_max?: string;
+	available?: boolean;
 	compare_at_price?: string;
 }
 
 interface ShopifyVariant {
-	barcode: null | string;
-	compare_at_price: null | string;
+	barcode: string;
+	compare_at_price: string;
 	created_at?: string;
 	fulfillment_service?: string;
 	grams: number;
 	id: number;
 	image_id?: null | string;
 	inventory_management: string;
-	options: string[];
-	option1: string;
-	option2: string;
+	option1: null | string;
+	option2: null | string;
 	option3: null | string;
 	position?: number;
 	price: string;

@@ -7,47 +7,53 @@ import { CustomWindow } from '../..';
 declare let window: CustomWindow;
 should();
 
+const firstVariant = '2114336302703';
+
 describe('convertShopifyProductToVariant', () => {
 	beforeEach(() => {
 		window.LittledataLayer = { ecommerce: {} };
 	});
 
 	it('adds standard GA fields', () => {
-		convertShopifyProductToVariant(sampleShopifyProduct, '794864229').should.deep.equal({
-			id: '329678821',
-			name: 'Red Rain Coat',
-			price: '129.00',
-			brand: 'Shopify',
+		convertShopifyProductToVariant(sampleShopifyProduct, firstVariant).should.deep.equal({
+			id: 'ABC',
+			name: 'Inox tap - CH',
+			price: '10.00',
+			brand: 'rares-ultimate-store',
 			category: 'Coat',
-			variant: 'Small',
+			variant: 'Default Title',
 			list_name: document.location.pathname,
-			handle: 'red-rain-coat',
-			shopify_product_id: '329678821',
-			shopify_variant_id: '794864229',
-			compare_at_price: null,
-			image_url: 'https://cdn.shopify.com/s/files/1/0040/7092/products/red-rain-coat.jpeg?v=1402604893',
+			handle: 'robinet-inox',
+			shopify_product_id: '2035740541017',
+			shopify_variant_id: firstVariant,
+			compare_at_price: '',
+			image_url:
+				'https://cdn.shopify.com/s/files/1/0032/3397/2313/products/robinet-de-salle-de-bain-robinet-de-cuisine-inox-r.jpg?v=1571760693',
 		});
 	});
 
 	it('uses pageType as list name if usePageTypeForListName is set', () => {
 		window.LittledataLayer = { ecommerce: {}, pageType: 'collection', usePageTypeForListName: true };
 
-		convertShopifyProductToVariant(sampleShopifyProduct, '794864229').should.include({
+		convertShopifyProductToVariant(sampleShopifyProduct, firstVariant).should.include({
 			list_name: 'collection',
 		});
 	});
 
 	it('adds list_position', () => {
-		convertShopifyProductToVariant(sampleShopifyProduct, '794864229').should.not.include({
+		convertShopifyProductToVariant(sampleShopifyProduct, firstVariant).should.not.include({
 			list_position: 5,
 		});
-		convertShopifyProductToVariant(sampleShopifyProduct, '794864229', 5).should.include({
+		convertShopifyProductToVariant(sampleShopifyProduct, firstVariant, 5).should.include({
 			list_position: 5,
 		});
 	});
 
 	it('handles product with no images', () => {
-		convertShopifyProductToVariant({ ...sampleShopifyProduct, images: [] }, '794864229').should.include({
+		convertShopifyProductToVariant(
+			{ ...sampleShopifyProduct, image: null, images: [] },
+			firstVariant,
+		).should.include({
 			image_url: '',
 		});
 	});

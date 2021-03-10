@@ -70,10 +70,11 @@ describe('getProductDetail', () => {
 	});
 
 	it('fetches product from Shopify and sets data layer with correct variant', async () => {
+		const variantId = '21143363027034';
 		window.LittledataLayer.pageType = 'product';
-		window.location.href = `${pathname}?variant=794864237`;
+		window.location.href = `${pathname}?variant=${variantId}`;
 		getJSON.resolves(sampleShopifyProduct);
-		const expectedProduct = convertShopifyProductToVariant(sampleShopifyProduct, '794864237', 1);
+		const expectedProduct = convertShopifyProductToVariant(sampleShopifyProduct, variantId, 1);
 		const product = await getProductDetail();
 		getJSON.should.have.been.calledWith('/products/my-product.js');
 		product.should.deep.equal(expectedProduct);

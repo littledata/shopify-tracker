@@ -27,7 +27,7 @@ export const convertShopifyProductToVariant = (
 		shopify_product_id: String(product.id),
 		shopify_variant_id: String(variant.id),
 		compare_at_price: variant.compare_at_price,
-		image_url: getFirstImageURL(product.images),
+		image_url: getFirstImageURL(product.image),
 	};
 
 	if (list_position) {
@@ -37,8 +37,7 @@ export const convertShopifyProductToVariant = (
 	return output;
 };
 
-const getFirstImageURL = (images: ShopifyProduct['images']) => {
-	const firstImage = images.length && images[0];
-	if (typeof firstImage !== 'string') return '';
-	return firstImage.replace(/^\/\//, 'https://');
+const getFirstImageURL = (image: ShopifyProduct['image']) => {
+	if (!image || !image.src) return '';
+	return image.src.replace(/^\/\//, 'https://');
 };
