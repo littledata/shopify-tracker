@@ -1,6 +1,7 @@
 /* eslint-env browser */
 import { getCookie, getValidGAClientId } from '../common/getCookie';
 import getConfig from '../common/getConfig';
+import { removePii } from '../common/removePii';
 
 declare let window: CartHookWindow;
 
@@ -77,7 +78,13 @@ export function initGtag(webPropertyId: string): void {
 	window.gtag = window.gtag || stubFunction;
 	// @ts-ignore
 	gtag('js', new Date());
-	gtag('config', webPropertyId, getConfig());
+	const page_title = removePii(document.title);
+	const page_location = removePii(document.location.href);
+	gtag('config', webPropertyId, {
+		page_title,
+		page_location,
+		...getConfig(),
+	});
 }
 
 export const sendCartId = () => {

@@ -1,12 +1,12 @@
 import { CustomWindow, Detail, GA4Product } from '../..';
 import {
 	productListClicks,
-	removePii,
 	retrieveAndStoreClientId,
 	trackProductImageClicks,
 	trackSocialShares,
 } from '../common/helpers';
 
+import { removePii } from '../common/removePii';
 import getConfig from '../common/getConfig';
 import getProductDetail from '../common/getProductDetail';
 import productListViews from '../common/productListViews';
