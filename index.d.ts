@@ -7,8 +7,8 @@ export interface Detail {
 	brand: string;
 	category: string;
 	variant: string;
-	list_name: string;
-	list: string; // duplicate property for GTM
+	list_name?: string;
+	list?: string; // duplicate property for GTM
 	handle: string;
 	list_position?: number;
 	shopify_product_id?: string;
@@ -72,6 +72,8 @@ export interface OwnLayer {
 	attributes?: Cart.Attributes;
 	segmentUserId?: string;
 	cookieUpdate?: boolean;
+	pageType?: string;
+	usePageTypeForListName?: boolean;
 }
 
 declare global {
@@ -155,7 +157,7 @@ declare global {
 	}
 
 	interface Impression extends Detail {
-		list_position: number;
+		list_position?: number;
 	}
 
 	interface DiscountApplication {
