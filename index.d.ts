@@ -7,7 +7,7 @@ export interface Detail {
 	brand: string;
 	category: string;
 	variant: string;
-	list_name?: string;
+	list_name: string;
 	list?: string; // duplicate property for GTM
 	handle: string;
 	list_position?: number;
@@ -55,9 +55,10 @@ export interface OwnLayer {
 	googleAdsConversionIds?: string[];
 	ecommerce: {
 		currencyCode?: string;
-		impressions?: Impression[];
-		detail?: Detail;
 		variants?: LooseObject[]; //from before data layer v9
+		impressions?: Impression[];
+		impressionsToSend?: ImpressionToSend[];
+		detail?: Detail;
 	};
 	transactionWatcherURL?: string;
 	cart?: Cart.RootObject;
@@ -73,6 +74,7 @@ export interface OwnLayer {
 	attributes?: Cart.Attributes;
 	segmentUserId?: string;
 	cookieUpdate?: boolean;
+	debug?: boolean;
 	pageType?: string;
 	usePageTypeForListName?: boolean;
 }
@@ -171,6 +173,12 @@ declare global {
 		value_type: string;
 	}
 
+	interface ImpressionToSend {
+		handle: string;
+		shopify_variant_id: string;
+		list_position: number;
+	}
+
 	var LittledataLayer: OwnLayer;
 	var dataLayer: any[];
 
@@ -188,7 +196,7 @@ declare global {
 		timeout: number;
 	}
 
-	type ListClickCallback = (foundProduct: Impression, self: TimeBombHTMLAnchor) => void;
+	type ListClickCallback = (foundProduct: Impression, element: TimeBombHTMLAnchor, openInNewTab: boolean) => void;
 
 	interface Customer {
 		id: string;

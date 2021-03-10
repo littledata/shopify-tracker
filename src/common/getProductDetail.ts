@@ -4,7 +4,6 @@ import { Detail, CustomWindow } from '../..';
 import { convertShopifyProductToVariant } from './convertShopifyProductToVariant';
 
 declare let window: CustomWindow;
-
 export default (): Promise<null | Detail> => {
 	const variantId = findVariantInURL();
 	const list_position = parseInt(window.localStorage.getItem('position')) || 1;
