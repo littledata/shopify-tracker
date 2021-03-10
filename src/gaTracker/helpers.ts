@@ -1,9 +1,16 @@
-import { Detail, GA4Product, CustomWindow } from '../..';
-import { removePii, retrieveAndStoreClientId, trackProductImageClicks, trackSocialShares } from '../common/helpers';
+import { CustomWindow, Detail, GA4Product } from '../..';
+import {
+	productListClicks,
+	removePii,
+	retrieveAndStoreClientId,
+	trackProductImageClicks,
+	trackSocialShares,
+} from '../common/helpers';
+
+import getConfig from '../common/getConfig';
 import getProductDetail from '../common/getProductDetail';
 import productListViews from '../common/productListViews';
-import { listClickCallback } from '../common/addClickListener';
-import getConfig from '../common/getConfig';
+
 declare let window: CustomWindow;
 
 const event_category = 'Shopify (Littledata)';
@@ -73,74 +80,82 @@ export const sendPageview = () => {
 		googleAds.forEach(adId => gtag('config', adId));
 	}
 
-	getProductDetail().then((product: Detail) => {
-		if (product) {
-			sendViewItemEvent(product);
-		}
-	});
+	const product = getProductDetail();
+	if (product) {
+		product.list_position = parseInt(window.localStorage.getItem('position')) || 1;
+		sendViewItemEvent(product);
+	}
 };
 
 export const trackEvents = () => {
 	/* run list, product, and clientID scripts everywhere */
-	const clickTag = (product: Impression, element: TimeBombHTMLAnchor, openInNewTab: boolean) => {
-		sendSelectContentEvent(product, element, openInNewTab);
-	};
+	if (LittledataLayer.ecommerce.impressions.length) {
+		productListClicks((product, self) => {
+			const productFromImpressions = LittledataLayer.ecommerce.impressions.find(
+				prod => prod.name === product.name && prod.handle === product.handle,
+			);
 
-	productListViews((products: Impression[]) => {
-		sendViewItemListEvent(products);
-	}, clickTag);
+			const pos = productFromImpressions && productFromImpressions.list_position;
+			window.localStorage.setItem('position', String(pos));
 
-	getProductDetail().then((product: Detail) => {
-		if (product) {
-			// if PDP, we can also track clicks on images and social shares
-			trackProductImageClicks(image => {
-				dataLayer.push({
-					event: 'product_image_click',
-					name: image.id,
+			sendSelectContentEvent(product, self);
+		});
+
+		productListViews((products: Impression[]) => {
+			sendViewItemListEvent(products);
+		});
+	}
+
+	const product = getProductDetail();
+	if (product) {
+		// if PDP, we can also track clicks on images and social shares
+		trackProductImageClicks(image => {
+			dataLayer.push({
+				event: 'product_image_click',
+				name: image.name,
+				image_url: image.src,
+			});
+
+			if (hasGA4()) {
+				gtag('event', 'select_content', {
+					content_type: 'product',
+					item_product_id: product.shopify_product_id,
+					item_sku: product.id,
+					item_variant_id: product.shopify_variant_id,
 					image_url: image.src,
+					send_to: LittledataLayer.measurementID,
 				});
+			}
+			if (hasGA3()) {
+				gtag('event', 'Product image click', {
+					event_category,
+					event_label: image.name,
+					send_to: LittledataLayer.webPropertyID,
+				});
+			}
+		});
 
-				if (hasGA4()) {
-					gtag('event', 'select_content', {
-						content_type: 'product',
-						item_product_id: product.shopify_product_id,
-						item_sku: product.id,
-						item_variant_id: product.shopify_variant_id,
-						image_url: image.src,
-						send_to: LittledataLayer.measurementID,
-					});
-				}
-				if (hasGA3()) {
-					gtag('event', 'Product image click', {
-						event_category,
-						event_label: image.id,
-						send_to: LittledataLayer.webPropertyID,
-					});
-				}
+		trackSocialShares(network => {
+			dataLayer.push({
+				event: 'share_product',
+				network,
 			});
 
-			trackSocialShares(network => {
-				dataLayer.push({
-					event: 'share_product',
-					network,
+			if (hasGA4()) {
+				gtag('event', 'share', {
+					method: network,
+					send_to: LittledataLayer.measurementID,
 				});
-
-				if (hasGA4()) {
-					gtag('event', 'share', {
-						method: network,
-						send_to: LittledataLayer.measurementID,
-					});
-				}
-				if (hasGA3()) {
-					gtag('event', 'Social share', {
-						event_category,
-						event_label: network,
-						send_to: LittledataLayer.webPropertyID,
-					});
-				}
-			});
-		}
-	});
+			}
+			if (hasGA3()) {
+				gtag('event', 'Social share', {
+					event_category,
+					event_label: network,
+					send_to: LittledataLayer.webPropertyID,
+				});
+			}
+		});
+	}
 };
 
 export const filterGAProductFields = (product: LooseObject) => {
@@ -237,7 +252,7 @@ function sendViewItemEvent(product: Detail): void {
 	});
 }
 
-function sendSelectContentEvent(product: Detail, self: TimeBombHTMLAnchor, openInNewTab: boolean): void {
+function sendSelectContentEvent(product: Detail, self: TimeBombHTMLAnchor): void {
 	dataLayer.push({
 		event: 'select_content',
 		ecommerce: {
@@ -252,7 +267,10 @@ function sendSelectContentEvent(product: Detail, self: TimeBombHTMLAnchor, openI
 		gtag('event', 'select_item', {
 			items: convertProductsToGa4Format(new Array(product), true),
 			send_to: LittledataLayer.measurementID,
-			event_callback: listClickCallback(self, openInNewTab),
+			event_callback() {
+				window.clearTimeout(self.timeout);
+				document.location.href = self.href;
+			},
 		});
 	}
 	if (hasGA3()) {
@@ -261,7 +279,10 @@ function sendSelectContentEvent(product: Detail, self: TimeBombHTMLAnchor, openI
 			content_type: 'product',
 			items: [filterGAProductFields(product)],
 			send_to: LittledataLayer.webPropertyID,
-			event_callback: listClickCallback(self, openInNewTab),
+			event_callback() {
+				window.clearTimeout(self.timeout);
+				document.location.href = self.href;
+			},
 		});
 	}
 }
