@@ -4,12 +4,13 @@ export interface ShopifyProduct {
 	handle: string;
 	id: number;
 	featured_image?: string;
-	images?: string[];
+	image?: ShopifyImage;
+	images?: ShopifyImage[];
 	options: LooseObject[];
 	product_type?: string;
 	published_at: string;
 	published_scope?: string;
-	tags: string[];
+	tags: string;
 	template_suffix?: string;
 	title: string;
 	description: string;
@@ -46,4 +47,17 @@ interface ShopifyVariant {
 	updated_at?: string;
 	weight: number;
 	weight_unit: string;
+}
+
+interface ShopifyImage {
+	id: number;
+	product_id: number;
+	position?: number;
+	created_at: string;
+	updated_at: string;
+	alt: null | string;
+	width: number;
+	height: number;
+	src: string;
+	variant_ids: string[];
 }

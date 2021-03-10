@@ -39,6 +39,6 @@ export const convertShopifyProductToVariant = (
 
 const getFirstImageURL = (images: ShopifyProduct['images']) => {
 	const firstImage = images.length && images[0];
-	if (!firstImage) return '';
+	if (typeof firstImage !== 'string') return '';
 	return firstImage.replace(/^\/\//, 'https://');
 };
