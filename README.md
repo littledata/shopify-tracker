@@ -36,23 +36,17 @@ The following fields of the `LittledataLayer` object allow for configuration of 
 
 ### For both Segment and Google Analytics
 
-**debug**
-
-Debug mode adds extra console logs to track how the script is performing.
-
-Deafult: `undefined` (boolean)
-
 **productClicks**
 
 By default our tracking code briefly interrupts a click on a product in a product list, in order to send the tracking event before the page reloads. If this is interfering with other apps or scripts you can turn off product list click tracking.
 
-Default: `true` (boolean)
+Default: `true`
 
 **productPageClicks**
 
 By default we track clicks on product images and social share buttons on the product details page. If this doesn't work with your theme you can opt out by setting this field to `false`.
 
-Default: `undefined` (boolean)
+Default: `null`
 
 **hideBranding**
 
@@ -63,12 +57,6 @@ Default: `false` (boolean)
 **doNotTrackReplaceState**
 
 For some themes, where the URL changes (e.g. a new variant) without a new page load our script will track a new page view. Change this setting to `true` to disable a new page view on `history.replaceState()` via [browser History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API)
-
-Default: `undefined` (boolean)
-
-**usePageTypeForListName**
-
-Littledata's tracking script uses the `document.location.pathname` as the list name for list events. Setting `usePageTypeForListName: true` overrides this to use [Shopify's page_type](https://shopify.dev/docs/themes/liquid/reference/objects/request#request-page_type) as the list name, which has fewer values and may be more helpful in reporting.
 
 Default: `undefined` (boolean)
 
