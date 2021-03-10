@@ -57,6 +57,7 @@ export interface OwnLayer {
 		currencyCode?: string;
 		impressions?: Impression[];
 		detail?: Detail;
+		variants?: LooseObject[]; //from before data layer v9
 	};
 	transactionWatcherURL?: string;
 	cart?: Cart.RootObject;
