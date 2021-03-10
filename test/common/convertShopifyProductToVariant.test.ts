@@ -7,7 +7,7 @@ import { CustomWindow } from '../..';
 declare let window: CustomWindow;
 should();
 
-const firstVariant = '2114336302703';
+const firstVariant = '21143363027033';
 
 describe('convertShopifyProductToVariant', () => {
 	beforeEach(() => {
@@ -29,6 +29,15 @@ describe('convertShopifyProductToVariant', () => {
 			compare_at_price: '',
 			image_url:
 				'https://cdn.shopify.com/s/files/1/0032/3397/2313/products/robinet-de-salle-de-bain-robinet-de-cuisine-inox-r.jpg?v=1571760693',
+		});
+	});
+
+	it('picks the first variant if none is given or invalid', () => {
+		convertShopifyProductToVariant(sampleShopifyProduct, undefined).should.include({
+			shopify_variant_id: firstVariant,
+		});
+		convertShopifyProductToVariant(sampleShopifyProduct, '1111').should.include({
+			shopify_variant_id: firstVariant,
 		});
 	});
 

@@ -8,9 +8,10 @@ export const convertShopifyProductToVariant = (
 	shopify_variant_id: null | string,
 	list_position?: number,
 ) => {
-	const variant = shopify_variant_id
-		? product.variants.find(v => String(v.id) === shopify_variant_id)
-		: product.variants[0];
+	let variant = shopify_variant_id && product.variants.find(v => String(v.id) === shopify_variant_id);
+	if (!variant) {
+		variant = product.variants[0];
+	}
 
 	const { pageType, usePageTypeForListName } = window.LittledataLayer;
 	const list_name = usePageTypeForListName && pageType ? pageType : document.location.pathname;
