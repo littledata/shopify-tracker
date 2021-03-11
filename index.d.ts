@@ -42,7 +42,7 @@ export interface CustomWindow extends Window {
 	_ga_originalSendHitTask: any;
 }
 
-export interface OwnLayer extends Cart.Attributes {
+export interface OwnLayer {
 	version?: string;
 	customer?: Customer;
 	hideBranding?: boolean;
