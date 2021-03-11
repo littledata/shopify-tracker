@@ -1,5 +1,5 @@
 /* eslint-env browser */
-/* global LittledataLayer */
+import { CustomWindow } from '../..';
 declare let window: CustomWindow;
 
 import {
@@ -7,24 +7,23 @@ import {
 	documentReady,
 	pageView,
 	retrieveAndStoreClientId,
-	setClientID,
 	validateLittledataLayer,
 } from '../common/helpers';
+import { setClientID } from '../common/setClientID';
 import { callSegmentPage, identifyCustomer, initSegment, trackEvents } from './helpers';
+import { sendEventsWithPageview } from './helpers/sendEventsWithPageview';
 
 (function() {
 	validateLittledataLayer();
 	initSegment();
 	advertiseLD('Segment');
-	identifyCustomer(LittledataLayer.customer);
+	identifyCustomer();
 	documentReady(trackEvents);
 	pageView(function() {
 		callSegmentPage({});
+		sendEventsWithPageview(document.location.pathname);
 		window.analytics.ready(() => {
-			// @ts-ignore 'Integrations' property does, in fact exist
-			if (window.analytics.Integrations['Google Analytics']) {
-				retrieveAndStoreClientId();
-			}
+			retrieveAndStoreClientId();
 			const { user } = window.analytics;
 			if (user) {
 				setClientID(user().anonymousId(), 'segment');

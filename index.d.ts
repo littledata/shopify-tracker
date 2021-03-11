@@ -30,6 +30,50 @@ export interface GA4Product {
 	index?: number;
 }
 
+export interface CustomWindow extends Window {
+	console: { (...data: any[]): void; (message?: any, ...optionalParams: any[]): void };
+	ga: any;
+	LittledataLayer: OwnLayer;
+	analytics: AnalyticsJS;
+	gtag: Gtag.Gtag;
+	dataLayer: any[];
+	LittledataScriptVersion: string;
+	Shopify?: LooseObject;
+	_ga_originalSendHitTask: any;
+}
+
+export interface OwnLayer {
+	version?: string;
+	customer?: Customer;
+	hideBranding?: boolean;
+	writeKey?: string;
+	webPropertyID?: string;
+	measurementID?: string;
+	referralExclusion?: RegExp | string; //before layer v8.8 it was a RegExp
+	enhancePrivacy?: boolean;
+	productClicks?: boolean;
+	googleAdsConversionIds?: string[];
+	ecommerce: {
+		currencyCode?: string;
+		impressions?: Impression[];
+		detail?: Detail;
+	};
+	transactionWatcherURL?: string;
+	cart?: Cart.RootObject;
+	anonymizeIp?: boolean;
+	googleSignals?: boolean;
+	optimizeId?: string;
+	productPageClicks?: boolean;
+	extraLinkerDomains?: string[];
+	cookiesToTrack?: string[];
+	doNotTrackReplaceState?: boolean;
+	MPEndpoint?: string;
+	CDNForAnalyticsJS?: string;
+	attributes?: Cart.Attributes;
+	segmentUserId?: string;
+	cookieUpdate?: boolean;
+}
+
 declare global {
 	interface LooseObject {
 		[index: string]: any;
@@ -37,8 +81,9 @@ declare global {
 
 	namespace Cart {
 		export interface Attributes {
+			token?: string;
 			updatedAt?: string; //old format pre v8.3
-			littledata_updatedAt?: number;
+			littledata_updatedAt?: string;
 			'google-clientID'?: string;
 			'segment-clientID'?: string;
 			'email-clientID'?: string;
@@ -102,10 +147,10 @@ declare global {
 			total_weight: number;
 			item_count: number;
 			items: Item[];
-			requires_shipping: boolean;
+			requires_shipping?: boolean;
 			currency: string;
-			items_subtotal_price: number;
-			cart_level_discount_applications: any[];
+			items_subtotal_price?: number;
+			cart_level_discount_applications?: any[];
 		}
 	}
 
@@ -123,49 +168,8 @@ declare global {
 		value_type: string;
 	}
 
-	interface OwnLayer extends Cart.Attributes {
-		version?: string;
-		customer?: Customer;
-		hideBranding?: boolean;
-		writeKey?: string;
-		webPropertyID?: string;
-		measurementID?: string;
-		referralExclusion?: RegExp;
-		enhancePrivacy?: boolean;
-		productClicks?: boolean;
-		googleAdsConversionIds?: string[];
-		ecommerce: {
-			currencyCode?: string;
-			impressions?: Impression[];
-			detail?: Detail;
-		};
-		transactionWatcherURL?: string;
-		cart?: Cart.RootObject;
-		anonymizeIp?: boolean;
-		googleSignals?: boolean;
-		optimizeId?: string;
-		productPageClicks?: boolean;
-		extraLinkerDomains?: string[];
-		cookiesToTrack?: string[];
-		doNotTrackReplaceState?: boolean;
-		MPEndpoint?: string;
-		CDNForAnalyticsJS?: string;
-	}
-
 	var LittledataLayer: OwnLayer;
 	var dataLayer: any[];
-
-	interface CustomWindow extends Window {
-		console: { (...data: any[]): void; (message?: any, ...optionalParams: any[]): void };
-		ga: any;
-		LittledataLayer: OwnLayer;
-		analytics: AnalyticsJS;
-		gtag: Gtag.Gtag;
-		dataLayer: any[];
-		LittledataScriptVersion: string;
-		Shopify?: LooseObject;
-		_ga_originalSendHitTask: any;
-	}
 
 	interface CartHookWindow extends Window {
 		gtag: Gtag.Gtag;
@@ -184,31 +188,31 @@ declare global {
 	type ListClickCallback = (foundProduct: Impression, self: TimeBombHTMLAnchor) => void;
 
 	interface Customer {
-		accepts_narketing: boolean;
-		display_name: string;
-		email: string;
-		first_name: string;
 		id: string;
-		last_name: string;
-		name: string;
-		phone: string;
-		address: {
+		accepts_marketing?: boolean;
+		display_name?: string;
+		email: string;
+		first_name?: string;
+		last_name?: string;
+		name?: string;
+		phone?: string;
+		address?: {
 			address1: string;
 			address2: string;
 			city: string;
-			company: string;
+			company?: string;
 			country: string;
 			country_code: string;
-			first_name: string;
-			id: string;
-			last_name: string;
 			phone: string;
 			province: string;
 			province_code: string;
-			street: string;
+			street?: string;
 			zip: string;
 		};
 		generatedClientID?: string;
+		customerLifetimeValue: number;
+		purchaseCount: number;
+		tags: string;
 	}
 
 	interface SegmentAddressFormat {

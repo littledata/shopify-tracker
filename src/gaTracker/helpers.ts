@@ -1,7 +1,4 @@
-/* global LittledataLayer */
-declare let window: CustomWindow;
-
-import { Detail, GA4Product } from '../..';
+import { CustomWindow, Detail, GA4Product } from '../..';
 import {
 	productListClicks,
 	removePii,
@@ -13,6 +10,8 @@ import {
 import getConfig from '../common/getConfig';
 import getProductDetail from '../common/getProductDetail';
 import productListViews from '../common/productListViews';
+
+declare let window: CustomWindow;
 
 const event_category = 'Shopify (Littledata)';
 
@@ -30,18 +29,17 @@ export const initGtag = () => {
 		};
 	window.ga.l = +new Date();
 
-	retrieveAndStoreClientId(true);
-
 	// @ts-ignore
 	gtag('js', new Date());
-	if (hasGA3()) {
-		gtag('config', LittledataLayer.webPropertyID, {
+
+	if (hasGA4()) {
+		gtag('config', LittledataLayer.measurementID, {
 			...getConfig(),
 			send_page_view: false,
 		});
 	}
-	if (hasGA4()) {
-		gtag('config', LittledataLayer.measurementID, {
+	if (hasGA3()) {
+		gtag('config', LittledataLayer.webPropertyID, {
 			...getConfig(),
 			send_page_view: false,
 		});
@@ -53,22 +51,23 @@ export const sendPageview = () => {
 	const locationWithMedium = addUTMMediumIfMissing(document.location.href);
 	const page_location = removePii(locationWithMedium);
 
-	if (hasGA3()) {
-		gtag('config', LittledataLayer.webPropertyID, {
-			...getConfig(),
-			send_page_view: true,
-			page_title,
-			page_location,
-		});
-	}
 	if (hasGA4()) {
 		gtag('config', LittledataLayer.measurementID, {
 			...getConfig(),
-			send_page_view: true,
 			page_title,
 			page_location,
+			send_page_view: true,
 		});
 	}
+	if (hasGA3()) {
+		gtag('config', LittledataLayer.webPropertyID, {
+			...getConfig(),
+			page_title,
+			page_location,
+			send_page_view: true,
+		});
+	}
+	retrieveAndStoreClientId();
 
 	dataLayer.push({
 		event: 'pageview',
