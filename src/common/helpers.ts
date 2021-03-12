@@ -185,4 +185,4 @@ function waitForGaToLoad(postClientIdTimeout: any, nextTimeout: number) {
 export const getGAClientId = (tracker: any): string => {
 	const clientId = tracker.get('clientId');
 	return getValidGAClientId(clientId) ? clientId : '';
-}
+};
