@@ -1,6 +1,7 @@
 import { OwnLayer } from '../..';
 import { getQueryStringParam } from '../common/getQueryStringParam';
 import { initSegment } from '../segmentTracker/helpers';
+import { httpRequest } from '../common/httpRequest'
 
 interface ShopifyWindow {
 	LittledataLayer: OwnLayer;
@@ -59,5 +60,20 @@ declare let window: ShopifyWindow;
 			tax: checkout.total_tax,
 			total: checkout.total_price,
 		});
+
+		//@ts-ignore
+		const { user } = analytics;
+		const shopId = getQueryStringParam(scriptSrc, 'shopId');
+		const env = getQueryStringParam(scriptSrc, 'env')
+		if (!shopId || !user) return;
+
+		const transactionWatcherURLRoot = env === 'production' ? 'https://transactions.littledata.io' : 'https://transactions-staging.littledata.io'
+		const clientIDEndpoint = `${transactionWatcherURLRoot}/v3/clientID/store/${shopId}`
+
+		httpRequest.postJSON(clientIDEndpoint, {
+			clientID: user().anonymousId(),
+			userID: window.Shopify.checkout.customer_id,
+			segment: false,
+		})
 	}
 })();

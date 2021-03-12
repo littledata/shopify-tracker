@@ -1,6 +1,8 @@
 import { CustomWindow } from '../..';
 import getConfig from '../common/getConfig';
 import { getQueryStringParam } from '../common/getQueryStringParam';
+import { httpRequest } from '../common/httpRequest'
+import { getGAClientId } from '../common/helpers'
 
 declare let window: CustomWindow;
 (function() {
@@ -9,7 +11,6 @@ declare let window: CustomWindow;
 		// @ts-ignore
 		const scriptSrc = document.currentScript.src;
 		const webPropertyId = getQueryStringParam(scriptSrc, 'webPropertyId');
-
 		if (!webPropertyId) {
 			throw new Error('Could not add ga thank you page script beacuse of missing webPropertyId');
 		}
@@ -38,5 +39,21 @@ declare let window: CustomWindow;
 			value,
 			send_to: webPropertyId,
 		});
+
+		const shopId = getQueryStringParam(scriptSrc, 'shopId');
+		const env = getQueryStringParam(scriptSrc, 'env')
+		if (!shopId) return;
+
+		const transactionWatcherURLRoot = env === 'production' ? 'https://transactions.littledata.io' : 'https://transactions-staging.littledata.io'
+		const clientIDEndpoint = `${transactionWatcherURLRoot}/v3/clientID/store/${shopId}`
+		const trackers = window.ga && window.ga.getAll && window.ga.getAll();
+		if (!trackers || !trackers.length) {
+			return
+		}
+		httpRequest.postJSON(clientIDEndpoint, {
+			clientID: getGAClientId(trackers[0]),
+			userID: window.Shopify.checkout.customer_id,
+			segment: false,
+		})
 	}
 })();
