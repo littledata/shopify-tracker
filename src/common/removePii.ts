@@ -1,3 +1,9 @@
+export const cleanPageviewUrl = (url: string) => {
+	const withoutPii = removePii(url);
+	const withoutTrailingSlash = withoutPii.replace(/\/$/, '').replace(/\/\?/, '?');
+	return withoutTrailingSlash;
+};
+
 export function removePii(str: string): string {
 	const piiRegexs = [
 		{

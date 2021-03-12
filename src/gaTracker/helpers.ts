@@ -1,5 +1,5 @@
 import { CustomWindow, Detail, GA4Product } from '../..';
-import { removePii } from '../common/removePii';
+import { removePii, cleanPageviewUrl } from '../common/removePii';
 import { retrieveAndStoreClientId, trackProductImageClicks, trackSocialShares } from '../common/helpers';
 import getProductDetail from '../common/getProductDetail';
 import productListViews from '../common/productListViews';
@@ -43,7 +43,7 @@ export const initGtag = () => {
 export const sendPageview = () => {
 	const page_title = removePii(document.title);
 	const locationWithMedium = addUTMMediumIfMissing(document.location.href);
-	const page_location = removePii(locationWithMedium);
+	const page_location = cleanPageviewUrl(locationWithMedium);
 
 	if (hasGA4()) {
 		gtag('config', LittledataLayer.measurementID, {
