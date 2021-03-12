@@ -9,16 +9,15 @@ type impressionCallback = (impressionTag: Impression[]) => void;
 export default (impressionTag: impressionCallback, clickTag: ListClickCallback) => {
 	let waitForScroll = 0;
 	const allVariants = [] as Impression[];
-	LittledataLayer.ecommerce.impressionsToSend = [];
+	const impressionsToSend = [] as ImpressionToSend[];
 	// previous data layer versions pre-populated impressions, so wipe those
 	LittledataLayer.ecommerce.impressions = [];
-	let { impressionsToSend } = LittledataLayer.ecommerce;
 
 	function trackImpressions() {
 		const products = getElementsByHref(productUrlRegex);
 		products.forEach((element, index) => {
 			const { handle, shopify_variant_id } = getHandleAndVariantFromProductLink(element.href);
-			if (productAlreadyViewed(handle, shopify_variant_id)) return;
+			if (productAlreadyViewed(impressionsToSend, handle, shopify_variant_id)) return;
 			if (productIsVisible(element)) {
 				//prevent product view from triggering again, even before view is tracked
 				impressionsToSend.push({
@@ -31,22 +30,24 @@ export default (impressionTag: impressionCallback, clickTag: ListClickCallback) 
 		});
 
 		if (impressionsToSend.length > 0) {
-			// if we fetched them previously, just send them now
-			const variantsPreviouslyFetched = impressionsToSend
-				.map(impression => {
-					const previouslyFetched = findProductInArray(
-						allVariants,
-						impression.handle,
-						impression.shopify_variant_id,
-					);
-					return {
-						...previouslyFetched,
-						list_position: impression.list_position,
-					};
-				})
-				.filter((impression: Impression) => impression && impression.id);
-			fireImpressionTag(variantsPreviouslyFetched, impressionTag, 'from previous fetch');
 			getVariantsFromShopify(impressionsToSend, impressionTag, allVariants);
+			window.setTimeout(() => {
+				// send all products fetched within one second
+				const variantsReadyToSend = impressionsToSend
+					.map(impression => {
+						const previouslyFetched = findProductInArray(
+							allVariants,
+							impression.handle,
+							impression.shopify_variant_id,
+						);
+						return {
+							...previouslyFetched,
+							list_position: impression.list_position,
+						};
+					})
+					.filter((impression: Impression) => impression && impression.id);
+				fireImpressionTag(variantsReadyToSend, impressionTag, impressionsToSend, 'after 1 second');
+			}, 1000);
 		}
 	}
 
@@ -86,10 +87,13 @@ const productIsVisible = (element: TimeBombHTMLAnchor) => {
 	return false;
 };
 
-const fireImpressionTag = (newImpressions: Impression[], impressionTag: impressionCallback, logMessage: string) => {
+const fireImpressionTag = (
+	newImpressions: Impression[],
+	impressionTag: impressionCallback,
+	impressionsToSend: ImpressionToSend[],
+	logMessage: string,
+) => {
 	if (!newImpressions.length) return;
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	let { impressionsToSend } = LittledataLayer.ecommerce;
 	LittledataLayer.ecommerce.impressions = [...LittledataLayer.ecommerce.impressions, ...newImpressions];
 	debugModeLog(logMessage, newImpressions);
 	newImpressions.forEach(v => {
@@ -98,24 +102,23 @@ const fireImpressionTag = (newImpressions: Impression[], impressionTag: impressi
 	});
 	impressionTag(newImpressions);
 };
+
 export const getVariantsFromShopify = (
 	impressions: ImpressionToSend[],
 	impressionTag: any,
 	allVariants: Impression[],
 ) => {
-	const handleGroups = groupBy(impressions, 'handle');
+	const impressionsNotFetchedPreviously = impressions
+		.map(impression => {
+			const previouslyFetched = findProductInArray(allVariants, impression.handle, impression.shopify_variant_id);
+			return previouslyFetched ? null : impression;
+		})
+		.filter(impression => impression);
+	const handleGroups = groupBy(impressionsNotFetchedPreviously, 'handle');
 	Object.keys(handleGroups).forEach(handle =>
 		httpRequest
 			.getJSON(`/products/${handle}.json`)
 			.then((json: any) => {
-				const variantsToSend = handleGroups[handle].map((impression: ImpressionToSend) =>
-					convertShopifyProductToVariant(
-						json.product,
-						impression.shopify_variant_id,
-						impression.list_position,
-					),
-				);
-				fireImpressionTag(variantsToSend, impressionTag, 'from products API');
 				json.product.variants.forEach((variant: LooseObject) => {
 					const shopify_variant_id = String(variant.id);
 					if (findProductInArray(allVariants, json.product.handle, shopify_variant_id)) return;
@@ -128,9 +131,13 @@ export const getVariantsFromShopify = (
 	);
 };
 
-export const productAlreadyViewed = (handle: string, shopify_variant_id: string) =>
+export const productAlreadyViewed = (
+	impressionsToSend: ImpressionToSend[],
+	handle: string,
+	shopify_variant_id: string,
+) =>
 	findProductInArray(LittledataLayer.ecommerce.impressions, handle, shopify_variant_id) ||
-	findProductInArray(LittledataLayer.ecommerce.impressionsToSend, handle, shopify_variant_id);
+	findProductInArray(impressionsToSend, handle, shopify_variant_id);
 
 const groupBy = (givenArray: any[], key: string) => {
 	return givenArray.reduce(function(rv, x) {
