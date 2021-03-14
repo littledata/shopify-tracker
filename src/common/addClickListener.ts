@@ -2,11 +2,11 @@ import { getHandleAndVariantFromProductLink } from './getHandleAndVariantFromPro
 
 export const addClickListener = (element: TimeBombHTMLAnchor, clickTag: ListClickCallback) => {
 	element.addEventListener('click', function(ev) {
-		const openInNewTab = ev.ctrlKey;
+		const openInNewTab = ev.ctrlKey || ev.metaKey;
 		const { handle, shopify_variant_id } = getHandleAndVariantFromProductLink(element.href);
 		const product = findProductInArray(LittledataLayer.ecommerce.impressions, handle, shopify_variant_id);
 
-		if (!product) return;
+		if (!product) return true;
 		window.localStorage.setItem('position', String(product.list_position));
 		debugModeLog(product);
 		ev.preventDefault();

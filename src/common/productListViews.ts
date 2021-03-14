@@ -7,6 +7,7 @@ import { httpRequest } from './httpRequest';
 type impressionCallback = (impressionTag: Impression[]) => void;
 
 const impressionsToSend = [] as ImpressionToSend[];
+const millisecondsForProductAPI = 600;
 
 export default (impressionTag: impressionCallback, clickTag: ListClickCallback) => {
 	let waitForScroll = 0;
@@ -48,7 +49,7 @@ export default (impressionTag: impressionCallback, clickTag: ListClickCallback) 
 					})
 					.filter((impression: Impression) => impression && impression.id);
 				fireImpressionTag(variantsReadyToSend, impressionTag, 'after 1 second');
-			}, 1000);
+			}, millisecondsForProductAPI);
 		}
 	}
 
@@ -146,7 +147,10 @@ const debugModeLog = (message: string, variants: Impression[]) => {
 		}
 		if (impressionsToSend.length) {
 			const toSendArray = impressionsToSend.map(v => `${v.handle} (${v.shopify_variant_id})`);
-			console.log(`Littledata still waiting for these product details:`, toSendArray);
+			console.warn(
+				`Littledata still waiting for these product details after ${millisecondsForProductAPI}ms:`,
+				toSendArray,
+			);
 		}
 	}
 };
