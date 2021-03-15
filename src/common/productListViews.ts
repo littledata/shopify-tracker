@@ -1,63 +1,156 @@
-type impressionCallback = (impressionTag: Impression[]) => void;
-import { getElementsByHref, findDataLayerProduct } from './helpers';
+import { getElementsByHref, productUrlRegex } from './helpers';
+import { convertShopifyProductToVariant } from './convertShopifyProductToVariant';
+import { getHandleAndVariantFromProductLink } from './getHandleAndVariantFromProductLink';
+import { addClickListener, findProductInArray, findProductIndexInArray } from './addClickListener';
+import { httpRequest } from './httpRequest';
 
-export default (impressionTag: impressionCallback) => {
+type impressionCallback = (impressionTag: Impression[]) => void;
+
+const impressionsToSend = [] as ImpressionToSend[];
+const millisecondsForProductAPI = 600;
+
+export default (impressionTag: impressionCallback, clickTag: ListClickCallback) => {
 	let waitForScroll = 0;
-	const products = getElementsByHref('/products/');
-	if (products.length === 0) {
-		return;
-	}
+	const allVariants = [] as Impression[];
+	// previous data layer versions pre-populated impressions, so wipe those
+	LittledataLayer.ecommerce.impressions = [];
 
 	function trackImpressions() {
-		const viewportTop = document.documentElement.scrollTop;
-		const viewportHeight = window.innerHeight;
-		const viewportBottom = viewportTop + viewportHeight;
-		const impressions: Impression[] = [];
+		const products = getElementsByHref(productUrlRegex);
 		products.forEach((element, index) => {
-			if (!element) return;
-			const elementTop = window.pageYOffset + element.getBoundingClientRect().top;
-			const elementHeight = element.offsetHeight;
-			const elementBottom = elementTop + elementHeight;
-			if (elementBottom >= viewportTop && elementTop < viewportBottom) {
-				let pixelsVisible = elementHeight;
-				if (elementTop - viewportTop < 0) {
-					pixelsVisible += elementTop - viewportTop;
-				} else if (viewportBottom - elementBottom < 0) {
-					pixelsVisible += viewportBottom - elementBottom;
-				}
-				const percentVisible = pixelsVisible / elementHeight;
-				if (percentVisible > 0.8) {
-					//remove product from collection
-					products[index] = null;
-
-					//find this product in the datalayer
-					const product = findDataLayerProduct(element.href);
-					if (product) impressions.push(product);
-				}
+			const { handle, shopify_variant_id } = getHandleAndVariantFromProductLink(element.href);
+			if (productAlreadyViewed(handle, shopify_variant_id)) return;
+			if (productIsVisible(element)) {
+				//prevent product view from triggering again while sending is in progress
+				impressionsToSend.push({
+					handle,
+					shopify_variant_id,
+					list_position: index + 1,
+				});
+				addClickListener(element, clickTag);
 			}
 		});
 
-		if (impressions.length > 0) {
-			//now send impressions to GA and dataLayer
-			//maximum batch size is 20
-
-			chunk(impressions, 20).forEach((batch: Impression[]) => impressionTag(batch));
+		if (impressionsToSend.length > 0) {
+			getVariantsFromShopify(impressionsToSend, impressionTag, allVariants);
+			window.setTimeout(() => {
+				// send all products fetched within one second
+				const variantsReadyToSend = impressionsToSend
+					.map(impression => {
+						const previouslyFetched = findProductInArray(
+							allVariants,
+							impression.handle,
+							impression.shopify_variant_id,
+						);
+						return {
+							...previouslyFetched,
+							list_position: impression.list_position,
+						};
+					})
+					.filter((impression: Impression) => impression && impression.id);
+				fireImpressionTag(variantsReadyToSend, impressionTag, 'after 1 second');
+			}, millisecondsForProductAPI);
 		}
 	}
 
 	window.setTimeout(function() {
 		clearTimeout(waitForScroll);
 		trackImpressions();
-	}, 500); /* wait for pageview to fire first */
+	}, 500); /* wait for user to see the products above the fold */
 
 	document.addEventListener('scroll', () => {
-		//assumes that people need 300ms after scrolling to register an impression
+		//assumes that people need 200ms after scrolling stops to register an impression
 		clearTimeout(waitForScroll);
 		waitForScroll = window.setTimeout(function() {
 			trackImpressions();
-		}, 300);
+		}, 200);
 	});
 };
 
-const chunk = (arr: Impression[], size: number) =>
-	Array.from({ length: Math.ceil(arr.length / size) }, (v, i) => arr.slice(i * size, i * size + size));
+const productIsVisible = (element: TimeBombHTMLAnchor) => {
+	const viewportTop = document.documentElement.scrollTop;
+	const viewportHeight = window.innerHeight;
+	const viewportBottom = viewportTop + viewportHeight;
+	const elementTop = window.pageYOffset + element.getBoundingClientRect().top;
+	const elementHeight = element.offsetHeight;
+	const elementBottom = elementTop + elementHeight;
+	if (elementBottom >= viewportTop && elementTop < viewportBottom) {
+		let pixelsVisible = elementHeight;
+		if (elementTop - viewportTop < 0) {
+			pixelsVisible += elementTop - viewportTop;
+		} else if (viewportBottom - elementBottom < 0) {
+			pixelsVisible += viewportBottom - elementBottom;
+		}
+		const percentVisible = pixelsVisible / elementHeight;
+		if (percentVisible > 0.8) {
+			return true;
+		}
+	}
+	return false;
+};
+
+const fireImpressionTag = (newImpressions: Impression[], impressionTag: impressionCallback, logMessage: string) => {
+	if (!newImpressions.length) return;
+	LittledataLayer.ecommerce.impressions = [...LittledataLayer.ecommerce.impressions, ...newImpressions];
+	newImpressions.forEach(v => {
+		const index = findProductIndexInArray(impressionsToSend, v.handle, v.shopify_variant_id);
+		impressionsToSend.splice(index, 1);
+	});
+	debugModeLog(logMessage, newImpressions);
+	impressionTag(newImpressions);
+};
+
+export const getVariantsFromShopify = (
+	impressions: ImpressionToSend[],
+	impressionTag: any,
+	allVariants: Impression[],
+) => {
+	const impressionsNotFetchedPreviously = impressions
+		.map(impression => {
+			const previouslyFetched = findProductInArray(allVariants, impression.handle, impression.shopify_variant_id);
+			return previouslyFetched ? null : impression;
+		})
+		.filter(impression => impression);
+	const handleGroups = groupBy(impressionsNotFetchedPreviously, 'handle');
+	Object.keys(handleGroups).forEach(handle =>
+		httpRequest
+			.getJSON(`/products/${handle}.json`)
+			.then((json: any) => {
+				json.product.variants.forEach((variant: LooseObject) => {
+					const shopify_variant_id = String(variant.id);
+					if (findProductInArray(allVariants, json.product.handle, shopify_variant_id)) return;
+					allVariants.push(convertShopifyProductToVariant(json.product, shopify_variant_id));
+				});
+			})
+			.catch(ex => {
+				console.debug('Littledata unable to fetch', handle, ex);
+			}),
+	);
+};
+
+export const productAlreadyViewed = (handle: string, shopify_variant_id: string) =>
+	findProductInArray(LittledataLayer.ecommerce.impressions, handle, shopify_variant_id) ||
+	findProductInArray(impressionsToSend, handle, shopify_variant_id);
+
+const groupBy = (givenArray: any[], key: string) => {
+	return givenArray.reduce(function(rv, x) {
+		(rv[x[key]] = rv[x[key]] || []).push(x);
+		return rv;
+	}, {});
+};
+
+const debugModeLog = (message: string, variants: Impression[]) => {
+	if (LittledataLayer.debug === true) {
+		if (variants.length) {
+			const handleArray = variants.map(v => `${v.handle} (${v.shopify_variant_id})`);
+			console.log(`Littledata product list views ${message}:`, handleArray);
+		}
+		if (impressionsToSend.length) {
+			const toSendArray = impressionsToSend.map(v => `${v.handle} (${v.shopify_variant_id})`);
+			console.warn(
+				`Littledata still waiting for these product details after ${millisecondsForProductAPI}ms:`,
+				toSendArray,
+			);
+		}
+	}
+};
