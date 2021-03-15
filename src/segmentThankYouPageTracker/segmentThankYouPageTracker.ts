@@ -2,6 +2,12 @@ import { OwnLayer } from '../..';
 import { getQueryStringParam } from '../common/getQueryStringParam';
 import { initSegment } from '../segmentTracker/helpers';
 import { httpRequest } from '../common/httpRequest';
+import {
+	STAGING,
+	PRODUCTION_TRANSACTION_WATCHER,
+	STAGING_TRANSACTION_WATCHER,
+	CLIENT_ID_CUSTOMER_ID_ROUTE,
+} from '../common/constants';
 
 interface ShopifyWindow {
 	LittledataLayer: OwnLayer;
@@ -63,13 +69,12 @@ declare let window: ShopifyWindow;
 
 		//@ts-ignore
 		const { user } = analytics;
-		const shopId = getQueryStringParam(scriptSrc, 'shopId');
 		const env = getQueryStringParam(scriptSrc, 'env');
-		if (!shopId || !user) return;
+		if (!user) return;
 
 		const transactionWatcherURLRoot =
-			env === 'production' ? 'https://transactions.littledata.io' : 'https://transactions-staging.littledata.io';
-		const clientIDEndpoint = `${transactionWatcherURLRoot}/v3/clientID/store/${shopId}`;
+			env === STAGING ? STAGING_TRANSACTION_WATCHER : PRODUCTION_TRANSACTION_WATCHER;
+		const clientIDEndpoint = `${transactionWatcherURLRoot}${CLIENT_ID_CUSTOMER_ID_ROUTE}`;
 
 		httpRequest.postJSON(clientIDEndpoint, {
 			clientID: user().anonymousId(),

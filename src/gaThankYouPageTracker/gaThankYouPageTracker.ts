@@ -3,6 +3,12 @@ import getConfig from '../common/getConfig';
 import { getQueryStringParam } from '../common/getQueryStringParam';
 import { httpRequest } from '../common/httpRequest';
 import { getGAClientId } from '../common/helpers';
+import {
+	STAGING,
+	PRODUCTION_TRANSACTION_WATCHER,
+	STAGING_TRANSACTION_WATCHER,
+	CLIENT_ID_CUSTOMER_ID_ROUTE,
+} from '../common/constants';
 
 declare let window: CustomWindow;
 (function() {
@@ -40,13 +46,11 @@ declare let window: CustomWindow;
 			send_to: webPropertyId,
 		});
 
-		const shopId = getQueryStringParam(scriptSrc, 'shopId');
 		const env = getQueryStringParam(scriptSrc, 'env');
-		if (!shopId) return;
 
 		const transactionWatcherURLRoot =
-			env === 'production' ? 'https://transactions.littledata.io' : 'https://transactions-staging.littledata.io';
-		const clientIDEndpoint = `${transactionWatcherURLRoot}/v3/clientID/store/${shopId}`;
+			env === STAGING ? STAGING_TRANSACTION_WATCHER : PRODUCTION_TRANSACTION_WATCHER;
+		const clientIDEndpoint = `${transactionWatcherURLRoot}${CLIENT_ID_CUSTOMER_ID_ROUTE}`;
 		const trackers = window.ga && window.ga.getAll && window.ga.getAll();
 		if (!trackers || !trackers.length) {
 			return;
